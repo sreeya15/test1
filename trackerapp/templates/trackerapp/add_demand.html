@@ -8,19 +8,38 @@
   body {
     font-family: Arial, sans-serif;
     margin: 2rem;
+    position: relative;
   }
-  form {
-    max-width: 400px;
+  
+  .main-content {
+    display: flex;
+    gap: 30px;
+    justify-content: space-between;
   }
+  
+  .form-container {
+    width: 300px;
+  }
+  
+  .stage-section {
+    width: 650px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+  }
+  
   label, input {
     display: block;
     width: 100%;
     margin-bottom: 0.5rem;
   }
+  
   input[type="text"] {
     padding: 8px;
     font-size: 14px;
   }
+  
   input[type="submit"] {
     background-color: #1f78b4;
     color: white;
@@ -30,25 +49,380 @@
     font-size: 14px;
     border-radius: 4px;
   }
+  
   input[type="submit"]:hover {
     background-color: #166494;
   }
+  
   a {
     display: inline-block;
     margin-top: 1rem;
     text-decoration: none;
     color: #1f78b4;
   }
+  
+  /* Stage checklist styles */
+  .stage-section {
+    width: 900px;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 15px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  }
+  
+  .stage-title {
+    font-weight: bold;
+    font-size: 18px;
+    margin-bottom: 15px;
+    text-align: center;
+  }
+  
+  .stage-list {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    height: 355px;
+    width: 100%;
+  }
+  
+  .stage-column {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    width: calc(33.33% - 10px);
+  }
+  
+  .stage-item {
+    display: flex;
+    align-items: center;
+    padding: 4px 6px;
+    border: 1px solid #f0f0f0;
+    border-radius: 3px;
+  }
+  
+  .stage-item:hover {
+    background-color: #f9f9f9;
+  }
+  
+  .stage-item label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    width: 100%;
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.4;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .stage-color {
+    width: 12px;
+    height: 12px;
+    display: none;
+    margin-right: 6px;
+    border: 1px solid rgba(0,0,0,0.1);
+  }
 </style>
 </head>
 <body>
   <h2>Add New Demand</h2>
-  <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" value="Add Demand" />
-  </form>
-  <a href="{% url 'demand_list' %}">Back to timeline</a>
+  
+  <div class="main-content">
+    <!-- Form Section -->
+    <div class="form-container">
+      <h3>Demand Details</h3>
+      <form method="post">
+        {% csrf_token %}
+        <div class="form-fields">
+          <div class="form-field">
+            <label for="id_name">Name:</label>
+            {{ form.name }}
+          </div>
+          <div class="form-field">
+            <label for="id_demand_ID">Demand ID:</label>
+            {{ form.demand_ID }}
+          </div>
+          <div class="form-field">
+            <label for="id_demand_amount">Amount:</label>
+            {{ form.demand_amount }}
+          </div>
+          <div class="form-field">
+            <label for="id_file_type">Type of File:</label>
+            {{ form.file_type }}
+          </div>
+          <div class="form-field">
+            <label for="id_io_name">IO:</label>
+            {{ form.io_name }}
+          </div>
+          <div class="form-field">
+            <label for="id_start_date">Start Date:</label>
+            {{ form.start_date }}
+          </div>
+          <div class="form-field">
+            <label for="id_duration_months">Duration (months):</label>
+            {{ form.duration_months }}
+          </div>
+          <div class="form-field submit-btn">
+            <input type="submit" value="Add Demand" />
+          </div>
+        </div>
+      </form>
+      <a href="{% url 'demand_list' %}">Back to timeline</a>
+    </div>
+    
+    <!-- Stage Checklist Section -->
+    <div class="stage-section">
+      <h3>Stage Legend Checklist</h3>
+          <div class="stage-list">
+            <!-- Column 1: Stages 0-9 -->
+            <div class="stage-column">
+              <!-- Stage 0 - Demand to be Initiated -->
+              <div class="stage-item">
+                <label>
+                  <input type="checkbox" name="stage_demand_to_be_initiated" class="stage-checkbox" data-stage="demand_to_be_initiated">
+                  <span class="stage-color" style="background-color: #1f78b4;"></span>
+                  <strong>0.</strong> Demand to be Initiated
+                </label>
+              </div>
+          
+              <!-- Stage 1 - Demand Initiated -->
+              <div class="stage-item">
+                <label>
+                  <input type="checkbox" name="stage_demand_initiated" class="stage-checkbox" data-stage="demand_initiated">
+                  <span class="stage-color" style="background-color: #33a02c;"></span>
+                  <strong>1.</strong> Demand Initiated
+                </label>
+              </div>
+          
+              <!-- Stage 2 - SPC Cleared -->
+              <div class="stage-item">
+                <label>
+                  <input type="checkbox" name="stage_spc_cleared" class="stage-checkbox" data-stage="spc_cleared">
+                  <span class="stage-color" style="background-color: #fb9a99;"></span>
+                  <strong>2.</strong> SPC Cleared
+                </label>
+              </div>
+              
+              <!-- Stage 3 - Demand Approved -->
+              <div class="stage-item">
+                <label>
+                  <input type="checkbox" name="stage_demand_approved" class="stage-checkbox" data-stage="demand_approved">
+                  <span class="stage-color" style="background-color: #e31a1c;"></span>
+                  <strong>3.</strong> Demand Approved
+                </label>
+              </div>
+
+              <!-- Stage 4 - Tender Enquiry Floated -->
+              <div class="stage-item">
+                <label>
+                  <input type="checkbox" name="stage_tender_enquiry_floated" class="stage-checkbox" data-stage="tender_enquiry_floated">
+                  <span class="stage-color" style="background-color: #fdbf6f;"></span>
+                  <strong>4.</strong> Tender Enquiry Floated
+                </label>
+              </div>
+
+              <!-- Stage 5 - Receipt of Quotations -->
+              <div class="stage-item">
+                <label>
+                  <input type="checkbox" name="stage_receipt_of_quotations" class="stage-checkbox" data-stage="receipt_of_quotations">
+                  <span class="stage-color" style="background-color: #ff7f00;"></span>
+                  <strong>5.</strong> Receipt of Quotations
+                </label>
+              </div>
+
+              <!-- Stage 6 - Tender Opening -->
+              <div class="stage-item">
+                <label>
+                  <input type="checkbox" name="stage_tender_opening" class="stage-checkbox" data-stage="tender_opening">
+                  <span class="stage-color" style="background-color: #cab2d6;"></span>
+                  <strong>6.</strong> Tender Opening
+                </label>
+              </div>
+
+              <!-- Stage 7 - Financial Benchmarking -->
+              <div class="stage-item">
+                <label>
+                  <input type="checkbox" name="stage_financial_benchmarking" class="stage-checkbox" data-stage="financial_benchmarking">
+                  <span class="stage-color" style="background-color: #6a3d9a;"></span>
+                  <strong>7.</strong> Financial Benchmarking
+                </label>
+              </div>
+
+              <!-- Stage 8 - Tech Evaluation -->
+              <div class="stage-item">
+                <label>
+                  <input type="checkbox" name="stage_tech_evaluation" class="stage-checkbox" data-stage="tech_evaluation">
+                  <span class="stage-color" style="background-color: #ffff99;"></span>
+                  <strong>8.</strong> Tech Evaluation
+                </label>
+              </div>
+
+              <!-- Stage 9 - Financial Evaluation -->
+              <div class="stage-item">
+                <label>
+                  <input type="checkbox" name="stage_financial_evaluation" class="stage-checkbox" data-stage="financial_evaluation">
+                  <span class="stage-color" style="background-color: #b15928;"></span>
+                  <strong>9.</strong> Financial Evaluation
+                </label>
+              </div>
+            </div>
+
+            <!-- Column 2: Stages 10-19 -->
+            <div class="stage-column">
+              <!-- Stage 10 - Tech Sanction -->
+              <div class="stage-item">
+                <label>
+                  <input type="checkbox" name="stage_tech_sanction" class="stage-checkbox" data-stage="tech_sanction">
+                  <span class="stage-color" style="background-color: #66c2a5;"></span>
+                  <strong>10.</strong> Tech Sanction
+                </label>
+              </div>
+
+              <!-- Stage 11 - PDR -->
+              <div class="stage-item">
+                <label>
+                  <input type="checkbox" name="stage_pdr" class="stage-checkbox" data-stage="pdr">
+                  <span class="stage-color" style="background-color: #33a02c;"></span>
+                  <strong>11.</strong> PDR
+                </label>
+              </div>
+
+              <!-- Stage 12 - Material Planning Conference -->
+              <div class="stage-item">
+                <label>
+                  <input type="checkbox" name="stage_material_planning_conference" class="stage-checkbox" data-stage="material_planning_conference">
+                  <span class="stage-color" style="background-color: #fb9a99;"></span>
+                  <strong>12.</strong> Material Planning Conference
+                </label>
+              </div>
+
+              <!-- Stage 13 - DDR -->
+              <div class="stage-item">
+                <label>
+                  <input type="checkbox" name="stage_ddr" class="stage-checkbox" data-stage="ddr">
+                  <span class="stage-color" style="background-color: #e31a1c;"></span>
+                  <strong>13.</strong> DDR
+                </label>
+              </div>
+
+              <!-- Stage 14 - CDR -->
+              <div class="stage-item">
+                <label>
+                  <input type="checkbox" name="stage_cdr" class="stage-checkbox" data-stage="cdr">
+                  <span class="stage-color" style="background-color: #fdbf6f;"></span>
+                  <strong>14.</strong> CDR
+                </label>
+              </div>
+
+              <!-- Stage 15 - QAP Approval -->
+              <div class="stage-item">
+                <label>
+                  <input type="checkbox" name="stage_qap_approval" class="stage-checkbox" data-stage="qap_approval">
+                  <span class="stage-color" style="background-color: #ff7f00;"></span>
+                  <strong>15.</strong> QAP Approval
+                </label>
+              </div>
+
+              <!-- Stage 16 - Realization Completed -->
+              <div class="stage-item">
+                <label>
+                  <input type="checkbox" name="stage_realization_completed" class="stage-checkbox" data-stage="realization_completed">
+                  <span class="stage-color" style="background-color: #cab2d6;"></span>
+                  <strong>16.</strong> Realization Completed
+                </label>
+              </div>
+
+              <!-- Stage 17 - FAT Completed -->
+              <div class="stage-item">
+                <label>
+                  <input type="checkbox" name="stage_fat_completed" class="stage-checkbox" data-stage="fat_completed">
+                  <span class="stage-color" style="background-color: #6a3d9a;"></span>
+                  <strong>17.</strong> FAT Completed
+                </label>
+              </div>
+
+              <!-- Stage 18 - Delivered -->
+              <div class="stage-item">
+                <label>
+                  <input type="checkbox" name="stage_delivered" class="stage-checkbox" data-stage="delivered">
+                  <span class="stage-color" style="background-color: #ffff99;"></span>
+                  <strong>18.</strong> Delivered
+                </label>
+              </div>
+
+              <!-- Stage 19 - SAT Completed -->
+              <div class="stage-item">
+                <label>
+                  <input type="checkbox" name="stage_sat_completed" class="stage-checkbox" data-stage="sat_completed">
+                  <span class="stage-color" style="background-color: #b15928;"></span>
+                  <strong>19.</strong> SAT Completed
+                </label>
+              </div>
+            </div>
+            
+            <!-- Column 3: Stages 20-25 -->
+            <div class="stage-column">
+              <!-- Stage 20 - HAT Completed -->
+              <div class="stage-item">
+                <label>
+                  <input type="checkbox" name="stage_hat_completed" class="stage-checkbox" data-stage="hat_completed">
+                  <span class="stage-color" style="background-color: #66c2a5;"></span>
+                  <strong>20.</strong> HAT Completed
+                </label>
+              </div>
+
+              <!-- Stage 21 - Inward Inspection Clearance -->
+              <div class="stage-item">
+                <label>
+                  <input type="checkbox" name="stage_inward_inspection_clearance" class="stage-checkbox" data-stage="inward_inspection_clearance">
+                  <span class="stage-color" style="background-color: #b2df8a;"></span>
+                  <strong>21.</strong> Inward Inspection Clearance
+                </label>
+              </div>
+
+              <!-- Stage 22 - Commissioned -->
+              <div class="stage-item">
+                <label>
+                  <input type="checkbox" name="stage_commissioned" class="stage-checkbox" data-stage="commissioned">
+                  <span class="stage-color" style="background-color: #a6cee3;"></span>
+                  <strong>22.</strong> Commissioned
+                </label>
+              </div>
+
+              <!-- Stage 23 - Partially Paid -->
+              <div class="stage-item">
+                <label>
+                  <input type="checkbox" name="stage_partially_paid" class="stage-checkbox" data-stage="partially_paid">
+                  <span class="stage-color" style="background-color: #e31a1c;"></span>
+                  <strong>23.</strong> Partially Paid
+                </label>
+              </div>
+
+              <!-- Stage 24 - Payment Completed -->
+              <div class="stage-item">
+                <label>
+                  <input type="checkbox" name="stage_payment_completed" class="stage-checkbox" data-stage="payment_completed">
+                  <span class="stage-color" style="background-color: #1f78b4;"></span>
+                  <strong>24.</strong> Payment Completed
+                </label>
+              </div>
+
+              <!-- Stage 25 - Warranty Start -->
+              <div class="stage-item">
+                <label>
+                  <input type="checkbox" name="stage_warranty_start" class="stage-checkbox" data-stage="warranty_start">
+                  <span class="stage-color" style="background-color: #33a02c;"></span>
+                  <strong>25.</strong> Warranty Start
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>     
+      </form>
+    </div>
 </body>
 </html>
 
