@@ -510,7 +510,7 @@
                 <a href="javascript:void(0)" class="details-button" title="View Details" onclick="toggleDetailBar('{{ d.demand.id }}'); return false;">🔍</a>
               </span>
               <div class="demand-info-label" id="demand-info-{{ d.demand.id }}" style="font-size: 11px; color: #666; margin-top: 4px;">
-                ID: {{ d.demand.id }} | Start Date: {{ d.demand.start_date|default:'Not set' }}
+                IO: {{ d.demand.io_name|default:'N/A' }} | Amount: {{ d.demand.demand_amount|default:'N/A' }} | Type: {{ d.demand.file_type|default:'N/A' }}
               </div>
             </td>
             <td>
