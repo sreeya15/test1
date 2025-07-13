@@ -1,0 +1,976 @@
+{% load trackerapp_filters %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Master Tracker - Demand Timeline</title>
+<style>
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #fff;
+    color: #333;
+    /* Add zoom-friendly settings */
+    -webkit-text-size-adjust: 100%;
+    -moz-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+  
+  .content {
+    width: 100%;
+  }
+  
+  .legend {
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    padding: 15px;
+    margin-top: 0;
+    margin-left: auto;
+    margin-right: 0;
+    max-width: 400px;
+    width: 400px;
+    right: 0;
+  }
+  
+  .legend h3 {
+    margin-top: 0;
+    color: #333;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .legend ul {
+    list-style: none;
+    padding-left: 0;
+    margin-top: 15px;
+  }
+  
+  .legend li {
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    font-size: 13px;
+  }
+  
+  .legend-color-box {
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+    margin-right: 8px;
+    border: 1px solid rgba(0,0,0,0.1);
+    vertical-align: middle;
+    border-radius: 2px;
+  }
+  
+  /* Button styles */
+  .button {
+    display: inline-block;
+    background-color: #2196F3;
+    color: white;
+    padding: 8px 16px;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 14px;
+    border: none;
+    margin-right: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .button:hover {
+    background-color: #0d8aee;
+  }
+  
+  /* Tables and timeline */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    border: 1px solid #eee;
+  }
+  
+  th, td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+    vertical-align: top;
+  }
+  
+  th {
+    background-color: #f8f8f8;
+    font-weight: 500;
+  }
+  
+  .demand-name {
+    min-width: 200px;
+    font-weight: normal;
+    white-space: nowrap;
+  }
+  
+  .demand-actions {
+    display: inline-block;
+    margin-left: 10px;
+  }
+  
+  .demand-name a {
+    text-decoration: none;
+    color: #666;
+    margin-left: 8px;
+    font-size: 14px;
+    transition: color 0.2s;
+  }
+  
+  .demand-name a.details-button {
+    font-size: 22px !important; /* Significantly increased size for the View Details icon */
+    line-height: 1;
+    vertical-align: middle;
+    display: inline-block;
+  }
+  
+  .demand-name a:hover {
+    color: #1f78b4;
+  }
+  
+  .delete-button {
+    color: #f44336;
+  }
+  
+  .delete-button:hover {
+    color: #d32f2f;
+  }
+  
+  .edit-button {
+    color: #2196F3;
+  }
+  
+  .edit-button:hover {
+    color: #0b7dda;
+  }
+  
+  /* Timeline specific styles */
+  .timeline-header {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0;
+    table-layout: fixed;
+    max-width: 100%;
+    overflow-x: auto;
+  }
+  
+  .timeline-header th {
+    text-align: center;
+    border-right: 1px solid #ddd;
+    padding: 6px 0;
+    font-weight: 600;
+    color: #000;
+    font-size: 14px;
+    background-color: #f9f9f9;
+  }
+  
+  .timeline-header th:last-child {
+    border-right: none;
+  }
+  
+  .timeline-header .quarter-cell {
+    text-align: center;
+    padding: 6px;
+    font-size: 14px;
+    color: #333;
+    font-weight: 600;
+    border: 1px solid #999;
+    background-color: #e8f4f8;
+    height: 30px;
+    vertical-align: middle;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .timeline-header .quarter-cell:last-child {
+    border-right: none;
+  }
+  
+  .timeline-scale {
+    padding: 0;
+    width: 100%;
+    border-bottom: 1px solid #ddd;
+    background-color: #f9f9f9;
+  }
+
+  .timeline-header-cell {
+    padding: 0 !important;
+  }
+  
+  .progress-bar-container {
+    position: relative;
+    height: auto;
+    min-height: 30px;
+    background-color: transparent;
+    margin-top: 10px;
+    margin-bottom: 25px;
+    border-radius: 3px;
+  }
+  
+  .demand-timeline-wrapper {
+    position: relative;
+    height: 30px;
+    width: 100%;
+    margin-bottom: 15px;
+  }
+  
+  .demand-timeline {
+    position: absolute;
+    height: 100%;
+    background-color: rgba(200, 200, 200, 0.15);
+    border: 1px solid #ddd;
+    border-radius: 2px;
+    z-index: 1;
+  }
+  
+  .progress-bar {
+    height: 100%;
+    position: absolute;
+    cursor: pointer;
+    border-radius: 0;  /* Changed from 3px to make edges square */
+    z-index: 10;
+    min-width: 8px;  /* Increased from 4px for better visibility of 1-day stages */
+    transition: min-width 0.1s, box-shadow 0.1s, transform 0.1s;
+    transform-origin: center;
+  }
+  
+  .progress-bar:hover {
+    min-width: 18px;  /* Increased from 12px */
+    transform: scaleY(1.1);
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.9);
+    z-index: 20;  /* Ensure hovered bars appear above others */
+  }
+  
+  .stage-number {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 500;
+    color: white;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  
+  .tooltip {
+    visibility: hidden;
+    position: absolute;
+    bottom: 125%;
+    left: 0;
+    transform: translateX(-25%);
+    background-color: #333;
+    color: white;
+    text-align: left;
+    border-radius: 5px;
+  
+  .timeline-date-label {
+    position: absolute;
+    font-size: 11px;
+    color: #666;
+    bottom: -20px;
+  }
+  
+  .timeline-date-label.start {
+    left: 0;
+  }
+  
+  .timeline-date-label.end {
+    right: 0;
+  }
+  
+  .dates-row {
+    font-size: 12px;
+    color: #666;
+    margin-top: 15px;
+    display: flex;
+  }
+  
+  .dates-row span {
+    margin-right: 15px;
+  }
+  
+  .timeline-global-date {
+    text-align: center;
+    font-size: 12px;
+    color: #333;
+    margin-top: 5px;
+    margin-bottom: -5px;
+    font-weight: 500;
+  }
+  
+  .no-demands-message {
+    margin-top: 30px;
+    text-align: center;
+    padding: 30px;
+    background-color: #f9f9f9;
+    border: 1px solid #eee;
+    color: #666;
+  }
+  
+  /* Modal styles */
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.7);
+  }
+  
+  .modal-content {
+    background-color: white;
+    margin: 10% auto;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    max-width: 450px;
+    position: relative;
+    animation: modalAppear 0.3s ease;
+    border: 1px solid #ddd;
+  }
+  
+  @keyframes modalAppear {
+    from {opacity: 0; transform: translateY(-20px);}
+    to {opacity: 1; transform: translateY(0);}
+  }
+  
+  .close-btn {
+    color: #aaa;
+    float: right;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  
+  .close-btn:hover {
+    color: #666;
+  }
+  
+  .progress-bar:hover .tooltip {
+    visibility: visible;
+  }
+  
+  .stage-detail-bar {
+    height: 16px;
+    border: 1px solid #ddd;
+    margin: 5px 0;
+    background-color: #f9f9f9;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    padding: 0 1px;
+    width: 100%;
+    box-sizing: border-box;
+    min-height: 16px;
+    margin-top: 10px;
+  }
+  
+  .stage-detail-segment {
+    flex: 1;
+    height: 8px;
+    background-color: #eee;
+    margin: 0 1px;
+    border-radius: 1px;
+  }
+  
+  .modal form label {
+    display: block;
+    margin: 10px 0 5px 0;
+  }
+  
+  .modal form input[type="date"] {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+  }
+  
+  .modal form input[type="submit"] {
+    margin-top: 15px;
+    padding: 8px 16px;
+    background-color: #2196F3;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .modal form input[type="submit"]:hover {
+    background-color: #0d8aee;
+  }
+</style>
+</head>
+<body>
+  <div class="content" style="display: flex; flex-direction: column;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+      <div>
+        <a href="{% url 'add_demand' %}" class="button">Add New Demand</a>
+        <a href="{% url 'update_stage' %}" class="button">Update Stage</a>
+      </div>
+    </div>
+    
+    <!-- Main content area with timeline and legend side by side -->
+    <div style="display: flex; gap: 20px; align-items: flex-start;">
+      <!-- Left side: Demand Timeline -->
+      <div style="flex: 1; overflow-x: auto; margin-right: 350px;">
+        {% if demand_data %}
+        <div class="timeline-container" style="max-width: calc(100% - 20px);">
+      <table>
+        <thead>
+          <tr>
+            <th>Demand</th>
+            <th class="timeline-header-cell">
+              <!-- Static global timeline from 2025 to 2029 with quarters -->
+              <div style="overflow-x: auto; max-width: 100%;">
+              <table class="timeline-header" style="width:180%; table-layout:fixed; border-collapse: separate; border-spacing: 5px;">
+                <colgroup>
+                  <!-- 5 years x 4 quarters = 20 columns -->
+                  <col style="width:15%">
+                  <col style="width:15%">
+                  <col style="width:15%">
+                  <col style="width:15%">
+                  <col style="width:15%">
+                  <col style="width:15%">
+                  <col style="width:15%">
+                  <col style="width:15%">
+                  <col style="width:15%">
+                  <col style="width:15%">
+                  <col style="width:15%">
+                  <col style="width:15%">
+                  <col style="width:15%">
+                  <col style="width:15%">
+                  <col style="width:15%">
+                  <col style="width:15%">
+                  <col style="width:15%">
+                  <col style="width:15%">
+                  <col style="width:15%">
+                  <col style="width:15%">
+                </colgroup>
+                <tr>
+                  <th colspan="4" style="text-align:center; padding:6px; font-weight:bold; font-size:14px; border:2px solid #999; background-color:#f0f0f0; height:30px;">2025</th>
+                  <th colspan="4" style="text-align:center; padding:6px; font-weight:bold; font-size:14px; border:2px solid #999; background-color:#f0f0f0; height:30px;">2026</th>
+                  <th colspan="4" style="text-align:center; padding:6px; font-weight:bold; font-size:14px; border:2px solid #999; background-color:#f0f0f0; height:30px;">2027</th>
+                  <th colspan="4" style="text-align:center; padding:6px; font-weight:bold; font-size:14px; border:2px solid #999; background-color:#f0f0f0; height:30px;">2028</th>
+                  <th colspan="4" style="text-align:center; padding:6px; font-weight:bold; font-size:14px; border:2px solid #999; background-color:#f0f0f0; height:30px;">2029</th>
+                </tr>
+                <tr class="quarter-row">
+                  <!-- 2025 Quarters -->
+                  <td class="quarter-cell">Q1</td>
+                  <td class="quarter-cell">Q2</td>
+                  <td class="quarter-cell">Q3</td>
+                  <td class="quarter-cell">Q4</td>
+                  <!-- 2026 Quarters -->
+                  <td class="quarter-cell">Q1</td>
+                  <td class="quarter-cell">Q2</td>
+                  <td class="quarter-cell">Q3</td>
+                  <td class="quarter-cell">Q4</td>
+                  <!-- 2027 Quarters -->
+                  <td class="quarter-cell">Q1</td>
+                  <td class="quarter-cell">Q2</td>
+                  <td class="quarter-cell">Q3</td>
+                  <td class="quarter-cell">Q4</td>
+                  <!-- 2028 Quarters -->
+                  <td class="quarter-cell">Q1</td>
+                  <td class="quarter-cell">Q2</td>
+                  <td class="quarter-cell">Q3</td>
+                  <td class="quarter-cell">Q4</td>
+                  <!-- 2029 Quarters -->
+                  <td class="quarter-cell">Q1</td>
+                  <td class="quarter-cell">Q2</td>
+                  <td class="quarter-cell">Q3</td>
+                  <td class="quarter-cell">Q4</td>
+                </tr>
+              </table>
+              </div>
+              
+              <div class="timeline-global-date">
+                2025 to 2029
+              </div>
+            </th>
+            <th style="width: 250px;">Weekly Update</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for d in demand_data %}
+          <tr>
+            <td class="demand-name">
+              {{ d.demand.name }}
+              <span class="demand-actions">
+                <a href="{% url 'edit_demand' d.demand.id %}" class="edit-button" title="Edit Demand">✏️</a>
+                <a href="{% url 'delete_demand' d.demand.id %}" class="delete-button" title="Delete Demand" onclick="return confirm('Are you sure you want to delete this demand?');">🗑️</a>
+                <a href="javascript:void(0)" class="details-button" title="View Details" onclick="toggleDetailBar('{{ d.demand.id }}'); return false;">🔍</a>
+              </span>
+              <div class="demand-info-label" id="demand-info-{{ d.demand.id }}" style="font-size: 11px; color: #666; margin-top: 4px;">
+                ID: {{ d.demand.id }} | Start Date: {{ d.demand.start_date|default:'Not set' }}
+              </div>
+            </td>
+            <td>
+              <div class="progress-bar-container">
+                <!-- Using the global timeline (2025-2029) instead of demand-specific timeline -->
+                <div class="demand-timeline-wrapper">
+                  <div class="demand-timeline" style="width: 100%; left: 0%;">
+                    <!-- Removed dynamic timeline labels in favor of global timeline -->
+                  
+                    {% for stage in d.stages %}
+                      <!-- Only show mini progress bar -->
+                      {% if 'mini_progress' in stage.stage and stage.start_year >= 2025 and stage.start_year <= 2029 and stage.end_year >= 2025 and stage.end_year <= 2029 %}
+                            <div
+                              class="progress-bar"
+                              style="width: {{ stage.quarter_width }}%; background-color: {{ stage.color }}; left: {{ stage.quarter_start_pos }}%;"
+                              data-stage-id="{{ stage.id }}"
+                              data-stage-name="{{ stage.stage_verbose }}"
+                              data-stage-number="{{ stage.number }}"
+                              data-start-date="{{ stage.start_date }}"
+                              data-end-date="{{ stage.end_date }}"
+                              data-duration="{{ stage.duration }}"
+                              onclick="event.stopPropagation(); openModal(this); return false;"
+                            >
+                              {% if stage.should_show_number %}
+                                <span class="stage-number">{{ stage.number }}</span>
+                              {% endif %}
+                              <div class="tooltip">
+                                <strong>{{ stage.stage_verbose }}</strong><br />
+                                {{ stage.start_date }} - {{ stage.end_date }}<br />
+                                Duration: {{ stage.duration }} days
+                              </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                  </div>
+                </div>
+                
+                <!-- Stage Detail Bar (initially hidden) -->
+                <div id="stage-detail-{{ d.demand.id }}" class="stage-detail-bar" style="display: none; position: relative; height: 50px; width: 100%; background-color: #f5f5f5; border: 1px solid #ccc; padding: 4px; margin-top: 5px; margin-bottom: 5px; text-align: center; overflow: hidden;">
+                  <div style="display: flex; width: 100%; justify-content: space-evenly; align-items: center;">
+                    {% for box in d.stage_detail_boxes %}
+                      {% if box.id %}
+                        <div id="stage-detail-segment-{{ box.id }}" class="stage-detail-segment" style="height: 36px; width: 3%; min-width: 12px; background-color: {{ box.color }}; border: 1px solid #555; box-shadow: 0px 1px 2px rgba(0,0,0,0.2); box-sizing: border-box; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; color: white;">
+                          {{ box.duration }}
+                        </div>
+                      {% else %}
+                        <div class="stage-detail-segment" style="height: 36px; width: 3%; min-width: 12px; background-color: {{ box.color }}; border: 1px solid #999; box-shadow: 0px 1px 2px rgba(0,0,0,0.1); box-sizing: border-box; display: flex; align-items: center; justify-content: center; font-size: 10px;">
+                          {{ box.duration }}
+                        </div>
+                      {% endif %}
+                    {% endfor %}
+                  </div>
+                </div>
+              </div>
+            </td>
+
+            <td style="vertical-align: top; padding: 10px;">
+              <!-- Weekly Update Cell for each demand (third column) -->
+              <div class="weekly-update-section" style="background-color: #f9f9f9; border: 1px solid #ddd; padding: 10px; border-radius: 4px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                  <h5 style="margin: 0; font-size: 14px;">Weekly Update</h5>
+                  <button style="background: none; border: none; color: #2196F3; cursor: pointer; font-size: 13px;" 
+                          onclick="openWeeklyUpdateModal({{ d.demand.id }}, '{{ d.demand.weekly_update_date|default_if_none:''|date:"Y-m-d" }}', '{{ d.demand.weekly_update_stage|default_if_none:'' }}', '{{ d.demand.weekly_update_progress|default_if_none:'' }}', '{{ d.demand.weekly_update_challenge|default_if_none:'' }}')">
+                    <i class="fas fa-edit"></i> Edit
+                  </button>
+                </div>
+                <div>
+                  <div style="margin-bottom: 3px; font-size: 13px;"><strong>Date:</strong> <span id="weekly-date-{{ d.demand.id }}">{{ d.demand.weekly_update_date|default:'Not set' }}</span></div>
+                  <div style="margin-bottom: 3px; font-size: 13px;"><strong>Stage:</strong> <span id="weekly-stage-{{ d.demand.id }}">{{ d.demand.weekly_update_stage|default:'Not set' }}</span></div>
+                  <div style="margin-bottom: 3px; font-size: 13px;"><strong>Progress Stage:</strong> <span id="weekly-progress-{{ d.demand.id }}">{{ d.demand.weekly_update_progress|default:'Not set' }}</span></div>
+                  <div style="font-size: 13px;"><strong>Challenge:</strong> <span id="weekly-challenge-{{ d.demand.id }}">{{ d.demand.weekly_update_challenge|default:'Not set' }}</span></div>
+                </div>
+              </div>
+            </td>
+
+          </tr>
+          {% empty %}
+          <tr><td colspan="2">No demands found.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div> <!-- Close timeline-container -->
+    {% else %}
+    <div class="no-demands-message">
+      <p>No demands found. Click "Add New Demand" to get started.</p>
+    </div>
+    {% endif %}
+      </div>
+      
+      <!-- Top Right: Stage Legend -->
+      {% comment %} <div id="stage-legend" style="position: absolute; top: 20px; right: 20px; width: 300px; background-color: white; border: 1px solid #ddd; border-radius: 5px; padding: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+        <h4 style="margin: 0 0 8px 0; font-size: 16px; text-align: center;">Stage Legend</h4>
+        <div style="display: flex; flex-direction: column; gap: 2px;">
+          <div style="padding: 2px 6px; border: 1px solid #f0f0f0; border-radius: 3px; white-space: nowrap; font-size: 13px; line-height: 1.3;">
+            <span style="width: 12px; height: 12px; display: inline-block; margin-right: 6px; vertical-align: middle; background-color: #1f78b4; border: 1px solid rgba(0,0,0,0.1);"></span>
+            <strong>0.</strong> Demand to be Initiated
+          </div>
+          <div style="padding: 2px 6px; border: 1px solid #f0f0f0; border-radius: 3px; white-space: nowrap; font-size: 13px; line-height: 1.3;">
+            <span style="width: 12px; height: 12px; display: inline-block; margin-right: 6px; vertical-align: middle; background-color: #33a02c; border: 1px solid rgba(0,0,0,0.1);"></span>
+            <strong>1.</strong> Demand Initiated
+          </div>
+          <div style="padding: 2px 6px; border: 1px solid #f0f0f0; border-radius: 3px; white-space: nowrap; font-size: 13px; line-height: 1.3;">
+            <span style="width: 12px; height: 12px; display: inline-block; margin-right: 6px; vertical-align: middle; background-color: #fb9a99; border: 1px solid rgba(0,0,0,0.1);"></span>
+            <strong>2.</strong> SPC Cleared
+          </div>
+          <div style="padding: 2px 6px; border: 1px solid #f0f0f0; border-radius: 3px; white-space: nowrap; font-size: 13px; line-height: 1.3;">
+            <span style="width: 12px; height: 12px; display: inline-block; margin-right: 6px; vertical-align: middle; background-color: #e31a1c; border: 1px solid rgba(0,0,0,0.1);"></span>
+            <strong>3.</strong> Demand Approved
+          </div>
+          <div style="padding: 2px 6px; border: 1px solid #f0f0f0; border-radius: 3px; white-space: nowrap; font-size: 13px; line-height: 1.3;">
+            <span style="width: 12px; height: 12px; display: inline-block; margin-right: 6px; vertical-align: middle; background-color: #fdbf6f; border: 1px solid rgba(0,0,0,0.1);"></span>
+            <strong>4.</strong> Tender Enquiry Floated
+          </div>
+          <div style="padding: 2px 6px; border: 1px solid #f0f0f0; border-radius: 3px; white-space: nowrap; font-size: 13px; line-height: 1.3;">
+            <span style="width: 12px; height: 12px; display: inline-block; margin-right: 6px; vertical-align: middle; background-color: #ff7f00; border: 1px solid rgba(0,0,0,0.1);"></span>
+            <strong>5.</strong> Receipt of Quotations
+          </div>
+          <div style="padding: 2px 6px; border: 1px solid #f0f0f0; border-radius: 3px; white-space: nowrap; font-size: 13px; line-height: 1.3;">
+            <span style="width: 12px; height: 12px; display: inline-block; margin-right: 6px; vertical-align: middle; background-color: #cab2d6; border: 1px solid rgba(0,0,0,0.1);"></span>
+            <strong>6.</strong> Tender Opening
+          </div>
+          <div style="padding: 2px 6px; border: 1px solid #f0f0f0; border-radius: 3px; white-space: nowrap; font-size: 13px; line-height: 1.3;">
+            <span style="width: 12px; height: 12px; display: inline-block; margin-right: 6px; vertical-align: middle; background-color: #6a3d9a; border: 1px solid rgba(0,0,0,0.1);"></span>
+            <strong>7.</strong> TCEC Approved
+          </div>
+          <div style="padding: 2px 6px; border: 1px solid #f0f0f0; border-radius: 3px; white-space: nowrap; font-size: 13px; line-height: 1.3;">
+            <span style="width: 12px; height: 12px; display: inline-block; margin-right: 6px; vertical-align: middle; background-color: #b2df8a; border: 1px solid rgba(0,0,0,0.1);"></span>
+            <strong>8.</strong> TPC Approved
+          </div>
+          <div style="padding: 2px 6px; border: 1px solid #f0f0f0; border-radius: 3px; white-space: nowrap; font-size: 13px; line-height: 1.3;">
+            <span style="width: 12px; height: 12px; display: inline-block; margin-right: 6px; vertical-align: middle; background-color: #a6cee3; border: 1px solid rgba(0,0,0,0.1);"></span>
+            <strong>9.</strong> Financial Sanction
+          </div>
+          <div style="padding: 2px 6px; border: 1px solid #f0f0f0; border-radius: 3px; white-space: nowrap; font-size: 13px; line-height: 1.3;">
+            <span style="width: 12px; height: 12px; display: inline-block; margin-right: 6px; vertical-align: middle; background-color: #1f78b4; border: 1px solid rgba(0,0,0,0.1);"></span>
+            <strong>10.</strong> Order Placement
+          </div>
+          <div style="padding: 2px 6px; border: 1px solid #f0f0f0; border-radius: 3px; white-space: nowrap; font-size: 13px; line-height: 1.3;">
+            <span style="width: 12px; height: 12px; display: inline-block; margin-right: 6px; vertical-align: middle; background-color: #33a02c; border: 1px solid rgba(0,0,0,0.1);"></span>
+            <strong>11.</strong> PDR
+          </div>
+          <div style="padding: 2px 6px; border: 1px solid #f0f0f0; border-radius: 3px; white-space: nowrap; font-size: 13px; line-height: 1.3;">
+            <span style="width: 12px; height: 12px; display: inline-block; margin-right: 6px; vertical-align: middle; background-color: #fb9a99; border: 1px solid rgba(0,0,0,0.1);"></span>
+            <strong>12.</strong> SO for Critical BoM by Dev Partner
+          </div>
+          <!-- Adding additional stages -->
+          <div style="padding: 2px 6px; border: 1px solid #f0f0f0; border-radius: 3px; white-space: nowrap; font-size: 13px; line-height: 1.3;">
+            <span style="width: 12px; height: 12px; display: inline-block; margin-right: 6px; vertical-align: middle; background-color: #e31a1c; border: 1px solid rgba(0,0,0,0.1);"></span>
+            <strong>13.</strong> DDR
+          </div>
+          <div style="padding: 2px 6px; border: 1px solid #f0f0f0; border-radius: 3px; white-space: nowrap; font-size: 13px; line-height: 1.3;">
+            <span style="width: 12px; height: 12px; display: inline-block; margin-right: 6px; vertical-align: middle; background-color: #fdbf6f; border: 1px solid rgba(0,0,0,0.1);"></span>
+            <strong>14.</strong> CDR
+          </div>
+          <div style="padding: 2px 6px; border: 1px solid #f0f0f0; border-radius: 3px; white-space: nowrap; font-size: 13px; line-height: 1.3;">
+            <span style="width: 12px; height: 12px; display: inline-block; margin-right: 6px; vertical-align: middle; background-color: #ff7f00; border: 1px solid rgba(0,0,0,0.1);"></span>
+            <strong>15.</strong> Acceptance of Critical BoM by Dev Partner
+          </div>
+          <div style="padding: 2px 6px; border: 1px solid #f0f0f0; border-radius: 3px; white-space: nowrap; font-size: 13px; line-height: 1.3;">
+            <span style="width: 12px; height: 12px; display: inline-block; margin-right: 6px; vertical-align: middle; background-color: #cab2d6; border: 1px solid rgba(0,0,0,0.1);"></span>
+            <strong>16.</strong> Realization Completed
+          </div>
+          <div style="padding: 2px 6px; border: 1px solid #f0f0f0; border-radius: 3px; white-space: nowrap; font-size: 13px; line-height: 1.3;">
+            <span style="width: 12px; height: 12px; display: inline-block; margin-right: 6px; vertical-align: middle; background-color: #6a3d9a; border: 1px solid rgba(0,0,0,0.1);"></span>
+            <strong>17.</strong> FAT Completed
+          </div>
+          <div style="padding: 2px 6px; border: 1px solid #f0f0f0; border-radius: 3px; white-space: nowrap; font-size: 13px; line-height: 1.3;">
+            <span style="width: 12px; height: 12px; display: inline-block; margin-right: 6px; vertical-align: middle; background-color: #b2df8a; border: 1px solid rgba(0,0,0,0.1);"></span>
+            <strong>18.</strong> ATP/QTP Completed
+          </div>
+          <div style="padding: 2px 6px; border: 1px solid #f0f0f0; border-radius: 3px; white-space: nowrap; font-size: 13px; line-height: 1.3;">
+            <span style="width: 12px; height: 12px; display: inline-block; margin-right: 6px; vertical-align: middle; background-color: #a6cee3; border: 1px solid rgba(0,0,0,0.1);"></span>
+            <strong>19.</strong> Delivery at Stores
+          </div>
+          <div style="padding: 2px 6px; border: 1px solid #f0f0f0; border-radius: 3px; white-space: nowrap; font-size: 13px; line-height: 1.3;">
+            <span style="width: 12px; height: 12px; display: inline-block; margin-right: 6px; vertical-align: middle; background-color: #1f78b4; border: 1px solid rgba(0,0,0,0.1);"></span>
+            <strong>20.</strong> SAT/SoFT
+          </div>
+          <div style="padding: 2px 6px; border: 1px solid #f0f0f0; border-radius: 3px; white-space: nowrap; font-size: 13px; line-height: 1.3;">
+            <span style="width: 12px; height: 12px; display: inline-block; margin-right: 6px; vertical-align: middle; background-color: #33a02c; border: 1px solid rgba(0,0,0,0.1);"></span>
+            <strong>21.</strong> Inward Inspection Clearance
+          </div>
+          <div style="padding: 2px 6px; border: 1px solid #f0f0f0; border-radius: 3px; white-space: nowrap; font-size: 13px; line-height: 1.3;">
+            <span style="width: 12px; height: 12px; display: inline-block; margin-right: 6px; vertical-align: middle; background-color: #fb9a99; border: 1px solid rgba(0,0,0,0.1);"></span>
+            <strong>22.</strong> Payment Process
+          </div>
+          <div style="padding: 2px 6px; border: 1px solid #f0f0f0; border-radius: 3px; white-space: nowrap; font-size: 13px; line-height: 1.3;">
+            <span style="width: 12px; height: 12px; display: inline-block; margin-right: 6px; vertical-align: middle; background-color: #e31a1c; border: 1px solid rgba(0,0,0,0.1);"></span>
+            <strong>23.</strong> Partially Paid
+          </div>
+          <div style="padding: 2px 6px; border: 1px solid #f0f0f0; border-radius: 3px; white-space: nowrap; font-size: 13px; line-height: 1.3;">
+            <span style="width: 12px; height: 12px; display: inline-block; margin-right: 6px; vertical-align: middle; background-color: #fdbf6f; border: 1px solid rgba(0,0,0,0.1);"></span>
+            <strong>24.</strong> Payment Released
+          </div>
+          <div style="padding: 2px 6px; border: 1px solid #f0f0f0; border-radius: 3px; white-space: nowrap; font-size: 13px; line-height: 1.3;">
+            <span style="width: 12px; height: 12px; display: inline-block; margin-right: 6px; vertical-align: middle; background-color: #ff7f00; border: 1px solid rgba(0,0,0,0.1);"></span>
+            <strong>25.</strong> Available for Integration
+          </div>
+        </div>
+      </div> {% endcomment %}
+    </div>
+  </div>
+
+  <!-- Legend has been moved to the top right of the page -->
+
+  <!-- Edit modal - implemented with basic styling -->
+  <div id="editModalOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); z-index: 9999;">
+    <div id="editModalContent" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: white; padding: 30px; border-radius: 8px; width: 400px; box-shadow: 0 0 20px rgba(0,0,0,0.3);">
+      <span onclick="closeEditModal()" style="position: absolute; right: 15px; top: 10px; font-size: 24px; font-weight: bold; cursor: pointer;">&times;</span>
+      <h3 style="margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px;">Edit <span id="modalStageName">Stage</span></h3>
+      <form method="post" action="{% url 'edit_stage_dates' %}" style="margin-top: 15px;">
+        {% csrf_token %}
+        <input type="hidden" name="stage_id" id="modalStageId" />
+        <input type="hidden" id="currentEditingStageId" />
+        
+        <!-- Current Duration Display -->
+        <div style="margin-bottom: 15px; padding: 10px; background-color: #f8f8f8; border-radius: 4px; text-align: center;">
+          <span style="font-weight: bold;">Current Duration: </span>
+          <span id="modalStageDuration" style="font-size: 16px; color: #333;">0</span>
+          <span> days</span>
+        </div>
+        
+        <div style="margin-bottom: 15px;">
+          <label for="modalStartDate" style="display: block; margin-bottom: 5px; font-weight: bold;">Start Date:</label>
+          <input type="date" name="start_date" id="modalStartDate" required style="width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px;" />
+        </div>
+        
+        <div style="margin-bottom: 20px;">
+          <label for="modalEndDate" style="display: block; margin-bottom: 5px; font-weight: bold;">End Date:</label>
+          <input type="date" name="end_date" id="modalEndDate" required style="width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px;" />
+        </div>
+        
+        <div style="text-align: center;">
+          <input type="submit" value="Save" style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px;" />
+          <button type="button" onclick="closeEditModal()" style="background-color: #f44336; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; margin-left: 10px;">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+<script>
+  function openModal(bar) {
+    console.log('openModal called');
+    
+    const modalOverlay = document.getElementById('editModalOverlay');
+    if (!modalOverlay) {
+      console.error('Modal overlay element not found');
+      return;
+    }
+    
+    const stageId = bar.getAttribute('data-stage-id');
+    const startDate = bar.getAttribute('data-start-date');
+    const endDate = bar.getAttribute('data-end-date');
+    const duration = bar.getAttribute('data-duration') || '0';
+    const stageName = bar.getAttribute('data-stage-name');
+    const stageNumber = bar.getAttribute('data-stage-number') || '';
+    
+    console.log('Stage data:', { stageId, startDate, endDate, duration, stageName, stageNumber });
+    
+    document.getElementById('modalStageId').value = stageId;
+    document.getElementById('modalStartDate').value = startDate;
+    document.getElementById('modalEndDate').value = endDate;
+    document.getElementById('modalStageDuration').textContent = duration;
+    
+    // Store the current stage ID in a hidden field to use for updates
+    document.getElementById('currentEditingStageId').value = stageId;
+    
+    // Set the stage name in the modal title
+    if (stageName) {
+      const stageDisplay = stageNumber ? `Stage ${stageNumber}: ${stageName}` : stageName;
+      document.getElementById('modalStageName').textContent = stageDisplay;
+    } else {
+      document.getElementById('modalStageName').textContent = 'Stage';
+    }
+    
+    // Display the modal overlay
+    modalOverlay.style.display = 'block';
+  }
+  
+  function closeEditModal() {
+    const modalOverlay = document.getElementById('editModalOverlay');
+    if (modalOverlay) {
+      modalOverlay.style.display = 'none';
+    }
+  }
+  
+  // Function to calculate duration between two dates
+  function calculateDuration(startDate, endDate) {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const diffTime = Math.abs(end - start);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // +1 to include both start and end days
+    return diffDays;
+  }
+  
+  // Function to map stage numbers to their corresponding colors
+  function getStageColor(stageNumber) {
+    // Map stage numbers to their corresponding colors
+    const stageColors = {
+      '0': '#1f78b4',
+      '1': '#a6cee3',
+      '2': '#b2df8a',
+      '3': '#33a02c',
+      '4': '#fb9a99',
+      '5': '#e31a1c',
+      '6': '#fdbf6f',
+      '7': '#ff7f00',
+      '8': '#cab2d6',
+      '9': '#6a3d9a',
+      '10': '#ffff99',
+      '11': '#b15928',
+      '12': '#fb9a99',
+      '13': '#e31a1c',
+      '14': '#fdbf6f',
+      '15': '#ff7f00',
+      '16': '#cab2d6',
+      '17': '#6a3d9a',
+      '18': '#ffff99',
+      '19': '#b15928',
+      '20': '#1f78b4',
+      '21': '#a6cee3',
+      '22': '#b2df8a',
+      '23': '#33a02c',
+      '24': '#fdbf6f'
+    };
+    
+    return stageColors[stageNumber] || '#cccccc'; // Default color if not found
+  }
+  
+  // Function to handle form submission and update the detail bar
+  document.addEventListener('DOMContentLoaded', function() {
+    const editForm = document.querySelector('#editModalContent form');
+    if (editForm) {
+      editForm.addEventListener('submit', function(event) {
+        // Don't prevent default - we want the form to actually submit
+        
+        // Get the values
+        const stageId = document.getElementById('modalStageId').value;
+        const startDate = document.getElementById('modalStartDate').value;
+        const endDate = document.getElementById('modalEndDate').value;
+        
+        // Calculate the new duration
+        const newDuration = calculateDuration(startDate, endDate);
+        
+        // Store the values in sessionStorage to retrieve after page reload
+        sessionStorage.setItem('updatedStageId', stageId);
+        sessionStorage.setItem('updatedDuration', newDuration);
+        sessionStorage.setItem('updatedStartDate', startDate);
+        sessionStorage.setItem('updatedEndDate', endDate);
+      });
+    }
+    
+    // Check if we have stored values from a previous form submission
+    const updatedStageId = sessionStorage.getItem('updatedStageId');
+    if (updatedStageId) {
+      const updatedDuration = sessionStorage.getItem('updatedDuration');
+      const updatedStartDate = sessionStorage.getItem('updatedStartDate');
+      const updatedEndDate = sessionStorage.getItem('updatedEndDate');
+      
+      // Update the stage detail segment with the new duration
+      const stageDetailSegment = document.getElementById(`stage-detail-segment-${updatedStageId}`);
+      if (stageDetailSegment) {
+        stageDetailSegment.textContent = updatedDuration;
+        console.log(`Updated stage ${updatedStageId} detail segment with duration ${updatedDuration}`);
+      }
+      
+      // Update the progress bar with new data attributes but preserve its size
+      const progressBar = document.querySelector(`[data-stage-id="${updatedStageId}"]`);
+      if (progressBar) {
+        // Update the data attributes
+        progressBar.setAttribute('data-duration', updatedDuration);
+        progressBar.setAttribute('data-start-date', updatedStartDate);
+        progressBar.setAttribute('data-end-date', updatedEndDate);
+        
+        // Explicitly update the background color for cross-browser compatibility
+        const stageNumber = progressBar.getAttribute('data-stage-number');
+        if (stageNumber) {
+          progressBar.style.backgroundColor = getStageColor(stageNumber);
+          console.log(`Updated progress bar color for stage ${updatedStageId} to ${getStageColor(stageNumber)}`);
+        }
+        
+        // Update the tooltip content with new dates and duration
+        const tooltip = progressBar.querySelector('.tooltip');
+        if (tooltip) {
+          // Get stage name from existing tooltip
+          const stageName = tooltip.querySelector('strong').innerText;
+          tooltip.innerHTML = `<strong>${stageName}</strong><br />${updatedStartDate} - ${updatedEndDate}<br />Duration: ${updatedDuration} days`;
+        }
+        
+        console.log(`Updated progress bar data for stage ${updatedStageId}`);
+      }
+      
+      // Clear the sessionStorage
+      sessionStorage.removeItem('updatedStageId');
+      sessionStorage.removeItem('updatedDuration');
+      sessionStorage.removeItem('updatedStartDate');
+      sessionStorage.removeItem('updatedEndDate');
+    }
+  });
+  </script>
+
+<script>
+  function toggleDetailBar(demandId) {    
+    // Target elements
+    const detailBarId = 'stage-detail-' + demandId;
+    const detailBar = document.getElementById(detailBarId);
+    
+    // Target weekly update section
+    const weeklyUpdateSection = document.querySelector(`#weekly-date-${demandId}`).closest('.weekly-update-section');
+    
+    // Target demand info label
+    const demandInfoLabel = document.getElementById(`demand-info-${demandId}`);
+    
+    if (detailBar && weeklyUpdateSection) {
+      // Force display style
+      if (detailBar.style.display === 'block') {
+        // Hide all elements
+        detailBar.style.display = 'none';
+        weeklyUpdateSection.style.display = 'none';
+        if (demandInfoLabel) {
+          demandInfoLabel.style.display = 'none';
+        }
+      } else {
+        // Show all elements
+        detailBar.style.display = 'block';
+        weeklyUpdateSection.style.display = 'block';
+        if (demandInfoLabel) {
+          demandInfoLabel.style.display = 'block';
+        }
+      }
+    } else {
+      alert('Error: Could not find elements for demand ID ' + demandId);
+      console.error('Could not find elements for demand ID:', demandId);
+    }
+  }
+  
+  // When the page loads, hide all detail bars, weekly update sections, and demand info labels
+  document.addEventListener('DOMContentLoaded', function() {
+    // Hide all detail bars
+    document.querySelectorAll('[id^="stage-detail-"]').forEach(function(detailBar) {
+      detailBar.style.display = 'none';
+    });
+    
+    // Hide all weekly update sections
+    document.querySelectorAll('.weekly-update-section').forEach(function(weeklyUpdateSection) {
+      weeklyUpdateSection.style.display = 'none';
+    });
+    
+    // Hide all demand info labels
+    document.querySelectorAll('.demand-info-label').forEach(function(label) {
+      label.style.display = 'none';
+    });
+  });
+  
+  document.onclick = function(event) {
+    if (event.target == document.getElementById('editModal')) {
+      closeModal();
+    }
+  }
+</script>
+
+</body>
+</html>
