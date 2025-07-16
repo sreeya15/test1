@@ -83,6 +83,39 @@
     background-color: #0d8aee;
   }
   
+  /* Tab styles */
+  .tabs {
+    display: flex;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .tab {
+    padding: 10px 20px;
+    cursor: pointer;
+    background-color: #f1f1f1;
+    border: 1px solid #ddd;
+    border-bottom: none;
+    margin-right: 5px;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+  }
+  
+  .tab.active {
+    background-color: white;
+    border-bottom: 1px solid white;
+    margin-bottom: -1px;
+    font-weight: bold;
+  }
+  
+  .tab-content {
+    display: none;
+  }
+  
+  .tab-content.active {
+    display: block;
+  }
+  
   /* Tables and timeline */
   table {
     width: 100%;
@@ -418,13 +451,24 @@
       </div>
     </div>
     
+    <!-- Tabs navigation -->
+    <div class="tabs">
+      <div class="tab active" data-tab="all">All Demands</div>
+      <div class="tab" data-tab="gem">GEM</div>
+      <div class="tab" data-tab="lpc">LPC</div>
+      <div class="tab" data-tab="cash">CASH</div>
+    </div>
+    
     <!-- Main content area with timeline and legend side by side -->
     <div style="display: flex; gap: 20px; align-items: flex-start;">
       <!-- Left side: Demand Timeline -->
       <div style="flex: 1; overflow-x: auto; margin-right: 350px;">
         {% if demand_data %}
-        <div class="timeline-container" style="max-width: calc(100% - 20px);">
-      <table>
+        
+        <!-- Tab content for All Demands -->
+        <div id="tab-all" class="tab-content active">
+          <div class="timeline-container" style="max-width: calc(100% - 20px);">
+            <table>
         <thead>
           <tr>
             <th>Demand</th>
@@ -592,12 +636,321 @@
           {% endfor %}
         </tbody>
       </table>
-    </div> <!-- Close timeline-container -->
-    {% else %}
-    <div class="no-demands-message">
-      <p>No demands found. Click "Add New Demand" to get started.</p>
-    </div>
-    {% endif %}
+            </table>
+          </div> <!-- Close timeline-container -->
+        </div> <!-- Close tab-all -->
+        
+        <!-- Tab content for GEM Demands -->
+        <div id="tab-gem" class="tab-content">
+          <div class="timeline-container" style="max-width: calc(100% - 20px);">
+            <table>
+              <thead>
+                <tr>
+                  <th>Demand</th>
+                  <th class="timeline-header-cell">
+                    <!-- Static global timeline from 2025 to 2029 with quarters -->
+                    <div style="overflow-x: auto; max-width: 100%;">
+                    <table class="timeline-header" style="width:180%; table-layout:fixed; border-collapse: separate; border-spacing: 5px;">
+                      <colgroup>
+                        <!-- 5 years x 4 quarters = 20 columns -->
+                        <col style="width:15%">
+                        {% for i in "01234567891012345678"|make_list %}
+                          <col style="width:5%">
+                        {% endfor %}
+                      </colgroup>
+                      <tr>
+                        <th></th>
+                        <th colspan="4" style="text-align:center; border:1px solid #999; background-color:#f0f0f0;">2025</th>
+                        <th colspan="4" style="text-align:center; border:1px solid #999; background-color:#f0f0f0;">2026</th>
+                        <th colspan="4" style="text-align:center; border:1px solid #999; background-color:#f0f0f0;">2027</th>
+                        <th colspan="4" style="text-align:center; border:1px solid #999; background-color:#f0f0f0;">2028</th>
+                        <th colspan="4" style="text-align:center; border:1px solid #999; background-color:#f0f0f0;">2029</th>
+                      </tr>
+                      <tr>
+                        <th></th>
+                        <!-- 2025 Quarters -->
+                        <th class="quarter-cell">Q1</th>
+                        <th class="quarter-cell">Q2</th>
+                        <th class="quarter-cell">Q3</th>
+                        <th class="quarter-cell">Q4</th>
+                        <!-- 2026 Quarters -->
+                        <th class="quarter-cell">Q1</th>
+                        <th class="quarter-cell">Q2</th>
+                        <th class="quarter-cell">Q3</th>
+                        <th class="quarter-cell">Q4</th>
+                        <!-- 2027 Quarters -->
+                        <th class="quarter-cell">Q1</th>
+                        <th class="quarter-cell">Q2</th>
+                        <th class="quarter-cell">Q3</th>
+                        <th class="quarter-cell">Q4</th>
+                        <!-- 2028 Quarters -->
+                        <th class="quarter-cell">Q1</th>
+                        <th class="quarter-cell">Q2</th>
+                        <th class="quarter-cell">Q3</th>
+                        <th class="quarter-cell">Q4</th>
+                        <!-- 2029 Quarters -->
+                        <th class="quarter-cell">Q1</th>
+                        <th class="quarter-cell">Q2</th>
+                        <th class="quarter-cell">Q3</th>
+                        <th class="quarter-cell">Q4</th>
+                      </tr>
+                    </table>
+                    </div>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for d in demand_data %}
+                  {% if d.demand.file_type == 'GEM' %}
+                    <tr>
+                      <td class="demand-name">
+                        {{ d.demand.name }}
+                        <span class="demand-actions">
+                          <a href="{% url 'edit_demand' d.demand.id %}" class="edit-button" title="Edit Demand">✏️</a>
+                        </span>
+                      </td>
+                      <td style="position: relative; padding: 0;">
+                        <div class="demand-timeline-wrapper">
+                          <div class="demand-timeline" style="left: {{ d.timeline_position.start_percent }}%; width: {{ d.timeline_position.width_percent }}%;">
+                            {% for stage in d.stages %}
+                              <div class="progress-bar" 
+                                   style="left: {{ stage.position_percent }}%; 
+                                          width: {{ stage.width_percent }}%; 
+                                          background-color: {{ stage.color }};"
+                                   data-demand-id="{{ d.demand.id }}"
+                                   data-stage="{{ stage.stage }}"
+                                   data-start="{{ stage.start_date|date:'Y-m-d' }}"
+                                   data-end="{{ stage.end_date|date:'Y-m-d' }}"
+                                   onclick="openModal(this)">
+                                <div class="tooltip">
+                                  <div>Stage: {{ stage.display_name }}</div>
+                                  <div>Duration: {{ stage.duration }} days</div>
+                                  <div>{{ stage.start_date|date:'M d, Y' }} - {{ stage.end_date|date:'M d, Y' }}</div>
+                                </div>
+                              </div>
+                            {% endfor %}
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  {% endif %}
+                {% empty %}
+                  <tr><td colspan="2">No GEM demands found.</td></tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div> <!-- Close timeline-container -->
+        </div> <!-- Close tab-gem -->
+        
+        <!-- Tab content for LPC Demands -->
+        <div id="tab-lpc" class="tab-content">
+          <div class="timeline-container" style="max-width: calc(100% - 20px);">
+            <table>
+              <thead>
+                <tr>
+                  <th>Demand</th>
+                  <th class="timeline-header-cell">
+                    <!-- Static global timeline from 2025 to 2029 with quarters -->
+                    <div style="overflow-x: auto; max-width: 100%;">
+                    <table class="timeline-header" style="width:180%; table-layout:fixed; border-collapse: separate; border-spacing: 5px;">
+                      <colgroup>
+                        <!-- 5 years x 4 quarters = 20 columns -->
+                        <col style="width:15%">
+                        {% for i in "01234567891012345678"|make_list %}
+                          <col style="width:5%">
+                        {% endfor %}
+                      </colgroup>
+                      <tr>
+                        <th></th>
+                        <th colspan="4" style="text-align:center; border:1px solid #999; background-color:#f0f0f0;">2025</th>
+                        <th colspan="4" style="text-align:center; border:1px solid #999; background-color:#f0f0f0;">2026</th>
+                        <th colspan="4" style="text-align:center; border:1px solid #999; background-color:#f0f0f0;">2027</th>
+                        <th colspan="4" style="text-align:center; border:1px solid #999; background-color:#f0f0f0;">2028</th>
+                        <th colspan="4" style="text-align:center; border:1px solid #999; background-color:#f0f0f0;">2029</th>
+                      </tr>
+                      <tr>
+                        <th></th>
+                        <!-- 2025 Quarters -->
+                        <th class="quarter-cell">Q1</th>
+                        <th class="quarter-cell">Q2</th>
+                        <th class="quarter-cell">Q3</th>
+                        <th class="quarter-cell">Q4</th>
+                        <!-- 2026 Quarters -->
+                        <th class="quarter-cell">Q1</th>
+                        <th class="quarter-cell">Q2</th>
+                        <th class="quarter-cell">Q3</th>
+                        <th class="quarter-cell">Q4</th>
+                        <!-- 2027 Quarters -->
+                        <th class="quarter-cell">Q1</th>
+                        <th class="quarter-cell">Q2</th>
+                        <th class="quarter-cell">Q3</th>
+                        <th class="quarter-cell">Q4</th>
+                        <!-- 2028 Quarters -->
+                        <th class="quarter-cell">Q1</th>
+                        <th class="quarter-cell">Q2</th>
+                        <th class="quarter-cell">Q3</th>
+                        <th class="quarter-cell">Q4</th>
+                        <!-- 2029 Quarters -->
+                        <th class="quarter-cell">Q1</th>
+                        <th class="quarter-cell">Q2</th>
+                        <th class="quarter-cell">Q3</th>
+                        <th class="quarter-cell">Q4</th>
+                      </tr>
+                    </table>
+                    </div>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for d in demand_data %}
+                  {% if d.demand.file_type == 'LPC' %}
+                    <tr>
+                      <td class="demand-name">
+                        {{ d.demand.name }}
+                        <span class="demand-actions">
+                          <a href="{% url 'edit_demand' d.demand.id %}" class="edit-button" title="Edit Demand">✏️</a>
+                        </span>
+                      </td>
+                      <td style="position: relative; padding: 0;">
+                        <div class="demand-timeline-wrapper">
+                          <div class="demand-timeline" style="left: {{ d.timeline_position.start_percent }}%; width: {{ d.timeline_position.width_percent }}%;">
+                            {% for stage in d.stages %}
+                              <div class="progress-bar" 
+                                   style="left: {{ stage.position_percent }}%; 
+                                          width: {{ stage.width_percent }}%; 
+                                          background-color: {{ stage.color }};"
+                                   data-demand-id="{{ d.demand.id }}"
+                                   data-stage="{{ stage.stage }}"
+                                   data-start="{{ stage.start_date|date:'Y-m-d' }}"
+                                   data-end="{{ stage.end_date|date:'Y-m-d' }}"
+                                   onclick="openModal(this)">
+                                <div class="tooltip">
+                                  <div>Stage: {{ stage.display_name }}</div>
+                                  <div>Duration: {{ stage.duration }} days</div>
+                                  <div>{{ stage.start_date|date:'M d, Y' }} - {{ stage.end_date|date:'M d, Y' }}</div>
+                                </div>
+                              </div>
+                            {% endfor %}
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  {% endif %}
+                {% empty %}
+                  <tr><td colspan="2">No LPC demands found.</td></tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div> <!-- Close timeline-container -->
+        </div> <!-- Close tab-lpc -->
+        
+        <!-- Tab content for CASH Demands -->
+        <div id="tab-cash" class="tab-content">
+          <div class="timeline-container" style="max-width: calc(100% - 20px);">
+            <table>
+              <thead>
+                <tr>
+                  <th>Demand</th>
+                  <th class="timeline-header-cell">
+                    <!-- Static global timeline from 2025 to 2029 with quarters -->
+                    <div style="overflow-x: auto; max-width: 100%;">
+                    <table class="timeline-header" style="width:180%; table-layout:fixed; border-collapse: separate; border-spacing: 5px;">
+                      <colgroup>
+                        <!-- 5 years x 4 quarters = 20 columns -->
+                        <col style="width:15%">
+                        {% for i in "01234567891012345678"|make_list %}
+                          <col style="width:5%">
+                        {% endfor %}
+                      </colgroup>
+                      <tr>
+                        <th></th>
+                        <th colspan="4" style="text-align:center; border:1px solid #999; background-color:#f0f0f0;">2025</th>
+                        <th colspan="4" style="text-align:center; border:1px solid #999; background-color:#f0f0f0;">2026</th>
+                        <th colspan="4" style="text-align:center; border:1px solid #999; background-color:#f0f0f0;">2027</th>
+                        <th colspan="4" style="text-align:center; border:1px solid #999; background-color:#f0f0f0;">2028</th>
+                        <th colspan="4" style="text-align:center; border:1px solid #999; background-color:#f0f0f0;">2029</th>
+                      </tr>
+                      <tr>
+                        <th></th>
+                        <!-- 2025 Quarters -->
+                        <th class="quarter-cell">Q1</th>
+                        <th class="quarter-cell">Q2</th>
+                        <th class="quarter-cell">Q3</th>
+                        <th class="quarter-cell">Q4</th>
+                        <!-- 2026 Quarters -->
+                        <th class="quarter-cell">Q1</th>
+                        <th class="quarter-cell">Q2</th>
+                        <th class="quarter-cell">Q3</th>
+                        <th class="quarter-cell">Q4</th>
+                        <!-- 2027 Quarters -->
+                        <th class="quarter-cell">Q1</th>
+                        <th class="quarter-cell">Q2</th>
+                        <th class="quarter-cell">Q3</th>
+                        <th class="quarter-cell">Q4</th>
+                        <!-- 2028 Quarters -->
+                        <th class="quarter-cell">Q1</th>
+                        <th class="quarter-cell">Q2</th>
+                        <th class="quarter-cell">Q3</th>
+                        <th class="quarter-cell">Q4</th>
+                        <!-- 2029 Quarters -->
+                        <th class="quarter-cell">Q1</th>
+                        <th class="quarter-cell">Q2</th>
+                        <th class="quarter-cell">Q3</th>
+                        <th class="quarter-cell">Q4</th>
+                      </tr>
+                    </table>
+                    </div>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for d in demand_data %}
+                  {% if d.demand.file_type == 'CASh' %}
+                    <tr>
+                      <td class="demand-name">
+                        {{ d.demand.name }}
+                        <span class="demand-actions">
+                          <a href="{% url 'edit_demand' d.demand.id %}" class="edit-button" title="Edit Demand">✏️</a>
+                        </span>
+                      </td>
+                      <td style="position: relative; padding: 0;">
+                        <div class="demand-timeline-wrapper">
+                          <div class="demand-timeline" style="left: {{ d.timeline_position.start_percent }}%; width: {{ d.timeline_position.width_percent }}%;">
+                            {% for stage in d.stages %}
+                              <div class="progress-bar" 
+                                   style="left: {{ stage.position_percent }}%; 
+                                          width: {{ stage.width_percent }}%; 
+                                          background-color: {{ stage.color }};"
+                                   data-demand-id="{{ d.demand.id }}"
+                                   data-stage="{{ stage.stage }}"
+                                   data-start="{{ stage.start_date|date:'Y-m-d' }}"
+                                   data-end="{{ stage.end_date|date:'Y-m-d' }}"
+                                   onclick="openModal(this)">
+                                <div class="tooltip">
+                                  <div>Stage: {{ stage.display_name }}</div>
+                                  <div>Duration: {{ stage.duration }} days</div>
+                                  <div>{{ stage.start_date|date:'M d, Y' }} - {{ stage.end_date|date:'M d, Y' }}</div>
+                                </div>
+                              </div>
+                            {% endfor %}
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  {% endif %}
+                {% empty %}
+                  <tr><td colspan="2">No CASH demands found.</td></tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div> <!-- Close timeline-container -->
+        </div> <!-- Close tab-cash -->
+        
+        {% else %}
+        <div class="no-demands-message">
+          <p>No demands found. Click "Add New Demand" to get started.</p>
+        </div>
+        {% endif %}
       </div>
       
       <!-- Top Right: Stage Legend -->
@@ -960,14 +1313,35 @@
     });
     
     // Hide all demand info labels
-    document.querySelectorAll('.demand-info-label').forEach(function(label) {
-      label.style.display = 'none';
+    document.querySelectorAll('.demand-info').forEach(function(infoLabel) {
+      infoLabel.style.display = 'none';
+    });
+    
+    // Add tab functionality
+    const tabs = document.querySelectorAll('.tab');
+    const tabContents = document.querySelectorAll('.tab-content');
+    
+    tabs.forEach(tab => {
+      tab.addEventListener('click', function() {
+        // Remove active class from all tabs
+        tabs.forEach(t => t.classList.remove('active'));
+        
+        // Add active class to clicked tab
+        this.classList.add('active');
+        
+        // Hide all tab contents
+        tabContents.forEach(content => content.classList.remove('active'));
+        
+        // Show the selected tab content
+        const tabId = this.getAttribute('data-tab');
+        document.getElementById('tab-' + tabId).classList.add('active');
+      });
     });
   });
   
   document.onclick = function(event) {
     if (event.target == document.getElementById('editModal')) {
-      closeModal();
+      closeEditModal();
     }
   }
 </script>
