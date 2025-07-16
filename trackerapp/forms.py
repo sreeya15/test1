@@ -59,7 +59,7 @@ class DemandForm(forms.ModelForm):
     
     file_detail = forms.ChoiceField(
         label='File Detail',
-        required=True,
+        required=False,  # Changed to False as we'll validate it conditionally
         choices=FILE_DETAIL_CHOICES,
         widget=forms.Select(attrs={'class': 'form-control', 'style': input_style, 'id': 'id_file_detail'})
     )
@@ -79,6 +79,17 @@ class DemandForm(forms.ModelForm):
     class Meta:
         model = Demand
         fields = ['name', 'demand_ID', 'file_type', 'file_subtype', 'file_detail', 'demand_amount', 'io_name', 'start_date', 'duration_months']
+        
+    def clean(self):
+        cleaned_data = super().clean()
+        file_subtype = cleaned_data.get('file_subtype')
+        file_detail = cleaned_data.get('file_detail')
+        
+        # Only require file_detail if file_subtype is 'Project'
+        if file_subtype == 'Project' and not file_detail:
+            self.add_error('file_detail', 'This field is required when File Subtype is Project.')
+            
+        return cleaned_data
         
     def save(self, commit=True):
         demand = super().save(commit=False)
