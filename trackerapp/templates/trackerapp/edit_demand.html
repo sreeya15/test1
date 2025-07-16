@@ -103,10 +103,73 @@
       {% endif %}
     </div>
     
+    <div class="form-group" id="file_type_container">
+      <label for="id_file_type">File Type:</label>
+      {{ form.file_type }}
+    </div>
+    
+    <div class="form-group" id="subtype_container">
+      <label for="id_file_subtype">File Subtype:</label>
+      {{ form.file_subtype }}
+    </div>
+    
+    <div class="form-group" id="detail_container">
+      <label for="id_file_detail">File Detail:</label>
+      {{ form.file_detail }}
+    </div>
+    
     <div class="form-actions">
       <input type="submit" value="Save Changes" />
       <a href="{% url 'demand_list' %}" class="btn-cancel">Cancel</a>
     </div>
+    
+    <script>
+      // JavaScript to handle the multi-level dropdown functionality
+      document.addEventListener('DOMContentLoaded', function() {
+        const fileTypeSelect = document.getElementById('id_file_type');
+        const subtypeSelect = document.getElementById('id_file_subtype');
+        const detailSelect = document.getElementById('id_file_detail');
+        const subtypeContainer = document.getElementById('subtype_container');
+        const detailContainer = document.getElementById('detail_container');
+        
+        // Initially show the subtype container
+        subtypeContainer.style.display = 'block';
+        
+        // Initially set visibility of detail container based on current subtype
+        updateDetailVisibility();
+        
+        // Add event listener to file type dropdown
+        fileTypeSelect.addEventListener('change', function() {
+          // Always show the subtype container when file type changes
+          subtypeContainer.style.display = 'block';
+          // Reset subtype selection
+          subtypeSelect.selectedIndex = 0;
+          // Reset detail selection
+          detailSelect.selectedIndex = 0;
+          // Update detail visibility
+          updateDetailVisibility();
+        });
+        
+        // Add event listener to subtype dropdown
+        subtypeSelect.addEventListener('change', function() {
+          // Reset detail selection
+          detailSelect.selectedIndex = 0;
+          // Update detail visibility
+          updateDetailVisibility();
+        });
+        
+        // Function to update the visibility of the detail dropdown
+        function updateDetailVisibility() {
+          if (subtypeSelect.value === 'Project') {
+            detailContainer.style.display = 'block';
+          } else {
+            detailContainer.style.display = 'none';
+            // Reset detail selection when not visible
+            detailSelect.selectedIndex = 0;
+          }
+        }
+      });
+    </script>
   </form>
 </body>
 </html>

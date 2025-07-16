@@ -31,11 +31,37 @@ class DemandForm(forms.ModelForm):
         ('CASh', 'CASh')
     ]
     
+    FILE_SUBTYPE_CHOICES = [
+        ('', '---------'),
+        ('Project', 'Project'),
+        ('Build up', 'Build up')
+    ]
+    
+    FILE_DETAIL_CHOICES = [
+        ('', '---------'),
+        ('MTR 21', 'MTR 21'),
+        ('MTR 28', 'MTR 28')
+    ]
+    
     file_type = forms.ChoiceField(
         label='File Type',
         required=True,
         choices=FILE_TYPE_CHOICES,
-        widget=forms.Select(attrs={'class': 'form-control', 'style': input_style})
+        widget=forms.Select(attrs={'class': 'form-control', 'style': input_style, 'id': 'id_file_type'})
+    )
+    
+    file_subtype = forms.ChoiceField(
+        label='File Subtype',
+        required=True,
+        choices=FILE_SUBTYPE_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control', 'style': input_style, 'id': 'id_file_subtype'})
+    )
+    
+    file_detail = forms.ChoiceField(
+        label='File Detail',
+        required=True,
+        choices=FILE_DETAIL_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control', 'style': input_style, 'id': 'id_file_detail'})
     )
 
     demand_amount = forms.DecimalField(
@@ -52,7 +78,7 @@ class DemandForm(forms.ModelForm):
    
     class Meta:
         model = Demand
-        fields = ['name', 'demand_ID', 'file_type', 'demand_amount', 'io_name', 'start_date', 'duration_months']
+        fields = ['name', 'demand_ID', 'file_type', 'file_subtype', 'file_detail', 'demand_amount', 'io_name', 'start_date', 'duration_months']
         
     def save(self, commit=True):
         demand = super().save(commit=False)
