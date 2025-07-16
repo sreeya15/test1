@@ -563,9 +563,7 @@
                 <div class="demand-timeline-wrapper">
                   <div class="demand-timeline" style="width: 100%; left: 0%;">
                     <!-- Removed dynamic timeline labels in favor of global timeline -->
-                  
                     {% for stage in d.stages %}
-                      <!-- Only show mini progress bar -->
                       {% if 'mini_progress' in stage.stage and stage.start_year >= 2025 and stage.start_year <= 2029 and stage.end_year >= 2025 and stage.end_year <= 2029 %}
                             <div
                               class="progress-bar"
@@ -711,21 +709,25 @@
                       </td>
                       <td style="position: relative; padding: 0;">
                         <div class="demand-timeline-wrapper">
-                          <div class="demand-timeline" style="left: {{ d.timeline_position.start_percent }}%; width: {{ d.timeline_position.width_percent }}%;">
+                          <div class="demand-timeline" style="left: {{ d.position.start_percent }}%; width: {{ d.position.width_percent }}%;">
                             {% for stage in d.stages %}
                               <div class="progress-bar" 
-                                   style="left: {{ stage.position_percent }}%; 
-                                          width: {{ stage.width_percent }}%; 
+                                   style="left: {{ stage.quarter_start_pos }}%; 
+                                          width: {{ stage.quarter_width }}%; 
                                           background-color: {{ stage.color }};"
                                    data-demand-id="{{ d.demand.id }}"
                                    data-stage="{{ stage.stage }}"
-                                   data-start="{{ stage.start_date|date:'Y-m-d' }}"
-                                   data-end="{{ stage.end_date|date:'Y-m-d' }}"
+                                   data-start="{{ stage.start_date }}"
+                                   data-end="{{ stage.end_date }}"
+                                   data-stage-number="{{ stage.number }}"
                                    onclick="openModal(this)">
+                                {% if stage.should_show_number %}
+                                  <span class="stage-number">{{ stage.number }}</span>
+                                {% endif %}
                                 <div class="tooltip">
-                                  <div>Stage: {{ stage.display_name }}</div>
+                                  <div>Stage: {{ stage.stage_verbose }}</div>
                                   <div>Duration: {{ stage.duration }} days</div>
-                                  <div>{{ stage.start_date|date:'M d, Y' }} - {{ stage.end_date|date:'M d, Y' }}</div>
+                                  <div>{{ stage.start_date }} - {{ stage.end_date }}</div>
                                 </div>
                               </div>
                             {% endfor %}
@@ -813,21 +815,25 @@
                       </td>
                       <td style="position: relative; padding: 0;">
                         <div class="demand-timeline-wrapper">
-                          <div class="demand-timeline" style="left: {{ d.timeline_position.start_percent }}%; width: {{ d.timeline_position.width_percent }}%;">
+                          <div class="demand-timeline" style="left: {{ d.position.start_percent }}%; width: {{ d.position.width_percent }}%;">
                             {% for stage in d.stages %}
                               <div class="progress-bar" 
-                                   style="left: {{ stage.position_percent }}%; 
-                                          width: {{ stage.width_percent }}%; 
+                                   style="left: {{ stage.quarter_start_pos }}%; 
+                                          width: {{ stage.quarter_width }}%; 
                                           background-color: {{ stage.color }};"
                                    data-demand-id="{{ d.demand.id }}"
                                    data-stage="{{ stage.stage }}"
-                                   data-start="{{ stage.start_date|date:'Y-m-d' }}"
-                                   data-end="{{ stage.end_date|date:'Y-m-d' }}"
+                                   data-start="{{ stage.start_date }}"
+                                   data-end="{{ stage.end_date }}"
+                                   data-stage-number="{{ stage.number }}"
                                    onclick="openModal(this)">
+                                {% if stage.should_show_number %}
+                                  <span class="stage-number">{{ stage.number }}</span>
+                                {% endif %}
                                 <div class="tooltip">
-                                  <div>Stage: {{ stage.display_name }}</div>
+                                  <div>Stage: {{ stage.stage_verbose }}</div>
                                   <div>Duration: {{ stage.duration }} days</div>
-                                  <div>{{ stage.start_date|date:'M d, Y' }} - {{ stage.end_date|date:'M d, Y' }}</div>
+                                  <div>{{ stage.start_date }} - {{ stage.end_date }}</div>
                                 </div>
                               </div>
                             {% endfor %}
@@ -915,21 +921,25 @@
                       </td>
                       <td style="position: relative; padding: 0;">
                         <div class="demand-timeline-wrapper">
-                          <div class="demand-timeline" style="left: {{ d.timeline_position.start_percent }}%; width: {{ d.timeline_position.width_percent }}%;">
+                          <div class="demand-timeline" style="left: {{ d.position.start_percent }}%; width: {{ d.position.width_percent }}%;">
                             {% for stage in d.stages %}
                               <div class="progress-bar" 
-                                   style="left: {{ stage.position_percent }}%; 
-                                          width: {{ stage.width_percent }}%; 
+                                   style="left: {{ stage.quarter_start_pos }}%; 
+                                          width: {{ stage.quarter_width }}%; 
                                           background-color: {{ stage.color }};"
                                    data-demand-id="{{ d.demand.id }}"
                                    data-stage="{{ stage.stage }}"
-                                   data-start="{{ stage.start_date|date:'Y-m-d' }}"
-                                   data-end="{{ stage.end_date|date:'Y-m-d' }}"
+                                   data-start="{{ stage.start_date }}"
+                                   data-end="{{ stage.end_date }}"
+                                   data-stage-number="{{ stage.number }}"
                                    onclick="openModal(this)">
+                                {% if stage.should_show_number %}
+                                  <span class="stage-number">{{ stage.number }}</span>
+                                {% endif %}
                                 <div class="tooltip">
-                                  <div>Stage: {{ stage.display_name }}</div>
+                                  <div>Stage: {{ stage.stage_verbose }}</div>
                                   <div>Duration: {{ stage.duration }} days</div>
-                                  <div>{{ stage.start_date|date:'M d, Y' }} - {{ stage.end_date|date:'M d, Y' }}</div>
+                                  <div>{{ stage.start_date }} - {{ stage.end_date }}</div>
                                 </div>
                               </div>
                             {% endfor %}
