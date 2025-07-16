@@ -3,40 +3,51 @@ from .models import Demand, DemandStagePeriod
 from datetime import datetime, timedelta
 
 class DemandForm(forms.ModelForm):
+    # Common style for all form fields
+    input_style = 'width: 100%; max-width: 100%;'
+    
     start_date = forms.DateField(
         label='Start Date (t0)', 
-        widget=forms.DateInput(attrs={'type': 'date'})
+        widget=forms.DateInput(attrs={'type': 'date', 'style': input_style, 'class': 'form-control'})
     )
 
     duration_months = forms.IntegerField(
         label='Duration in Months (end)', 
         min_value=1, 
         required=True,
-        help_text='Total duration of the demand in months'
+        help_text='Total duration of the demand in months',
+        widget=forms.NumberInput(attrs={'class': 'form-control', 'style': input_style})
     )
 
     demand_ID = forms.CharField(
         label='Demand ID',
         required=True,
-        widget=forms.TextInput(attrs={'class': 'form-control'})
+        widget=forms.TextInput(attrs={'class': 'form-control', 'style': input_style})
     )
 
-    file_type = forms.CharField(
+    FILE_TYPE_CHOICES = [
+        ('GEM', 'GEM'),
+        ('LPC', 'LPC'),
+        ('CASh', 'CASh')
+    ]
+    
+    file_type = forms.ChoiceField(
         label='File Type',
         required=True,
-        widget=forms.TextInput(attrs={'class': 'form-control'})
+        choices=FILE_TYPE_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control', 'style': input_style})
     )
 
     demand_amount = forms.DecimalField(
         label='Demand Amount',
         required=True,
-        widget=forms.TextInput(attrs={'class': 'form-control'})
+        widget=forms.TextInput(attrs={'class': 'form-control', 'style': input_style})
     )
 
     io_name = forms.CharField(
         label='IO Name',
         required=True,
-        widget=forms.TextInput(attrs={'class': 'form-control'})
+        widget=forms.TextInput(attrs={'class': 'form-control', 'style': input_style})
     )
    
     class Meta:
