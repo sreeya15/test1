@@ -7,6 +7,8 @@ class Demand(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     demand_ID = models.CharField(max_length=100, null=True, blank=True)
     file_type = models.CharField(max_length=100, null=True, blank=True)
+    file_subtype = models.CharField(max_length=100, null=True, blank=True)
+    file_detail = models.CharField(max_length=100, null=True, blank=True)
     demand_amount = models.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True)
     io_name = models.CharField(max_length=200, null=True, blank=True)
     start_date = models.DateField(null=True, blank=True)

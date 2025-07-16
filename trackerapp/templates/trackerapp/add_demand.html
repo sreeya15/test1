@@ -160,6 +160,14 @@
             <label for="id_file_type">Type of File:</label>
             {{ form.file_type }}
           </div>
+          <div class="form-field" id="subtype_container">
+            <label for="id_file_subtype">File Subtype:</label>
+            {{ form.file_subtype }}
+          </div>
+          <div class="form-field" id="detail_container">
+            <label for="id_file_detail">File Detail:</label>
+            {{ form.file_detail }}
+          </div>
           <div class="form-field">
             <label for="id_io_name">IO:</label>
             {{ form.io_name }}
@@ -178,6 +186,54 @@
         </div>
       </form>
       <a href="{% url 'demand_list' %}">Back to timeline</a>
+      
+      <script>
+        // JavaScript to handle the multi-level dropdown functionality
+        document.addEventListener('DOMContentLoaded', function() {
+          const fileTypeSelect = document.getElementById('id_file_type');
+          const subtypeSelect = document.getElementById('id_file_subtype');
+          const detailSelect = document.getElementById('id_file_detail');
+          const subtypeContainer = document.getElementById('subtype_container');
+          const detailContainer = document.getElementById('detail_container');
+          
+          // Initially show the subtype container
+          subtypeContainer.style.display = 'block';
+          
+          // Initially hide the detail container until Project is selected
+          updateDetailVisibility();
+          
+          // Add event listener to file type dropdown
+          fileTypeSelect.addEventListener('change', function() {
+            // Always show the subtype container when file type changes
+            subtypeContainer.style.display = 'block';
+            // Reset subtype selection
+            subtypeSelect.selectedIndex = 0;
+            // Reset detail selection
+            detailSelect.selectedIndex = 0;
+            // Update detail visibility
+            updateDetailVisibility();
+          });
+          
+          // Add event listener to subtype dropdown
+          subtypeSelect.addEventListener('change', function() {
+            // Reset detail selection
+            detailSelect.selectedIndex = 0;
+            // Update detail visibility
+            updateDetailVisibility();
+          });
+          
+          // Function to update the visibility of the detail dropdown
+          function updateDetailVisibility() {
+            if (subtypeSelect.value === 'Project') {
+              detailContainer.style.display = 'block';
+            } else {
+              detailContainer.style.display = 'none';
+              // Reset detail selection when not visible
+              detailSelect.selectedIndex = 0;
+            }
+          }
+        });
+      </script>
     </div>
     
     <!-- Stage Checklist Section -->
