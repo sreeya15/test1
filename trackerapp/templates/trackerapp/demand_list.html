@@ -122,6 +122,7 @@
     border-collapse: collapse;
     margin-top: 10px;
     border: 1px solid #eee;
+    table-layout: fixed;
   }
   
   th, td {
@@ -190,6 +191,24 @@
     table-layout: fixed;
     max-width: 100%;
     overflow-x: auto;
+  }
+  
+  /* Ensure timeline table maintains structure when columns are toggled */
+  .timeline-container table {
+    table-layout: fixed;
+    width: 100%;
+  }
+  
+  .timeline-container table th:first-child {
+    width: 200px;
+  }
+  
+  .timeline-container table th:nth-child(2) {
+    width: calc(100% - 450px);
+  }
+  
+  .timeline-container table th.weekly-update-header {
+    width: 250px;
   }
   
   .timeline-header th {
@@ -467,7 +486,7 @@
         
         <!-- Tab content for All Demands -->
         <div id="tab-all" class="tab-content active">
-          <div class="timeline-container" style="max-width: calc(100% - 20px);">
+          <div class="timeline-container" style="max-width: calc(100% - 20px); width: 100%;">
             <table>
         <thead>
           <tr>
@@ -540,7 +559,7 @@
                 2025 to 2029
               </div>
             </th>
-            <th style="width: 250px;">Weekly Update</th>
+            <th style="width: 250px; display: none;" class="weekly-update-header">Weekly Update</th>
           </tr>
         </thead>
         <tbody>
@@ -609,7 +628,7 @@
               </div>
             </td>
 
-            <td style="vertical-align: top; padding: 10px;">
+            <td style="vertical-align: top; padding: 10px; display: none;" class="weekly-update-cell">
               <!-- Weekly Update Cell for each demand (third column) -->
               <div class="weekly-update-section" style="background-color: #f9f9f9; border: 1px solid #ddd; padding: 10px; border-radius: 4px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
@@ -1281,27 +1300,42 @@
     const detailBarId = 'stage-detail-' + demandId;
     const detailBar = document.getElementById(detailBarId);
     
-    // Target weekly update section
-    const weeklyUpdateSection = document.querySelector(`#weekly-date-${demandId}`).closest('.weekly-update-section');
+    // Target weekly update cell for this specific demand
+    const weeklyUpdateCell = document.querySelector(`#weekly-date-${demandId}`).closest('tr').querySelector('.weekly-update-cell');
     
     // Target demand info label
     const demandInfoLabel = document.getElementById(`demand-info-${demandId}`);
     
-    if (detailBar && weeklyUpdateSection) {
+    // Check if any detail bar is currently visible
+    const anyDetailBarVisible = document.querySelector('[id^="stage-detail-"]:not([style*="display: none"])');
+    
+    if (detailBar && weeklyUpdateCell) {
       // Force display style
       if (detailBar.style.display === 'block') {
         // Hide all elements
         detailBar.style.display = 'none';
-        weeklyUpdateSection.style.display = 'none';
+        weeklyUpdateCell.style.display = 'none';
         if (demandInfoLabel) {
           demandInfoLabel.style.display = 'none';
+        }
+        
+        // Hide the weekly update header if no detail bars are visible
+        const weeklyUpdateHeader = document.querySelector('.weekly-update-header');
+        if (weeklyUpdateHeader) {
+          weeklyUpdateHeader.style.display = 'none';
         }
       } else {
         // Show all elements
         detailBar.style.display = 'block';
-        weeklyUpdateSection.style.display = 'block';
+        weeklyUpdateCell.style.display = 'table-cell';
         if (demandInfoLabel) {
           demandInfoLabel.style.display = 'block';
+        }
+        
+        // Show the weekly update header
+        const weeklyUpdateHeader = document.querySelector('.weekly-update-header');
+        if (weeklyUpdateHeader) {
+          weeklyUpdateHeader.style.display = 'table-cell';
         }
       }
     } else {
@@ -1310,20 +1344,25 @@
     }
   }
   
-  // When the page loads, hide all detail bars, weekly update sections, and demand info labels
+  // When the page loads, hide all detail bars, weekly update cells, and demand info labels
   document.addEventListener('DOMContentLoaded', function() {
     // Hide all detail bars
     document.querySelectorAll('[id^="stage-detail-"]').forEach(function(detailBar) {
       detailBar.style.display = 'none';
     });
     
-    // Hide all weekly update sections
-    document.querySelectorAll('.weekly-update-section').forEach(function(weeklyUpdateSection) {
-      weeklyUpdateSection.style.display = 'none';
+    // Hide all weekly update cells
+    document.querySelectorAll('.weekly-update-cell').forEach(function(weeklyUpdateCell) {
+      weeklyUpdateCell.style.display = 'none';
+    });
+    
+    // Hide weekly update header
+    document.querySelectorAll('.weekly-update-header').forEach(function(weeklyUpdateHeader) {
+      weeklyUpdateHeader.style.display = 'none';
     });
     
     // Hide all demand info labels
-    document.querySelectorAll('.demand-info').forEach(function(infoLabel) {
+    document.querySelectorAll('.demand-info-label').forEach(function(infoLabel) {
       infoLabel.style.display = 'none';
     });
     
