@@ -116,6 +116,43 @@
     display: block;
   }
   
+  /* Demand tabs styles */
+  .demand-tabs {
+    display: flex;
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 10px;
+  }
+  
+  .demand-tab {
+    padding: 6px 12px;
+    cursor: pointer;
+    background-color: #f1f1f1;
+    border: 1px solid #ddd;
+    border-bottom: none;
+    margin-right: 2px;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    font-size: 11px;
+    font-weight: 500;
+    min-width: 80px;
+    text-align: center;
+  }
+  
+  .demand-tab.active {
+    background-color: white;
+    border-bottom: 1px solid white;
+    margin-bottom: -1px;
+    font-weight: bold;
+  }
+  
+  .demand-tab-content {
+    display: none;
+  }
+  
+  .demand-tab-content.active {
+    display: block;
+  }
+  
   /* Tables and timeline */
   table {
     width: 100%;
@@ -204,11 +241,11 @@
   }
   
   .timeline-container table th:nth-child(2) {
-    width: calc(100% - 450px);
+    width: calc(100% - 480px);
   }
   
   .timeline-container table th.weekly-update-header {
-    width: 250px;
+    width: 280px;
   }
   
   .timeline-header th {
@@ -559,7 +596,7 @@
                 2025 to 2029
               </div>
             </th>
-            <th style="width: 250px; display: none;" class="weekly-update-header">Weekly Update</th>
+            <th style="width: 280px; display: none;" class="weekly-update-header">STATUS</th>
           </tr>
         </thead>
         <tbody>
@@ -631,18 +668,47 @@
             <td style="vertical-align: top; padding: 10px; display: none;" class="weekly-update-cell">
               <!-- Weekly Update Cell for each demand (third column) -->
               <div class="weekly-update-section" style="background-color: #f9f9f9; border: 1px solid #ddd; padding: 10px; border-radius: 4px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
-                  <h5 style="margin: 0; font-size: 14px;">Weekly Update</h5>
-                  <button style="background: none; border: none; color: #2196F3; cursor: pointer; font-size: 13px;" 
-                          onclick="openWeeklyUpdateModal({{ d.demand.id }}, '{{ d.demand.weekly_update_date|default_if_none:''|date:"Y-m-d" }}', '{{ d.demand.weekly_update_stage|default_if_none:'' }}', '{{ d.demand.weekly_update_progress|default_if_none:'' }}', '{{ d.demand.weekly_update_challenge|default_if_none:'' }}')">
-                    <i class="fas fa-edit"></i> Edit
-                  </button>
+                <!-- Tabs for Weekly Update and Demand Details -->
+                <div class="demand-tabs" style="margin-bottom: 10px;">
+                  <div class="demand-tab active" data-tab="weekly-update-{{ d.demand.id }}" onclick="switchDemandTab('weekly-update-{{ d.demand.id }}', '{{ d.demand.id }}')">Weekly Update</div>
+                  <div class="demand-tab" data-tab="demand-details-{{ d.demand.id }}" onclick="switchDemandTab('demand-details-{{ d.demand.id }}', '{{ d.demand.id }}')">Demand Details</div>
                 </div>
-                <div>
-                  <div style="margin-bottom: 3px; font-size: 13px;"><strong>Date:</strong> <span id="weekly-date-{{ d.demand.id }}">{{ d.demand.weekly_update_date|default:'Not set' }}</span></div>
-                  <div style="margin-bottom: 3px; font-size: 13px;"><strong>Stage:</strong> <span id="weekly-stage-{{ d.demand.id }}">{{ d.demand.weekly_update_stage|default:'Not set' }}</span></div>
-                  <div style="margin-bottom: 3px; font-size: 13px;"><strong>Progress Stage:</strong> <span id="weekly-progress-{{ d.demand.id }}">{{ d.demand.weekly_update_progress|default:'Not set' }}</span></div>
-                  <div style="font-size: 13px;"><strong>Challenge:</strong> <span id="weekly-challenge-{{ d.demand.id }}">{{ d.demand.weekly_update_challenge|default:'Not set' }}</span></div>
+                
+                <!-- Weekly Update Tab Content -->
+                <div id="weekly-update-content-{{ d.demand.id }}" class="demand-tab-content active">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                    <h5 style="margin: 0; font-size: 14px;">Weekly Update</h5>
+                    <button style="background: none; border: none; color: #2196F3; cursor: pointer; font-size: 13px;" 
+                            onclick="openWeeklyUpdateModal({{ d.demand.id }}, '{{ d.demand.weekly_update_date|default_if_none:''|date:"Y-m-d" }}', '{{ d.demand.weekly_update_stage|default_if_none:'' }}', '{{ d.demand.weekly_update_progress|default_if_none:'' }}', '{{ d.demand.weekly_update_challenge|default_if_none:'' }}')">
+                      <i class="fas fa-edit"></i> Edit
+                    </button>
+                  </div>
+                  <div>
+                    <div style="margin-bottom: 3px; font-size: 13px;"><strong>Date:</strong> <span id="weekly-date-{{ d.demand.id }}">{{ d.demand.weekly_update_date|default:'Not set' }}</span></div>
+                    <div style="margin-bottom: 3px; font-size: 13px;"><strong>Stage:</strong> <span id="weekly-stage-{{ d.demand.id }}">{{ d.demand.weekly_update_stage|default:'Not set' }}</span></div>
+                    <div style="margin-bottom: 3px; font-size: 13px;"><strong>Progress Stage:</strong> <span id="weekly-progress-{{ d.demand.id }}">{{ d.demand.weekly_update_progress|default:'Not set' }}</span></div>
+                    <div style="font-size: 13px;"><strong>Challenge:</strong> <span id="weekly-challenge-{{ d.demand.id }}">{{ d.demand.weekly_update_challenge|default:'Not set' }}</span></div>
+                  </div>
+                </div>
+                
+                <!-- Demand Details Tab Content -->
+                <div id="demand-details-content-{{ d.demand.id }}" class="demand-tab-content">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                    <h5 style="margin: 0; font-size: 14px;">Demand Details</h5>
+                    <a href="{% url 'edit_demand' d.demand.id %}" style="background: none; border: none; color: #2196F3; cursor: pointer; font-size: 13px; text-decoration: none;">
+                      <i class="fas fa-edit"></i> Edit
+                    </a>
+                  </div>
+                  <div>
+                    <div style="margin-bottom: 3px; font-size: 13px;"><strong>Demand Name:</strong> <span>{{ d.demand.name }}</span></div>
+                    <div style="margin-bottom: 3px; font-size: 13px;"><strong>IO Name:</strong> <span>{{ d.demand.io_name|default:'Not set' }}</span></div>
+                    <div style="margin-bottom: 3px; font-size: 13px;"><strong>Demand Amount:</strong> <span>{{ d.demand.demand_amount|default:'Not set' }}</span></div>
+                    <div style="margin-bottom: 3px; font-size: 13px;"><strong>File Type:</strong> <span>{{ d.demand.file_type|default:'Not set' }}</span></div>
+                    <div style="margin-bottom: 3px; font-size: 13px;"><strong>File Subtype:</strong> <span>{{ d.demand.file_subtype|default:'Not set' }}</span></div>
+                    <div style="margin-bottom: 3px; font-size: 13px;"><strong>Start Date:</strong> <span>{{ d.demand.start_date|default:'Not set' }}</span></div>
+                    <div style="margin-bottom: 3px; font-size: 13px;"><strong>End Date:</strong> <span>{{ d.demand.end_date|default:'Not set' }}</span></div>
+                    <div style="font-size: 13px;"><strong>Duration (Months):</strong> <span>{{ d.demand.duration_months|default:'Not set' }}</span></div>
+                  </div>
                 </div>
               </div>
             </td>
@@ -1344,6 +1410,29 @@
     }
   }
   
+  function switchDemandTab(tabId, demandId) {
+    // Remove active class from all tabs for this demand
+    const demandTabs = document.querySelectorAll(`[data-tab^="weekly-update-${demandId}"], [data-tab^="demand-details-${demandId}"]`);
+    demandTabs.forEach(tab => tab.classList.remove('active'));
+    
+    // Add active class to clicked tab
+    const clickedTab = document.querySelector(`[data-tab="${tabId}"]`);
+    if (clickedTab) {
+      clickedTab.classList.add('active');
+    }
+    
+    // Hide all tab contents for this demand
+    const demandTabContents = document.querySelectorAll(`#weekly-update-content-${demandId}, #demand-details-content-${demandId}`);
+    demandTabContents.forEach(content => content.classList.remove('active'));
+    
+    // Show the selected tab content
+    if (tabId.startsWith('weekly-update-')) {
+      document.getElementById(`weekly-update-content-${demandId}`).classList.add('active');
+    } else if (tabId.startsWith('demand-details-')) {
+      document.getElementById(`demand-details-content-${demandId}`).classList.add('active');
+    }
+  }
+  
   // When the page loads, hide all detail bars, weekly update cells, and demand info labels
   document.addEventListener('DOMContentLoaded', function() {
     // Hide all detail bars
@@ -1364,6 +1453,16 @@
     // Hide all demand info labels
     document.querySelectorAll('.demand-info-label').forEach(function(infoLabel) {
       infoLabel.style.display = 'none';
+    });
+    
+    // Hide all demand tab contents except the first one for each demand
+    document.querySelectorAll('.demand-tab-content').forEach(function(tabContent) {
+      tabContent.classList.remove('active');
+    });
+    
+    // Show only the weekly update content for each demand by default
+    document.querySelectorAll('[id^="weekly-update-content-"]').forEach(function(weeklyContent) {
+      weeklyContent.classList.add('active');
     });
     
     // Add tab functionality
