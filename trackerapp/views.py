@@ -667,3 +667,40 @@ def edit_stage_dates(request):
             messages.success(request, f'Stage dates updated successfully. New duration: {duration_days} days.')
 
         return redirect('demand_list')
+
+def update_weekly_dates(request):
+    """Handle AJAX request to update weekly start and end dates for a demand"""
+    if request.method == 'POST' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        from django.http import JsonResponse
+        from django.views.decorators.csrf import csrf_exempt
+        
+        try:
+            demand_id = request.POST.get('demand_id')
+            weekly_start_date = request.POST.get('weekly_start_date')
+            weekly_end_date = request.POST.get('weekly_end_date')
+            
+            if not demand_id or not weekly_start_date or not weekly_end_date:
+                return JsonResponse({'success': False, 'error': 'Missing required fields'})
+            
+            demand = get_object_or_404(Demand, id=demand_id)
+            
+            # Convert string dates to date objects
+            start_date = datetime.strptime(weekly_start_date, '%Y-%m-%d').date()
+            end_date = datetime.strptime(weekly_end_date, '%Y-%m-%d').date()
+            
+            if start_date > end_date:
+                return JsonResponse({'success': False, 'error': 'Start date cannot be after end date'})
+            
+            # Update the demand with new weekly dates
+            demand.weekly_start_date = start_date
+            demand.weekly_end_date = end_date
+            demand.save()
+            
+            return JsonResponse({'success': True})
+            
+        except ValueError as e:
+            return JsonResponse({'success': False, 'error': 'Invalid date format'})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+    
+    return JsonResponse({'success': False, 'error': 'Invalid request method'})
