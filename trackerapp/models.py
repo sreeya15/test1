@@ -13,6 +13,8 @@ class Demand(models.Model):
     io_name = models.CharField(max_length=200, null=True, blank=True)
     start_date = models.DateField(null=True, blank=True)
     duration_months = models.IntegerField(null=True, blank=True)
+    weekly_start_date = models.DateField(null=True, blank=True)
+    weekly_end_date = models.DateField(null=True, blank=True)
 
     def __str__(self):
         return self.name

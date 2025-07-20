@@ -8,5 +8,6 @@ urlpatterns = [
     path('delete/<int:demand_id>/', views.delete_demand, name='delete_demand'),
     path('update_stage/', views.update_stage, name='update_stage'),
     path('edit_stage_dates/', views.edit_stage_dates, name='edit_stage_dates'),
+    path('update_weekly_dates/', views.update_weekly_dates, name='update_weekly_dates'),
 ]
 
