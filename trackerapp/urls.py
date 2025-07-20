@@ -10,5 +10,7 @@ urlpatterns = [
     path('edit_stage_dates/', views.edit_stage_dates, name='edit_stage_dates'),
     path('update_weekly_dates/', views.update_weekly_dates, name='update_weekly_dates'),
     path('update_weekly_stage/', views.update_weekly_stage, name='update_weekly_stage'),
+    path('update_weekly_progress/', views.update_weekly_progress, name='update_weekly_progress'),
+    path('update_weekly_challenge/', views.update_weekly_challenge, name='update_weekly_challenge'),
 ]
 
