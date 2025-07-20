@@ -704,3 +704,29 @@ def update_weekly_dates(request):
             return JsonResponse({'success': False, 'error': str(e)})
     
     return JsonResponse({'success': False, 'error': 'Invalid request method'})
+
+def update_weekly_stage(request):
+    """Handle AJAX request to update weekly stage for a demand"""
+    if request.method == 'POST' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        from django.http import JsonResponse
+        from django.views.decorators.csrf import csrf_exempt
+        
+        try:
+            demand_id = request.POST.get('demand_id')
+            weekly_update_stage = request.POST.get('weekly_update_stage')
+            
+            if not demand_id or not weekly_update_stage:
+                return JsonResponse({'success': False, 'error': 'Missing required fields'})
+            
+            demand = get_object_or_404(Demand, id=demand_id)
+            
+            # Update the demand with new weekly stage
+            demand.weekly_update_stage = weekly_update_stage
+            demand.save()
+            
+            return JsonResponse({'success': True})
+            
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+    
+    return JsonResponse({'success': False, 'error': 'Invalid request method'})

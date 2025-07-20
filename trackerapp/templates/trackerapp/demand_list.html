@@ -690,8 +690,41 @@
                     </button>
                   </div>
                   <div>
-                    <div style="margin-bottom: 3px; font-size: 13px;"><strong>Stage:</strong> <span id="weekly-stage-{{ d.demand.id }}">{{ d.demand.weekly_update_stage|default:'Not set' }}</span></div>
-                    <div style="margin-bottom: 3px; font-size: 13px;"><strong>Progress Stage:</strong> <span id="weekly-progress-{{ d.demand.id }}">{{ d.demand.weekly_update_progress|default:'Not set' }}</span></div>
+                    <div style="margin-bottom: 3px; font-size: 13px;">
+                      <strong>Stage:</strong> 
+                      <select id="weekly-stage-{{ d.demand.id }}" 
+                              style="font-size: 12px; padding: 2px 4px; border: 1px solid #ccc; border-radius: 3px; width: 200px; margin-left: 5px;"
+                              onchange="updateWeeklyStage({{ d.demand.id }})">
+                        <option value="">Select Stage</option>
+                        <option value="demand_to_be_initiated" {% if d.demand.weekly_update_stage == 'demand_to_be_initiated' %}selected{% endif %}>Demand to be Initiated</option>
+                        <option value="demand_initiated" {% if d.demand.weekly_update_stage == 'demand_initiated' %}selected{% endif %}>Demand Initiated</option>
+                        <option value="spc_cleared" {% if d.demand.weekly_update_stage == 'spc_cleared' %}selected{% endif %}>SPC Cleared</option>
+                        <option value="demand_approved" {% if d.demand.weekly_update_stage == 'demand_approved' %}selected{% endif %}>Demand Approved</option>
+                        <option value="tender_enquiry_floated" {% if d.demand.weekly_update_stage == 'tender_enquiry_floated' %}selected{% endif %}>Tender Enquiry Floated</option>
+                        <option value="receipt_of_quotations" {% if d.demand.weekly_update_stage == 'receipt_of_quotations' %}selected{% endif %}>Receipt of Quotations</option>
+                        <option value="tender_opening" {% if d.demand.weekly_update_stage == 'tender_opening' %}selected{% endif %}>Tender Opening</option>
+                        <option value="tcec_approved" {% if d.demand.weekly_update_stage == 'tcec_approved' %}selected{% endif %}>TCEC Approved</option>
+                        <option value="tpc_approved" {% if d.demand.weekly_update_stage == 'tpc_approved' %}selected{% endif %}>TPC Approved</option>
+                        <option value="financial_sanction" {% if d.demand.weekly_update_stage == 'financial_sanction' %}selected{% endif %}>Financial Sanction</option>
+                        <option value="order_placement" {% if d.demand.weekly_update_stage == 'order_placement' %}selected{% endif %}>Order Placement</option>
+                        <option value="pdr" {% if d.demand.weekly_update_stage == 'pdr' %}selected{% endif %}>PDR</option>
+                        <option value="so_for_critical_bom_by_dev_partner" {% if d.demand.weekly_update_stage == 'so_for_critical_bom_by_dev_partner' %}selected{% endif %}>SO for Critical BoM by Dev Partner</option>
+                        <option value="ddr" {% if d.demand.weekly_update_stage == 'ddr' %}selected{% endif %}>DDR</option>
+                        <option value="cdr" {% if d.demand.weekly_update_stage == 'cdr' %}selected{% endif %}>CDR</option>
+                        <option value="acceptance_of_critical_bom_by_dev_partner" {% if d.demand.weekly_update_stage == 'acceptance_of_critical_bom_by_dev_partner' %}selected{% endif %}>Acceptance of Critical BoM by Dev Partner</option>
+                        <option value="realization_completed" {% if d.demand.weekly_update_stage == 'realization_completed' %}selected{% endif %}>Realization Completed</option>
+                        <option value="fat_completed" {% if d.demand.weekly_update_stage == 'fat_completed' %}selected{% endif %}>FAT Completed</option>
+                        <option value="atp_qtp_completed" {% if d.demand.weekly_update_stage == 'atp_qtp_completed' %}selected{% endif %}>ATP/QTP Completed</option>
+                        <option value="delivery_at_stores" {% if d.demand.weekly_update_stage == 'delivery_at_stores' %}selected{% endif %}>Delivery at Stores</option>
+                        <option value="sat_soft" {% if d.demand.weekly_update_stage == 'sat_soft' %}selected{% endif %}>SAT/SoFT</option>
+                        <option value="inward_inspection_clearance" {% if d.demand.weekly_update_stage == 'inward_inspection_clearance' %}selected{% endif %}>Inward Inspection Clearance</option>
+                        <option value="payment_process" {% if d.demand.weekly_update_stage == 'payment_process' %}selected{% endif %}>Payment Process</option>
+                        <option value="partially_paid" {% if d.demand.weekly_update_stage == 'partially_paid' %}selected{% endif %}>Partially Paid</option>
+                        <option value="payment_released" {% if d.demand.weekly_update_stage == 'payment_released' %}selected{% endif %}>Payment Released</option>
+                        <option value="available_for_integration" {% if d.demand.weekly_update_stage == 'available_for_integration' %}selected{% endif %}>Available for Integration</option>
+                      </select>
+                    </div>
+                    <div style="margin-bottom: 3px; font-size: 13px;"><strong>Stage Details:</strong> <span id="weekly-progress-{{ d.demand.id }}">{{ d.demand.weekly_update_progress|default:'Not set' }}</span></div>
                     <div style="margin-bottom: 3px; font-size: 13px;"><strong>Challenge:</strong> <span id="weekly-challenge-{{ d.demand.id }}">{{ d.demand.weekly_update_challenge|default:'Not set' }}</span></div>
                     
                     <!-- Start and End Date Fields with Save Button on the Right -->
@@ -1543,6 +1576,50 @@
         startDateInput.value = endDateInput.value;
       }
     }
+  }
+  
+  // Function to update weekly stage
+  function updateWeeklyStage(demandId) {
+    const stageSelect = document.getElementById(`weekly-stage-${demandId}`);
+    const selectedStage = stageSelect.value;
+    
+    if (!selectedStage) {
+      return; // Don't save if no stage is selected
+    }
+    
+    // Create form data for AJAX request
+    const formData = new FormData();
+    formData.append('demand_id', demandId);
+    formData.append('weekly_update_stage', selectedStage);
+    formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+    
+    // Send AJAX request to save stage
+    fetch('{% url "update_weekly_stage" %}', {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        // Show success feedback
+        stageSelect.style.borderColor = '#4CAF50';
+        stageSelect.style.backgroundColor = '#f0f8f0';
+        
+        setTimeout(() => {
+          stageSelect.style.borderColor = '#ccc';
+          stageSelect.style.backgroundColor = 'white';
+        }, 2000);
+      } else {
+        alert('Error saving stage: ' + (data.error || 'Unknown error'));
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('Error saving stage. Please try again.');
+    });
   }
   
   // Function to save weekly dates
