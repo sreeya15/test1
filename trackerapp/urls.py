@@ -9,5 +9,6 @@ urlpatterns = [
     path('update_stage/', views.update_stage, name='update_stage'),
     path('edit_stage_dates/', views.edit_stage_dates, name='edit_stage_dates'),
     path('update_weekly_dates/', views.update_weekly_dates, name='update_weekly_dates'),
+    path('update_weekly_stage/', views.update_weekly_stage, name='update_weekly_stage'),
 ]
 
