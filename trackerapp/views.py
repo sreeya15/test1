@@ -730,3 +730,55 @@ def update_weekly_stage(request):
             return JsonResponse({'success': False, 'error': str(e)})
     
     return JsonResponse({'success': False, 'error': 'Invalid request method'})
+
+def update_weekly_progress(request):
+    """Handle AJAX request to update weekly progress for a demand"""
+    if request.method == 'POST' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        from django.http import JsonResponse
+        from django.views.decorators.csrf import csrf_exempt
+        
+        try:
+            demand_id = request.POST.get('demand_id')
+            weekly_update_progress = request.POST.get('weekly_update_progress')
+            
+            if not demand_id:
+                return JsonResponse({'success': False, 'error': 'Missing demand ID'})
+            
+            demand = get_object_or_404(Demand, id=demand_id)
+            
+            # Update the demand with new weekly progress
+            demand.weekly_update_progress = weekly_update_progress
+            demand.save()
+            
+            return JsonResponse({'success': True})
+            
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+    
+    return JsonResponse({'success': False, 'error': 'Invalid request method'})
+
+def update_weekly_challenge(request):
+    """Handle AJAX request to update weekly challenge for a demand"""
+    if request.method == 'POST' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        from django.http import JsonResponse
+        from django.views.decorators.csrf import csrf_exempt
+        
+        try:
+            demand_id = request.POST.get('demand_id')
+            weekly_update_challenge = request.POST.get('weekly_update_challenge')
+            
+            if not demand_id:
+                return JsonResponse({'success': False, 'error': 'Missing demand ID'})
+            
+            demand = get_object_or_404(Demand, id=demand_id)
+            
+            # Update the demand with new weekly challenge
+            demand.weekly_update_challenge = weekly_update_challenge
+            demand.save()
+            
+            return JsonResponse({'success': True})
+            
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+    
+    return JsonResponse({'success': False, 'error': 'Invalid request method'})

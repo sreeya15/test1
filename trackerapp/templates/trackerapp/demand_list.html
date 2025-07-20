@@ -724,8 +724,84 @@
                         <option value="available_for_integration" {% if d.demand.weekly_update_stage == 'available_for_integration' %}selected{% endif %}>Available for Integration</option>
                       </select>
                     </div>
-                    <div style="margin-bottom: 3px; font-size: 13px;"><strong>Stage Details:</strong> <span id="weekly-progress-{{ d.demand.id }}">{{ d.demand.weekly_update_progress|default:'Not set' }}</span></div>
-                    <div style="margin-bottom: 3px; font-size: 13px;"><strong>Challenge:</strong> <span id="weekly-challenge-{{ d.demand.id }}">{{ d.demand.weekly_update_challenge|default:'Not set' }}</span></div>
+                    <div style="margin-bottom: 3px; font-size: 13px;">
+                      <strong>Stage Details:</strong> 
+                      <div style="margin-top: 2px;">
+                        <div id="progress-display-{{ d.demand.id }}" style="display: block;">
+                          <input type="text"
+                                 id="progress-text-{{ d.demand.id }}"
+                                 data-full-text="{{ d.demand.weekly_update_progress|default:'' }}"
+                                 value="{% if d.demand.weekly_update_progress %}{% if d.demand.weekly_update_progress|length > 20 %}{{ d.demand.weekly_update_progress|slice:":20" }}...{% else %}{{ d.demand.weekly_update_progress }}{% endif %}{% endif %}"
+                                 readonly
+                                 style="font-size: 12px; color: #333; background: #fff; border: 1px solid #ccc; border-radius: 3px; width: 100%; padding: 4px; margin-bottom: 0;" />
+                          {% if d.demand.weekly_update_progress and d.demand.weekly_update_progress|length > 20 %}
+                            <button type="button" onclick="toggleProgressText({{ d.demand.id }})"
+                                    style="background: none; border: none; color: #2196F3; cursor: pointer; font-size: 11px; margin-left: 5px; text-decoration: underline;">
+                              Show More
+                            </button>
+                          {% endif %}
+                        </div>
+                        <div id="progress-edit-{{ d.demand.id }}" style="display: none;">
+                          <input type="text" id="weekly-progress-{{ d.demand.id }}"
+                                 placeholder="Enter stage details..."
+                                 style="font-size: 12px; padding: 4px; border: 1px solid #ccc; border-radius: 3px; width: 100%; font-family: inherit;"
+                                 maxlength="500" />
+                          <div style="margin-top: 5px;">
+                            <button type="button" onclick="saveProgress({{ d.demand.id }})"
+                                    style="background-color: #4CAF50; color: white; border: none; padding: 4px 8px; border-radius: 3px; font-size: 11px; cursor: pointer; margin-right: 5px;">
+                              Save
+                            </button>
+                            <button type="button" onclick="cancelProgressEdit({{ d.demand.id }})"
+                                    style="background-color: #f44336; color: white; border: none; padding: 4px 8px; border-radius: 3px; font-size: 11px; cursor: pointer;">
+                              Cancel
+                            </button>
+                          </div>
+                        </div>
+                        <button type="button" onclick="editProgress({{ d.demand.id }})" 
+                                style="background: none; border: none; color: #2196F3; cursor: pointer; font-size: 11px; margin-top: 2px; text-decoration: underline;">
+                          Edit
+                        </button>
+                      </div>
+                    </div>
+                    <div style="margin-bottom: 3px; font-size: 13px;">
+                      <strong>Challenge:</strong> 
+                      <div style="margin-top: 2px;">
+                        <div id="challenge-display-{{ d.demand.id }}" style="display: block;">
+                          <input type="text"
+                                 id="challenge-text-{{ d.demand.id }}"
+                                 data-full-text="{{ d.demand.weekly_update_challenge|default:'' }}"
+                                 value="{% if d.demand.weekly_update_challenge %}{% if d.demand.weekly_update_challenge|length > 20 %}{{ d.demand.weekly_update_challenge|slice:":20" }}...{% else %}{{ d.demand.weekly_update_challenge }}{% endif %}{% endif %}"
+                                 readonly
+                                 style="font-size: 12px; color: #333; background: #fff; border: 1px solid #ccc; border-radius: 3px; width: 100%; padding: 4px; margin-bottom: 0;" />
+                          {% if d.demand.weekly_update_challenge and d.demand.weekly_update_challenge|length > 20 %}
+                            <button type="button" onclick="toggleChallengeText({{ d.demand.id }})"
+                                    style="background: none; border: none; color: #2196F3; cursor: pointer; font-size: 11px; margin-left: 5px; text-decoration: underline;">
+                              Show More
+                            </button>
+                          {% endif %}
+                        </div>
+                        <div id="challenge-edit-{{ d.demand.id }}" style="display: none;">
+                          <input type="text" id="weekly-challenge-{{ d.demand.id }}"
+                                 placeholder="Enter challenges..."
+                                 style="font-size: 12px; padding: 4px; border: 1px solid #ccc; border-radius: 3px; width: 100%; font-family: inherit;"
+                                 maxlength="500" />
+                          <div style="margin-top: 5px;">
+                            <button type="button" onclick="saveChallenge({{ d.demand.id }})"
+                                    style="background-color: #4CAF50; color: white; border: none; padding: 4px 8px; border-radius: 3px; font-size: 11px; cursor: pointer; margin-right: 5px;">
+                              Save
+                            </button>
+                            <button type="button" onclick="cancelChallengeEdit({{ d.demand.id }})"
+                                    style="background-color: #f44336; color: white; border: none; padding: 4px 8px; border-radius: 3px; font-size: 11px; cursor: pointer;">
+                              Cancel
+                            </button>
+                          </div>
+                        </div>
+                        <button type="button" onclick="editChallenge({{ d.demand.id }})" 
+                                style="background: none; border: none; color: #2196F3; cursor: pointer; font-size: 11px; margin-top: 2px; text-decoration: underline;">
+                          Edit
+                        </button>
+                      </div>
+                    </div>
                     
                     <!-- Start and End Date Fields with Save Button on the Right -->
                     <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #eee; display: flex; justify-content: space-between; align-items: flex-end;">
@@ -1620,6 +1696,240 @@
       console.error('Error:', error);
       alert('Error saving stage. Please try again.');
     });
+  }
+  
+  // Function to update weekly progress
+  function updateWeeklyProgress(demandId) {
+    const progressTextarea = document.getElementById(`weekly-progress-${demandId}`);
+    const progressText = progressTextarea.value;
+    
+    // Create form data for AJAX request
+    const formData = new FormData();
+    formData.append('demand_id', demandId);
+    formData.append('weekly_update_progress', progressText);
+    formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+    
+    // Send AJAX request to save progress
+    fetch('{% url "update_weekly_progress" %}', {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        // Show success feedback
+        progressTextarea.style.borderColor = '#4CAF50';
+        progressTextarea.style.backgroundColor = '#f0f8f0';
+        
+        setTimeout(() => {
+          progressTextarea.style.borderColor = '#ccc';
+          progressTextarea.style.backgroundColor = 'white';
+        }, 2000);
+      } else {
+        alert('Error saving progress: ' + (data.error || 'Unknown error'));
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('Error saving progress. Please try again.');
+    });
+  }
+  
+  // Function to update weekly challenge
+  function updateWeeklyChallenge(demandId) {
+    const challengeTextarea = document.getElementById(`weekly-challenge-${demandId}`);
+    const challengeText = challengeTextarea.value;
+    
+    // Create form data for AJAX request
+    const formData = new FormData();
+    formData.append('demand_id', demandId);
+    formData.append('weekly_update_challenge', challengeText);
+    formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+    
+    // Send AJAX request to save challenge
+    fetch('{% url "update_weekly_challenge" %}', {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        // Show success feedback
+        challengeTextarea.style.borderColor = '#4CAF50';
+        challengeTextarea.style.backgroundColor = '#f0f8f0';
+        
+        setTimeout(() => {
+          challengeTextarea.style.borderColor = '#ccc';
+          challengeTextarea.style.backgroundColor = 'white';
+        }, 2000);
+      } else {
+        alert('Error saving challenge: ' + (data.error || 'Unknown error'));
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('Error saving challenge. Please try again.');
+    });
+  }
+  
+  // Function to toggle progress text (show more/less)
+  function toggleProgressText(demandId) {
+    const progressInput = document.getElementById(`progress-text-${demandId}`);
+    const toggleButton = event.target;
+    const fullText = progressInput.getAttribute('data-full-text') || '';
+    if (toggleButton.textContent === 'Show More') {
+      progressInput.value = fullText;
+      toggleButton.textContent = 'Show Less';
+    } else {
+      progressInput.value = fullText.length > 20 ? fullText.substring(0, 20) + '...' : fullText;
+      toggleButton.textContent = 'Show More';
+    }
+  }
+  
+  // Function to toggle challenge text (show more/less)
+  function toggleChallengeText(demandId) {
+    const challengeInput = document.getElementById(`challenge-text-${demandId}`);
+    const toggleButton = event.target;
+    const fullText = challengeInput.getAttribute('data-full-text') || '';
+    if (toggleButton.textContent === 'Show More') {
+      challengeInput.value = fullText;
+      toggleButton.textContent = 'Show Less';
+    } else {
+      challengeInput.value = fullText.length > 20 ? fullText.substring(0, 20) + '...' : fullText;
+      toggleButton.textContent = 'Show More';
+    }
+  }
+  
+  // Function to edit progress
+  function editProgress(demandId) {
+    const displayDiv = document.getElementById(`progress-display-${demandId}`);
+    const editDiv = document.getElementById(`progress-edit-${demandId}`);
+    const input = document.getElementById(`weekly-progress-${demandId}`);
+    const displayText = document.getElementById(`progress-text-${demandId}`);
+    const fullText = displayText.getAttribute('data-full-text') || '';
+    input.value = fullText;
+    displayDiv.style.display = 'none';
+    editDiv.style.display = 'block';
+    input.focus();
+  }
+  
+  // Function to save progress
+  function saveProgress(demandId) {
+    const input = document.getElementById(`weekly-progress-${demandId}`);
+    const progressText = input.value;
+    const formData = new FormData();
+    formData.append('demand_id', demandId);
+    formData.append('weekly_update_progress', progressText);
+    formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+    fetch('{% url "update_weekly_progress" %}', {
+      method: 'POST',
+      body: formData,
+      headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        const displayInput = document.getElementById(`progress-text-${demandId}`);
+        displayInput.setAttribute('data-full-text', progressText);
+        displayInput.value = progressText.length > 20 ? progressText.substring(0, 20) + '...' : progressText;
+        const toggleButton = displayInput.nextElementSibling;
+        if (toggleButton && toggleButton.tagName === 'BUTTON') {
+          toggleButton.textContent = 'Show More';
+          toggleButton.style.display = progressText.length > 20 ? 'inline' : 'none';
+        }
+        document.getElementById(`progress-display-${demandId}`).style.display = 'block';
+        document.getElementById(`progress-edit-${demandId}`).style.display = 'none';
+        const saveButton = event.target;
+        const originalText = saveButton.textContent;
+        saveButton.textContent = 'Saved!';
+        saveButton.style.backgroundColor = '#45a049';
+        setTimeout(() => {
+          saveButton.textContent = originalText;
+          saveButton.style.backgroundColor = '#4CAF50';
+        }, 2000);
+      } else {
+        alert('Error saving progress: ' + (data.error || 'Unknown error'));
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('Error saving progress. Please try again.');
+    });
+  }
+  
+  // Function to cancel progress edit
+  function cancelProgressEdit(demandId) {
+    document.getElementById(`progress-display-${demandId}`).style.display = 'block';
+    document.getElementById(`progress-edit-${demandId}`).style.display = 'none';
+  }
+  
+  // Function to edit challenge
+  function editChallenge(demandId) {
+    const displayDiv = document.getElementById(`challenge-display-${demandId}`);
+    const editDiv = document.getElementById(`challenge-edit-${demandId}`);
+    const input = document.getElementById(`weekly-challenge-${demandId}`);
+    const displayText = document.getElementById(`challenge-text-${demandId}`);
+    const fullText = displayText.getAttribute('data-full-text') || '';
+    input.value = fullText;
+    displayDiv.style.display = 'none';
+    editDiv.style.display = 'block';
+    input.focus();
+  }
+  
+  // Function to save challenge
+  function saveChallenge(demandId) {
+    const input = document.getElementById(`weekly-challenge-${demandId}`);
+    const challengeText = input.value;
+    const formData = new FormData();
+    formData.append('demand_id', demandId);
+    formData.append('weekly_update_challenge', challengeText);
+    formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+    fetch('{% url "update_weekly_challenge" %}', {
+      method: 'POST',
+      body: formData,
+      headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        const displayInput = document.getElementById(`challenge-text-${demandId}`);
+        displayInput.setAttribute('data-full-text', challengeText);
+        displayInput.value = challengeText.length > 20 ? challengeText.substring(0, 20) + '...' : challengeText;
+        const toggleButton = displayInput.nextElementSibling;
+        if (toggleButton && toggleButton.tagName === 'BUTTON') {
+          toggleButton.textContent = 'Show More';
+          toggleButton.style.display = challengeText.length > 20 ? 'inline' : 'none';
+        }
+        document.getElementById(`challenge-display-${demandId}`).style.display = 'block';
+        document.getElementById(`challenge-edit-${demandId}`).style.display = 'none';
+        const saveButton = event.target;
+        const originalText = saveButton.textContent;
+        saveButton.textContent = 'Saved!';
+        saveButton.style.backgroundColor = '#45a049';
+        setTimeout(() => {
+          saveButton.textContent = originalText;
+          saveButton.style.backgroundColor = '#4CAF50';
+        }, 2000);
+      } else {
+        alert('Error saving challenge: ' + (data.error || 'Unknown error'));
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('Error saving challenge. Please try again.');
+    });
+  }
+  
+  // Function to cancel challenge edit
+  function cancelChallengeEdit(demandId) {
+    document.getElementById(`challenge-display-${demandId}`).style.display = 'block';
+    document.getElementById(`challenge-edit-${demandId}`).style.display = 'none';
   }
   
   // Function to save weekly dates
