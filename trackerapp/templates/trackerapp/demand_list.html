@@ -1690,14 +1690,8 @@
           stageSelect.style.borderColor = '#ccc';
           stageSelect.style.backgroundColor = 'white';
         }, 2000);
-      } else {
-        alert('Error saving stage: ' + (data.error || 'Unknown error'));
-      }
+      } 
     })
-    // .catch(error => {
-    //   console.error('Error:', error);
-    //   alert('Error saving stage. Please try again.');
-    // });
   }
   
   // Function to update weekly progress
@@ -1765,14 +1759,8 @@
           challengeTextarea.style.borderColor = '#ccc';
           challengeTextarea.style.backgroundColor = 'white';
         }, 2000);
-      } else {
-        alert('Error saving challenge: ' + (data.error || 'Unknown error'));
-      }
+      } 
     })
-    .catch(error => {
-      console.error('Error:', error);
-      alert('Error saving challenge. Please try again.');
-    });
   }
   
   // Function to toggle progress text (show more/less)
@@ -1884,14 +1872,8 @@
           saveButton.textContent = originalText;
           saveButton.style.backgroundColor = '#4CAF50';
         }, 2000);
-      } else {
-        alert('Error saving progress: ' + (data.error || 'Unknown error'));
-      }
+      } 
     })
-    .catch(error => {
-      console.error('Error:', error);
-      alert('Error saving progress. Please try again.');
-    });
   }
   
   // Function to cancel progress edit
@@ -1971,14 +1953,8 @@
           saveButton.textContent = originalText;
           saveButton.style.backgroundColor = '#4CAF50';
         }, 2000);
-      } else {
-        alert('Error saving challenge: ' + (data.error || 'Unknown error'));
-      }
+      } 
     })
-    .catch(error => {
-      console.error('Error:', error);
-      alert('Error saving challenge. Please try again.');
-    });
   }
   
   // Function to cancel challenge edit
@@ -2030,14 +2006,8 @@
           saveButton.textContent = originalText;
           saveButton.style.backgroundColor = '#4CAF50';
         }, 2000);
-      } else {
-        alert('Error saving dates: ' + (data.error || 'Unknown error'));
-      }
+      } 
     })
-    .catch(error => {
-      console.error('Error:', error);
-      alert('Error saving dates. Please try again.');
-    });
   }
 </script>
 
