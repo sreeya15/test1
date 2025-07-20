@@ -733,9 +733,10 @@
                                  data-full-text="{{ d.demand.weekly_update_progress|default:'' }}"
                                  value="{% if d.demand.weekly_update_progress %}{% if d.demand.weekly_update_progress|length > 20 %}{{ d.demand.weekly_update_progress|slice:":20" }}...{% else %}{{ d.demand.weekly_update_progress }}{% endif %}{% endif %}"
                                  readonly
-                                 style="font-size: 12px; color: #333; background: #fff; border: 1px solid #ccc; border-radius: 3px; width: 100%; padding: 4px; margin-bottom: 0;" />
+                                 style="font-size: 12px; color: #333; background: #fff; border: 1px solid #ccc; border-radius: 3px; width: 100%; padding: 4px; margin-bottom: 0; display: block;" />
+                          <textarea id="progress-textarea-{{ d.demand.id }}" readonly style="display: none; font-size: 12px; color: #333; background: #fff; border: 1px solid #ccc; border-radius: 3px; width: 100%; padding: 4px; min-height: 40px; margin-bottom: 0; resize: vertical; font-family: inherit;"></textarea>
                           {% if d.demand.weekly_update_progress and d.demand.weekly_update_progress|length > 20 %}
-                            <button type="button" onclick="toggleProgressText({{ d.demand.id }})"
+                            <button type="button" id="progress-toggle-btn-{{ d.demand.id }}" onclick="toggleProgressText({{ d.demand.id }})"
                                     style="background: none; border: none; color: #2196F3; cursor: pointer; font-size: 11px; margin-left: 5px; text-decoration: underline;">
                               Show More
                             </button>
@@ -772,9 +773,10 @@
                                  data-full-text="{{ d.demand.weekly_update_challenge|default:'' }}"
                                  value="{% if d.demand.weekly_update_challenge %}{% if d.demand.weekly_update_challenge|length > 20 %}{{ d.demand.weekly_update_challenge|slice:":20" }}...{% else %}{{ d.demand.weekly_update_challenge }}{% endif %}{% endif %}"
                                  readonly
-                                 style="font-size: 12px; color: #333; background: #fff; border: 1px solid #ccc; border-radius: 3px; width: 100%; padding: 4px; margin-bottom: 0;" />
+                                 style="font-size: 12px; color: #333; background: #fff; border: 1px solid #ccc; border-radius: 3px; width: 100%; padding: 4px; margin-bottom: 0; display: block;" />
+                          <textarea id="challenge-textarea-{{ d.demand.id }}" readonly style="display: none; font-size: 12px; color: #333; background: #fff; border: 1px solid #ccc; border-radius: 3px; width: 100%; padding: 4px; min-height: 40px; margin-bottom: 0; resize: vertical; font-family: inherit;"></textarea>
                           {% if d.demand.weekly_update_challenge and d.demand.weekly_update_challenge|length > 20 %}
-                            <button type="button" onclick="toggleChallengeText({{ d.demand.id }})"
+                            <button type="button" id="challenge-toggle-btn-{{ d.demand.id }}" onclick="toggleChallengeText({{ d.demand.id }})"
                                     style="background: none; border: none; color: #2196F3; cursor: pointer; font-size: 11px; margin-left: 5px; text-decoration: underline;">
                               Show More
                             </button>
@@ -1692,10 +1694,10 @@
         alert('Error saving stage: ' + (data.error || 'Unknown error'));
       }
     })
-    .catch(error => {
-      console.error('Error:', error);
-      alert('Error saving stage. Please try again.');
-    });
+    // .catch(error => {
+    //   console.error('Error:', error);
+    //   alert('Error saving stage. Please try again.');
+    // });
   }
   
   // Function to update weekly progress
@@ -1728,14 +1730,9 @@
           progressTextarea.style.borderColor = '#ccc';
           progressTextarea.style.backgroundColor = 'white';
         }, 2000);
-      } else {
-        alert('Error saving progress: ' + (data.error || 'Unknown error'));
-      }
+      } 
     })
-    .catch(error => {
-      console.error('Error:', error);
-      alert('Error saving progress. Please try again.');
-    });
+    
   }
   
   // Function to update weekly challenge
@@ -1780,29 +1777,39 @@
   
   // Function to toggle progress text (show more/less)
   function toggleProgressText(demandId) {
-    const progressInput = document.getElementById(`progress-text-${demandId}`);
-    const toggleButton = event.target;
-    const fullText = progressInput.getAttribute('data-full-text') || '';
-    if (toggleButton.textContent === 'Show More') {
-      progressInput.value = fullText;
-      toggleButton.textContent = 'Show Less';
+    const input = document.getElementById(`progress-text-${demandId}`);
+    const textarea = document.getElementById(`progress-textarea-${demandId}`);
+    const toggleBtn = document.getElementById(`progress-toggle-btn-${demandId}`);
+    const fullText = input.getAttribute('data-full-text') || '';
+    if (toggleBtn.textContent === 'Show More') {
+      input.style.display = 'none';
+      textarea.style.display = 'block';
+      textarea.value = fullText;
+      toggleBtn.textContent = 'Show Less';
     } else {
-      progressInput.value = fullText.length > 20 ? fullText.substring(0, 20) + '...' : fullText;
-      toggleButton.textContent = 'Show More';
+      input.style.display = 'block';
+      textarea.style.display = 'none';
+      input.value = fullText.length > 20 ? fullText.substring(0, 20) + '...' : fullText;
+      toggleBtn.textContent = 'Show More';
     }
   }
   
   // Function to toggle challenge text (show more/less)
   function toggleChallengeText(demandId) {
-    const challengeInput = document.getElementById(`challenge-text-${demandId}`);
-    const toggleButton = event.target;
-    const fullText = challengeInput.getAttribute('data-full-text') || '';
-    if (toggleButton.textContent === 'Show More') {
-      challengeInput.value = fullText;
-      toggleButton.textContent = 'Show Less';
+    const input = document.getElementById(`challenge-text-${demandId}`);
+    const textarea = document.getElementById(`challenge-textarea-${demandId}`);
+    const toggleBtn = document.getElementById(`challenge-toggle-btn-${demandId}`);
+    const fullText = input.getAttribute('data-full-text') || '';
+    if (toggleBtn.textContent === 'Show More') {
+      input.style.display = 'none';
+      textarea.style.display = 'block';
+      textarea.value = fullText;
+      toggleBtn.textContent = 'Show Less';
     } else {
-      challengeInput.value = fullText.length > 20 ? fullText.substring(0, 20) + '...' : fullText;
-      toggleButton.textContent = 'Show More';
+      input.style.display = 'block';
+      textarea.style.display = 'none';
+      input.value = fullText.length > 20 ? fullText.substring(0, 20) + '...' : fullText;
+      toggleBtn.textContent = 'Show More';
     }
   }
   
@@ -1836,12 +1843,36 @@
     .then(data => {
       if (data.success) {
         const displayInput = document.getElementById(`progress-text-${demandId}`);
+        const displayTextarea = document.getElementById(`progress-textarea-${demandId}`);
         displayInput.setAttribute('data-full-text', progressText);
         displayInput.value = progressText.length > 20 ? progressText.substring(0, 20) + '...' : progressText;
-        const toggleButton = displayInput.nextElementSibling;
-        if (toggleButton && toggleButton.tagName === 'BUTTON') {
-          toggleButton.textContent = 'Show More';
-          toggleButton.style.display = progressText.length > 20 ? 'inline' : 'none';
+        displayTextarea.value = progressText;
+        displayInput.style.display = 'block';
+        displayTextarea.style.display = 'none';
+        // Handle Show More button
+        let toggleButton = document.getElementById(`progress-toggle-btn-${demandId}`);
+        if (progressText.length > 20) {
+          if (!toggleButton) {
+            // Create the button
+            toggleButton = document.createElement('button');
+            toggleButton.type = 'button';
+            toggleButton.id = `progress-toggle-btn-${demandId}`;
+            toggleButton.onclick = function() { toggleProgressText(demandId); };
+            toggleButton.style.background = 'none';
+            toggleButton.style.border = 'none';
+            toggleButton.style.color = '#2196F3';
+            toggleButton.style.cursor = 'pointer';
+            toggleButton.style.fontSize = '11px';
+            toggleButton.style.marginLeft = '5px';
+            toggleButton.style.textDecoration = 'underline';
+            toggleButton.textContent = 'Show More';
+            displayInput.parentNode.appendChild(toggleButton);
+          } else {
+            toggleButton.textContent = 'Show More';
+            toggleButton.style.display = 'inline';
+          }
+        } else if (toggleButton) {
+          toggleButton.remove();
         }
         document.getElementById(`progress-display-${demandId}`).style.display = 'block';
         document.getElementById(`progress-edit-${demandId}`).style.display = 'none';
@@ -1899,12 +1930,36 @@
     .then(data => {
       if (data.success) {
         const displayInput = document.getElementById(`challenge-text-${demandId}`);
+        const displayTextarea = document.getElementById(`challenge-textarea-${demandId}`);
         displayInput.setAttribute('data-full-text', challengeText);
         displayInput.value = challengeText.length > 20 ? challengeText.substring(0, 20) + '...' : challengeText;
-        const toggleButton = displayInput.nextElementSibling;
-        if (toggleButton && toggleButton.tagName === 'BUTTON') {
-          toggleButton.textContent = 'Show More';
-          toggleButton.style.display = challengeText.length > 20 ? 'inline' : 'none';
+        displayTextarea.value = challengeText;
+        displayInput.style.display = 'block';
+        displayTextarea.style.display = 'none';
+        // Handle Show More button
+        let toggleButton = document.getElementById(`challenge-toggle-btn-${demandId}`);
+        if (challengeText.length > 20) {
+          if (!toggleButton) {
+            // Create the button
+            toggleButton = document.createElement('button');
+            toggleButton.type = 'button';
+            toggleButton.id = `challenge-toggle-btn-${demandId}`;
+            toggleButton.onclick = function() { toggleChallengeText(demandId); };
+            toggleButton.style.background = 'none';
+            toggleButton.style.border = 'none';
+            toggleButton.style.color = '#2196F3';
+            toggleButton.style.cursor = 'pointer';
+            toggleButton.style.fontSize = '11px';
+            toggleButton.style.marginLeft = '5px';
+            toggleButton.style.textDecoration = 'underline';
+            toggleButton.textContent = 'Show More';
+            displayInput.parentNode.appendChild(toggleButton);
+          } else {
+            toggleButton.textContent = 'Show More';
+            toggleButton.style.display = 'inline';
+          }
+        } else if (toggleButton) {
+          toggleButton.remove();
         }
         document.getElementById(`challenge-display-${demandId}`).style.display = 'block';
         document.getElementById(`challenge-edit-${demandId}`).style.display = 'none';
