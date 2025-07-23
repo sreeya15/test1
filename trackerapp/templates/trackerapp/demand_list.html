@@ -733,14 +733,26 @@
                             {% if d.latest_weekly_update.achievements %}
                               <div style="margin-bottom: 8px;">
                                 <div style="font-size: 11px; color: #666; font-weight: bold; margin-bottom: 3px;">✅ Achievements:</div>
-                                <div style="font-size: 12px; color: #333; line-height: 1.4;">{{ d.latest_weekly_update.achievements|truncatewords:20 }}</div>
+                                <div style="background-color: white; border: 1px solid #ddd; border-radius: 3px; padding: 6px; font-size: 12px; color: #333; line-height: 1.4; word-wrap: break-word; overflow-wrap: break-word; white-space: normal;">
+                                  <span id="achievements-short-{{ d.latest_weekly_update.id }}" style="display: inline-block; max-width: 100%;">{{ d.latest_weekly_update.achievements|truncatechars:20 }}</span>
+                                  {% if d.latest_weekly_update.achievements|length > 20 %}
+                                    <span id="achievements-full-{{ d.latest_weekly_update.id }}" style="display: none; word-wrap: break-word; overflow-wrap: break-word; white-space: normal;">{{ d.latest_weekly_update.achievements }}</span>
+                                    <button type="button" onclick="toggleText('achievements-short-{{ d.latest_weekly_update.id }}', 'achievements-full-{{ d.latest_weekly_update.id }}', 'achievements-btn-{{ d.latest_weekly_update.id }}')" id="achievements-btn-{{ d.latest_weekly_update.id }}" style="background: none; border: none; color: #1f78b4; cursor: pointer; font-size: 10px; margin-left: 5px; text-decoration: underline; white-space: nowrap;">View More</button>
+                                  {% endif %}
+                                </div>
                               </div>
                             {% endif %}
                             
                             {% if d.latest_weekly_update.challenges %}
                               <div style="margin-bottom: 8px;">
                                 <div style="font-size: 11px; color: #666; font-weight: bold; margin-bottom: 3px;">⚠️ Challenges:</div>
-                                <div style="font-size: 12px; color: #333; line-height: 1.4;">{{ d.latest_weekly_update.challenges|truncatewords:20 }}</div>
+                                <div style="background-color: white; border: 1px solid #ddd; border-radius: 3px; padding: 6px; font-size: 12px; color: #333; line-height: 1.4; word-wrap: break-word; overflow-wrap: break-word; white-space: normal;">
+                                  <span id="challenges-short-{{ d.latest_weekly_update.id }}" style="display: inline-block; max-width: 100%;">{{ d.latest_weekly_update.challenges|truncatechars:20 }}</span>
+                                  {% if d.latest_weekly_update.challenges|length > 20 %}
+                                    <span id="challenges-full-{{ d.latest_weekly_update.id }}" style="display: none; word-wrap: break-word; overflow-wrap: break-word; white-space: normal;">{{ d.latest_weekly_update.challenges }}</span>
+                                    <button type="button" onclick="toggleText('challenges-short-{{ d.latest_weekly_update.id }}', 'challenges-full-{{ d.latest_weekly_update.id }}', 'challenges-btn-{{ d.latest_weekly_update.id }}')" id="challenges-btn-{{ d.latest_weekly_update.id }}" style="background: none; border: none; color: #1f78b4; cursor: pointer; font-size: 10px; margin-left: 5px; text-decoration: underline; white-space: nowrap;">View More</button>
+                                  {% endif %}
+                                </div>
                               </div>
                             {% endif %}
                             
@@ -1942,6 +1954,25 @@
         }, 2000);
       } 
     })
+  }
+  
+  // Function to toggle text between short and full versions
+  function toggleText(shortId, fullId, buttonId) {
+    const shortElement = document.getElementById(shortId);
+    const fullElement = document.getElementById(fullId);
+    const button = document.getElementById(buttonId);
+    
+    if (shortElement.style.display !== 'none') {
+      // Show full text
+      shortElement.style.display = 'none';
+      fullElement.style.display = 'inline';
+      button.textContent = 'View Less';
+    } else {
+      // Show short text
+      shortElement.style.display = 'inline';
+      fullElement.style.display = 'none';
+      button.textContent = 'View More';
+    }
   }
 </script>
 
