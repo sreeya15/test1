@@ -1547,36 +1547,29 @@
   //   });
     
   //   // Hide all demand tab contents except the first one for each demand
-  //   document.querySelectorAll('.demand-tab-content').forEach(function(tabContent) {
-  //     tabContent.classList.remove('active');
-  //   });
-    
-  //   // Show only the weekly update content for each demand by default
-  //   document.querySelectorAll('[id^="weekly-update-content-"]').forEach(function(weeklyContent) {
-  //     weeklyContent.classList.add('active');
-  //   });
-    
-  //   // Add tab functionality
-  //   const tabs = document.querySelectorAll('.tab');
-  //   const tabContents = document.querySelectorAll('.tab-content');
-    
-  //   tabs.forEach(tab => {
-  //     tab.addEventListener('click', function() {
-  //       // Remove active class from all tabs
-  //       tabs.forEach(t => t.classList.remove('active'));
-        
-  //       // Add active class to clicked tab
-  //       this.classList.add('active');
-        
-  //       // Hide all tab contents
-  //       tabContents.forEach(content => content.classList.remove('active'));
-        
-  //       // Show the selected tab content
-  //       const tabId = this.getAttribute('data-tab');
-  //       document.getElementById('tab-' + tabId).classList.add('active');
-  //     });
-  //   });
-  // });
+  // Add tab functionality
+  const tabs = document.querySelectorAll('.tab');
+  const tabContents = document.querySelectorAll('.tab-content');
+  
+  tabs.forEach(tab => {
+    tab.addEventListener('click', function() {
+      // Remove active class from all tabs
+      tabs.forEach(t => t.classList.remove('active'));
+      
+      // Add active class to clicked tab
+      this.classList.add('active');
+      
+      // Hide all tab contents
+      tabContents.forEach(content => content.classList.remove('active'));
+      
+      // Show the selected tab content
+      const tabId = this.getAttribute('data-tab');
+      const targetTab = document.getElementById('tab-' + tabId);
+      if (targetTab) {
+        targetTab.classList.add('active');
+      }
+    });
+  });
   
   document.onclick = function(event) {
     if (event.target == document.getElementById('editModal')) {
@@ -1993,8 +1986,6 @@
       .then(response => response.json())
       .then(data => {
         if (data.success) {
-          // Show success message
-          alert(data.message);
           // Reload the page to reflect changes
           window.location.reload();
         } else {

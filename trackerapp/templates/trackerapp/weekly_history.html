@@ -404,8 +404,6 @@
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
-                            // Show success message
-                            alert(data.message);
                             // Reload the page to reflect changes
                             window.location.reload();
                         } else {
