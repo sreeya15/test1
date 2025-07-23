@@ -178,7 +178,9 @@
     min-width: 300px;
     width: 300px;
     font-weight: normal;
-    white-space: nowrap;
+    /* Allow wrapping for long names */
+    white-space: normal;
+    word-break: break-word;
     padding-right: 20px;
   }
   
@@ -477,7 +479,7 @@
     height: 8px;
     background-color: #eee;
     margin: 0 1px;
-    border-radius: 1px;
+    border-radius: 10px;
   }
   
   .modal form label {
@@ -529,7 +531,7 @@
     <!-- Main content area with timeline and legend side by side -->
     <div style="display: flex; gap: 20px; align-items: flex-start;">
       <!-- Left side: Demand Timeline -->
-      <div style="flex: 1; overflow-x: auto; margin-right: 350px;">
+      <div style="flex: 1; overflow-x: auto;">
         {% if demand_data %}
         
         <!-- Tab content for All Demands -->
