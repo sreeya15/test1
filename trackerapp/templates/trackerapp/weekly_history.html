@@ -331,9 +331,8 @@
                         {% endif %}
                         <a href="{% url 'edit_weekly_update' update_id=update.id %}"
                             class="btn btn-primary btn-small">Edit</a>
-                        <a href="{% url 'delete_weekly_update' update_id=update.id %}"
-                            class="btn btn-secondary btn-small"
-                            onclick="return confirm('Are you sure you want to delete this weekly update?')">Delete</a>
+                        <a href="javascript:void(0)" class="btn btn-secondary btn-small"
+                            onclick="deleteWeeklyUpdate({{ update.id }}, '{{ demand.id }}')">Delete</a>
                     </div>
                 </div>
 
@@ -385,6 +384,41 @@
             {% endif %}
         </div>
     </div>
+
+    <script>
+        // Function to delete weekly update via AJAX
+        function deleteWeeklyUpdate(updateId, demandId) {
+            if (confirm('Are you sure you want to delete this weekly update? This action cannot be undone.')) {
+                // Create form data
+                const formData = new FormData();
+                formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+
+                // Send AJAX request
+                fetch(`/weekly/${updateId}/delete/`, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Show success message
+                            alert(data.message);
+                            // Reload the page to reflect changes
+                            window.location.reload();
+                        } else {
+                            alert('Error deleting weekly update. Please try again.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Error deleting weekly update. Please try again.');
+                    });
+            }
+        }
+    </script>
 </body>
 
 </html>
