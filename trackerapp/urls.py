@@ -12,5 +12,12 @@ urlpatterns = [
     path('update_weekly_stage/', views.update_weekly_stage, name='update_weekly_stage'),
     path('update_weekly_progress/', views.update_weekly_progress, name='update_weekly_progress'),
     path('update_weekly_challenge/', views.update_weekly_challenge, name='update_weekly_challenge'),
+    
+    # Weekly Update URLs
+    path('demand/<int:demand_id>/weekly/add/', views.add_weekly_update, name='add_weekly_update'),
+    path('demand/<int:demand_id>/weekly/history/', views.weekly_history, name='weekly_history'),
+    path('weekly/<int:update_id>/edit/', views.edit_weekly_update, name='edit_weekly_update'),
+    path('weekly/<int:update_id>/delete/', views.delete_weekly_update, name='delete_weekly_update'),
+    path('weekly/summary/', views.weekly_summary, name='weekly_summary'),
 ]
 

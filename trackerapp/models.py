@@ -138,3 +138,26 @@ class DemandStagePeriod(models.Model):
 
     def duration_in_days(self):
         return (self.end_date - self.start_date).days + 1
+
+class WeeklyUpdate(models.Model):
+    demand = models.ForeignKey(Demand, on_delete=models.CASCADE, related_name='weekly_updates')
+    week_number = models.IntegerField()
+    week_start_date = models.DateField()
+    week_end_date = models.DateField()
+    current_stage = models.CharField(max_length=50, choices=Stage.choices, null=True, blank=True)
+    progress_percentage = models.IntegerField(default=0)
+    challenges = models.TextField(blank=True, null=True)
+    achievements = models.TextField(blank=True, null=True)
+    next_week_plan = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ('demand', 'week_number')
+        ordering = ['-week_number']
+
+    def __str__(self):
+        return f"{self.demand.name} - Week {self.week_number}"
+
+    def get_week_label(self):
+        return f"Week {self.week_number} ({self.week_start_date.strftime('%b %d')} - {self.week_end_date.strftime('%b %d, %Y')})"

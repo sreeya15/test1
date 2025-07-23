@@ -511,6 +511,7 @@
       <div>
         <a href="{% url 'add_demand' %}" class="button">Add New Demand</a>
         <a href="{% url 'update_stage' %}" class="button">Update Stage</a>
+        <a href="{% url 'weekly_summary' %}" class="button" style="background-color: #28a745;">Weekly Summary</a>
       </div>
     </div>
     
@@ -685,155 +686,85 @@
                 
                 <!-- Weekly Update Tab Content -->
                 <div id="weekly-update-content-{{ d.demand.id }}" class="demand-tab-content active">
-                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
-                    <h5 style="margin: 0; font-size: 14px;">Weekly Update</h5>
-                    <button style="background: none; border: none; color: #2196F3; cursor: pointer; font-size: 13px;" 
-                            onclick="openWeeklyUpdateModal({{ d.demand.id }}, '{{ d.demand.weekly_update_date|default_if_none:''|date:"Y-m-d" }}', '{{ d.demand.weekly_update_stage|default_if_none:'' }}', '{{ d.demand.weekly_update_progress|default_if_none:'' }}', '{{ d.demand.weekly_update_challenge|default_if_none:'' }}')">
-                      <i class="fas fa-edit"></i> Edit
-                    </button>
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <h5 style="margin: 0; font-size: 14px;">Weekly Updates</h5>
+                    <a href="{% url 'add_weekly_update' demand_id=d.demand.id %}" style="background-color: #28a745; color: white; padding: 4px 8px; border-radius: 3px; font-size: 11px; text-decoration: none;">Add Update</a>
                   </div>
-                  <div>
-                    <div style="margin-bottom: 3px; font-size: 13px;">
-                      <strong>Stage:</strong> 
-                      <select id="weekly-stage-{{ d.demand.id }}" 
-                              style="font-size: 12px; padding: 2px 4px; border: 1px solid #ccc; border-radius: 3px; width: 200px; margin-left: 5px;"
-                              onchange="updateWeeklyStage({{ d.demand.id }})">
-                        <option value="">Select Stage</option>
-                        <option value="demand_to_be_initiated" {% if d.demand.weekly_update_stage == 'demand_to_be_initiated' %}selected{% endif %}>Demand to be Initiated</option>
-                        <option value="demand_initiated" {% if d.demand.weekly_update_stage == 'demand_initiated' %}selected{% endif %}>Demand Initiated</option>
-                        <option value="spc_cleared" {% if d.demand.weekly_update_stage == 'spc_cleared' %}selected{% endif %}>SPC Cleared</option>
-                        <option value="demand_approved" {% if d.demand.weekly_update_stage == 'demand_approved' %}selected{% endif %}>Demand Approved</option>
-                        <option value="tender_enquiry_floated" {% if d.demand.weekly_update_stage == 'tender_enquiry_floated' %}selected{% endif %}>Tender Enquiry Floated</option>
-                        <option value="receipt_of_quotations" {% if d.demand.weekly_update_stage == 'receipt_of_quotations' %}selected{% endif %}>Receipt of Quotations</option>
-                        <option value="tender_opening" {% if d.demand.weekly_update_stage == 'tender_opening' %}selected{% endif %}>Tender Opening</option>
-                        <option value="tcec_approved" {% if d.demand.weekly_update_stage == 'tcec_approved' %}selected{% endif %}>TCEC Approved</option>
-                        <option value="tpc_approved" {% if d.demand.weekly_update_stage == 'tpc_approved' %}selected{% endif %}>TPC Approved</option>
-                        <option value="financial_sanction" {% if d.demand.weekly_update_stage == 'financial_sanction' %}selected{% endif %}>Financial Sanction</option>
-                        <option value="order_placement" {% if d.demand.weekly_update_stage == 'order_placement' %}selected{% endif %}>Order Placement</option>
-                        <option value="pdr" {% if d.demand.weekly_update_stage == 'pdr' %}selected{% endif %}>PDR</option>
-                        <option value="so_for_critical_bom_by_dev_partner" {% if d.demand.weekly_update_stage == 'so_for_critical_bom_by_dev_partner' %}selected{% endif %}>SO for Critical BoM by Dev Partner</option>
-                        <option value="ddr" {% if d.demand.weekly_update_stage == 'ddr' %}selected{% endif %}>DDR</option>
-                        <option value="cdr" {% if d.demand.weekly_update_stage == 'cdr' %}selected{% endif %}>CDR</option>
-                        <option value="acceptance_of_critical_bom_by_dev_partner" {% if d.demand.weekly_update_stage == 'acceptance_of_critical_bom_by_dev_partner' %}selected{% endif %}>Acceptance of Critical BoM by Dev Partner</option>
-                        <option value="realization_completed" {% if d.demand.weekly_update_stage == 'realization_completed' %}selected{% endif %}>Realization Completed</option>
-                        <option value="fat_completed" {% if d.demand.weekly_update_stage == 'fat_completed' %}selected{% endif %}>FAT Completed</option>
-                        <option value="atp_qtp_completed" {% if d.demand.weekly_update_stage == 'atp_qtp_completed' %}selected{% endif %}>ATP/QTP Completed</option>
-                        <option value="delivery_at_stores" {% if d.demand.weekly_update_stage == 'delivery_at_stores' %}selected{% endif %}>Delivery at Stores</option>
-                        <option value="sat_soft" {% if d.demand.weekly_update_stage == 'sat_soft' %}selected{% endif %}>SAT/SoFT</option>
-                        <option value="inward_inspection_clearance" {% if d.demand.weekly_update_stage == 'inward_inspection_clearance' %}selected{% endif %}>Inward Inspection Clearance</option>
-                        <option value="payment_process" {% if d.demand.weekly_update_stage == 'payment_process' %}selected{% endif %}>Payment Process</option>
-                        <option value="partially_paid" {% if d.demand.weekly_update_stage == 'partially_paid' %}selected{% endif %}>Partially Paid</option>
-                        <option value="payment_released" {% if d.demand.weekly_update_stage == 'payment_released' %}selected{% endif %}>Payment Released</option>
-                        <option value="available_for_integration" {% if d.demand.weekly_update_stage == 'available_for_integration' %}selected{% endif %}>Available for Integration</option>
-                      </select>
-                    </div>
-                    <div style="margin-bottom: 3px; font-size: 13px;">
-                      <strong>Stage Details:</strong> 
-                      <div style="margin-top: 2px;">
-                        <div id="progress-display-{{ d.demand.id }}" style="display: block;">
-                          <input type="text"
-                                 id="progress-text-{{ d.demand.id }}"
-                                 data-full-text="{{ d.demand.weekly_update_progress|default:'' }}"
-                                 value="{% if d.demand.weekly_update_progress %}{% if d.demand.weekly_update_progress|length > 20 %}{{ d.demand.weekly_update_progress|slice:":20" }}...{% else %}{{ d.demand.weekly_update_progress }}{% endif %}{% endif %}"
-                                 readonly
-                                 style="font-size: 12px; color: #333; background: #fff; border: 1px solid #ccc; border-radius: 3px; width: 100%; padding: 4px; margin-bottom: 0; display: block;" />
-                          <textarea id="progress-textarea-{{ d.demand.id }}" readonly style="display: none; font-size: 12px; color: #333; background: #fff; border: 1px solid #ccc; border-radius: 3px; width: 100%; padding: 4px; min-height: 40px; margin-bottom: 0; resize: vertical; font-family: inherit;"></textarea>
-                          {% if d.demand.weekly_update_progress and d.demand.weekly_update_progress|length > 20 %}
-                            <button type="button" id="progress-toggle-btn-{{ d.demand.id }}" onclick="toggleProgressText({{ d.demand.id }})"
-                                    style="background: none; border: none; color: #2196F3; cursor: pointer; font-size: 11px; margin-left: 5px; text-decoration: underline;">
-                              Show More
-                            </button>
-                          {% endif %}
-                        </div>
-                        <div id="progress-edit-{{ d.demand.id }}" style="display: none;">
-                          <input type="text" id="weekly-progress-{{ d.demand.id }}"
-                                 placeholder="Enter stage details..."
-                                 style="font-size: 12px; padding: 4px; border: 1px solid #ccc; border-radius: 3px; width: 100%; font-family: inherit;"
-                                 maxlength="500" />
-                          <div style="margin-top: 5px;">
-                            <button type="button" onclick="saveProgress({{ d.demand.id }})"
-                                    style="background-color: #4CAF50; color: white; border: none; padding: 4px 8px; border-radius: 3px; font-size: 11px; cursor: pointer; margin-right: 5px;">
-                              Save
-                            </button>
-                            <button type="button" onclick="cancelProgressEdit({{ d.demand.id }})"
-                                    style="background-color: #f44336; color: white; border: none; padding: 4px 8px; border-radius: 3px; font-size: 11px; cursor: pointer;">
-                              Cancel
-                            </button>
-                          </div>
-                        </div>
-                        <button type="button" onclick="editProgress({{ d.demand.id }})" 
-                                style="background: none; border: none; color: #2196F3; cursor: pointer; font-size: 11px; margin-top: 2px; text-decoration: underline;">
-                          Edit
-                        </button>
+                  
+                  <!-- Weekly History Section -->
+                                      <div style="margin-bottom: 15px;">
+                      <div style="font-size: 12px; color: #666; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+                        <strong>Latest Update ({{ d.total_weekly_updates }} total)</strong>
+                        {% if d.total_weekly_updates > 1 %}
+                          <a href="{% url 'weekly_history' demand_id=d.demand.id %}" style="background-color: #6c757d; color: white; padding: 4px 8px; border-radius: 3px; font-size: 10px; text-decoration: none;">
+                            📊 View History
+                          </a>
+                        {% endif %}
                       </div>
-                    </div>
-                    <div style="margin-bottom: 3px; font-size: 13px;">
-                      <strong>Challenge:</strong> 
-                      <div style="margin-top: 2px;">
-                        <div id="challenge-display-{{ d.demand.id }}" style="display: block;">
-                          <input type="text"
-                                 id="challenge-text-{{ d.demand.id }}"
-                                 data-full-text="{{ d.demand.weekly_update_challenge|default:'' }}"
-                                 value="{% if d.demand.weekly_update_challenge %}{% if d.demand.weekly_update_challenge|length > 20 %}{{ d.demand.weekly_update_challenge|slice:":20" }}...{% else %}{{ d.demand.weekly_update_challenge }}{% endif %}{% endif %}"
-                                 readonly
-                                 style="font-size: 12px; color: #333; background: #fff; border: 1px solid #ccc; border-radius: 3px; width: 100%; padding: 4px; margin-bottom: 0; display: block;" />
-                          <textarea id="challenge-textarea-{{ d.demand.id }}" readonly style="display: none; font-size: 12px; color: #333; background: #fff; border: 1px solid #ccc; border-radius: 3px; width: 100%; padding: 4px; min-height: 40px; margin-bottom: 0; resize: vertical; font-family: inherit;"></textarea>
-                          {% if d.demand.weekly_update_challenge and d.demand.weekly_update_challenge|length > 20 %}
-                            <button type="button" id="challenge-toggle-btn-{{ d.demand.id }}" onclick="toggleChallengeText({{ d.demand.id }})"
-                                    style="background: none; border: none; color: #2196F3; cursor: pointer; font-size: 11px; margin-left: 5px; text-decoration: underline;">
-                              Show More
-                            </button>
-                          {% endif %}
-                        </div>
-                        <div id="challenge-edit-{{ d.demand.id }}" style="display: none;">
-                          <input type="text" id="weekly-challenge-{{ d.demand.id }}"
-                                 placeholder="Enter challenges..."
-                                 style="font-size: 12px; padding: 4px; border: 1px solid #ccc; border-radius: 3px; width: 100%; font-family: inherit;"
-                                 maxlength="500" />
-                          <div style="margin-top: 5px;">
-                            <button type="button" onclick="saveChallenge({{ d.demand.id }})"
-                                    style="background-color: #4CAF50; color: white; border: none; padding: 4px 8px; border-radius: 3px; font-size: 11px; cursor: pointer; margin-right: 5px;">
-                              Save
-                            </button>
-                            <button type="button" onclick="cancelChallengeEdit({{ d.demand.id }})"
-                                    style="background-color: #f44336; color: white; border: none; padding: 4px 8px; border-radius: 3px; font-size: 11px; cursor: pointer;">
-                              Cancel
-                            </button>
-                          </div>
-                        </div>
-                        <button type="button" onclick="editChallenge({{ d.demand.id }})" 
-                                style="background: none; border: none; color: #2196F3; cursor: pointer; font-size: 11px; margin-top: 2px; text-decoration: underline;">
-                          Edit
-                        </button>
-                      </div>
-                    </div>
                     
-                    <!-- Start and End Date Fields with Save Button on the Right -->
-                    <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #eee; display: flex; justify-content: space-between; align-items: flex-end;">
-                      <div style="flex: 1;">
-                        <div style="margin-bottom: 3px; font-size: 13px;">
-                          <strong>Start Date:</strong> 
-                          <input type="date" id="weekly-start-date-{{ d.demand.id }}" 
-                                 value="{{ d.demand.weekly_start_date|default_if_none:''|date:'Y-m-d' }}" 
-                                 style="font-size: 12px; padding: 2px 4px; border: 1px solid #ccc; border-radius: 3px; width: 120px;"
-                                 onchange="updateWeeklyDates({{ d.demand.id }}, 'start')">
-                        </div>
-                        <div style="margin-bottom: 3px; font-size: 13px;">
-                          <strong>End Date:</strong> 
-                          <input type="date" id="weekly-end-date-{{ d.demand.id }}" 
-                                 value="{{ d.demand.weekly_end_date|default_if_none:''|date:'Y-m-d' }}" 
-                                 style="font-size: 12px; padding: 2px 4px; border: 1px solid #ccc; border-radius: 3px; width: 120px;"
-                                 onchange="updateWeeklyDates({{ d.demand.id }}, 'end')">
-                        </div>
+                    {% if d.latest_weekly_update %}
+                      <div style="border: 1px solid #ddd; border-radius: 4px; padding: 12px; background-color: white;">
+                                                      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                              <div style="font-weight: bold; font-size: 13px; color: #1f78b4;">
+                                Week {{ d.latest_weekly_update.week_number }}
+                              </div>
+                              <div style="font-size: 11px; color: #666;">
+                                {{ d.latest_weekly_update.week_start_date|date:"M d" }} - {{ d.latest_weekly_update.week_end_date|date:"M d, Y" }}
+                              </div>
+                            </div>
+                            
+                            {% if d.latest_weekly_update.current_stage %}
+                              <div style="margin-bottom: 8px;">
+                                <span style="background-color: #1f78b4; color: white; padding: 3px 8px; border-radius: 12px; font-size: 11px;">
+                                  {{ d.latest_weekly_update.get_current_stage_display }}
+                                </span>
+                              </div>
+                            {% endif %}
+                            
+                            <div style="margin-bottom: 10px;">
+                              <div style="width: 100%; height: 10px; background-color: #e9ecef; border-radius: 5px; overflow: hidden;">
+                                <div style="height: 100%; background-color: #1f78b4; width: {{ d.latest_weekly_update.progress_percentage }}%;"></div>
+                              </div>
+                              <div style="text-align: center; font-size: 11px; color: #666; margin-top: 3px;">
+                                {{ d.latest_weekly_update.progress_percentage }}% Complete
+                              </div>
+                            </div>
+                            
+                            {% if d.latest_weekly_update.achievements %}
+                              <div style="margin-bottom: 8px;">
+                                <div style="font-size: 11px; color: #666; font-weight: bold; margin-bottom: 3px;">✅ Achievements:</div>
+                                <div style="font-size: 12px; color: #333; line-height: 1.4;">{{ d.latest_weekly_update.achievements|truncatewords:20 }}</div>
+                              </div>
+                            {% endif %}
+                            
+                            {% if d.latest_weekly_update.challenges %}
+                              <div style="margin-bottom: 8px;">
+                                <div style="font-size: 11px; color: #666; font-weight: bold; margin-bottom: 3px;">⚠️ Challenges:</div>
+                                <div style="font-size: 12px; color: #333; line-height: 1.4;">{{ d.latest_weekly_update.challenges|truncatewords:20 }}</div>
+                              </div>
+                            {% endif %}
+                            
+                            {% if d.latest_weekly_update.next_week_plan %}
+                              <div style="margin-bottom: 8px;">
+                                <div style="font-size: 11px; color: #666; font-weight: bold; margin-bottom: 3px;">📋 Next Week Plan:</div>
+                                <div style="font-size: 12px; color: #333; line-height: 1.4;">{{ d.latest_weekly_update.next_week_plan|truncatewords:20 }}</div>
+                              </div>
+                            {% endif %}
+                            
+                            <div style="margin-top: 10px; display: flex; gap: 6px;">
+                              <a href="{% url 'edit_weekly_update' update_id=d.latest_weekly_update.id %}" style="background-color: #ffc107; color: #333; padding: 3px 8px; border-radius: 3px; font-size: 10px; text-decoration: none;">✏️ Edit</a>
+                              <a href="{% url 'delete_weekly_update' update_id=d.latest_weekly_update.id %}" style="background-color: #dc3545; color: white; padding: 3px 8px; border-radius: 3px; font-size: 10px; text-decoration: none;" onclick="return confirm('Delete this weekly update?')">🗑️ Delete</a>
+                            </div>
                       </div>
-                      <div style="margin-left: 10px;">
-                        <button type="button" onclick="saveWeeklyDates({{ d.demand.id }})" 
-                                style="background-color: #4CAF50; color: white; border: none; padding: 6px 12px; border-radius: 3px; font-size: 12px; cursor: pointer; white-space: nowrap;">
-                          Save Dates
-                        </button>
+                    {% else %}
+                      <div style="text-align: center; padding: 20px; color: #666; background-color: #f8f9fa; border-radius: 4px;">
+                        <div style="font-size: 12px; margin-bottom: 10px;">No weekly updates yet</div>
+                        <a href="{% url 'add_weekly_update' demand_id=d.demand.id %}" style="background-color: #28a745; color: white; padding: 6px 12px; border-radius: 3px; font-size: 11px; text-decoration: none;">Add First Update</a>
                       </div>
-                    </div>
+                    {% endif %}
                   </div>
+                  
+
                 </div>
                 
                 <!-- Demand Details Tab Content -->

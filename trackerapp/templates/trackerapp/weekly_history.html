@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weekly History - {{ demand.name }}</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background-color: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: #333;
+            margin: 0 0 15px 0;
+            border-bottom: 2px solid #1f78b4;
+            padding-bottom: 10px;
+        }
+
+        .demand-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .info-card {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #1f78b4;
+        }
+
+        .info-card h4 {
+            margin: 0 0 8px 0;
+            color: #1f78b4;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-card p {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 500;
+        }
+
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: bold;
+            color: #1f78b4;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .actions {
+            margin-bottom: 25px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .btn-primary {
+            background-color: #1f78b4;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #166494;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #545b62;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+        }
+
+        .weekly-updates {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .update-card {
+            border-bottom: 1px solid #eee;
+            padding: 20px;
+        }
+
+        .update-card:last-child {
+            border-bottom: none;
+        }
+
+        .update-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .week-info {
+            flex: 1;
+        }
+
+        .week-number {
+            font-size: 18px;
+            font-weight: bold;
+            color: #1f78b4;
+            margin-bottom: 5px;
+        }
+
+        .week-dates {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .update-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background-color: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: #1f78b4;
+            transition: width 0.3s ease;
+        }
+
+        .update-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 15px;
+        }
+
+        .content-section {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+        }
+
+        .content-section h4 {
+            margin: 0 0 10px 0;
+            color: #333;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .content-section p {
+            margin: 0;
+            font-size: 14px;
+            line-height: 1.5;
+            color: #555;
+        }
+
+        .stage-badge {
+            display: inline-block;
+            background-color: #1f78b4;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .no-updates {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .no-updates h3 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        @media (max-width: 768px) {
+            .update-content {
+                grid-template-columns: 1fr;
+            }
+
+            .demand-info {
+                grid-template-columns: 1fr;
+            }
+
+            .summary-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Weekly History - {{ demand.name }}</h1>
+
+            <div class="demand-info">
+                <div class="info-card">
+                    <h4>Demand ID</h4>
+                    <p>{{ demand.demand_ID|default:"Not specified" }}</p>
+                </div>
+                <div class="info-card">
+                    <h4>File Type</h4>
+                    <p>{{ demand.file_type|default:"Not specified" }}</p>
+                </div>
+                <div class="info-card">
+                    <h4>Amount</h4>
+                    <p>{{ demand.demand_amount|default:"Not specified" }}</p>
+                </div>
+                <div class="info-card">
+                    <h4>Start Date</h4>
+                    <p>{{ demand.start_date|date:"M d, Y"|default:"Not specified" }}</p>
+                </div>
+            </div>
+
+            <div class="summary-stats">
+                <div class="stat-card">
+                    <div class="stat-number">{{ total_weeks }}</div>
+                    <div class="stat-label">Total Weeks</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">{{ avg_progress }}%</div>
+                    <div class="stat-label">Avg Progress</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">{{ weekly_updates.count }}</div>
+                    <div class="stat-label">Updates</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">{{ demand.stages.count }}</div>
+                    <div class="stat-label">Stages</div>
+                </div>
+            </div>
+
+            <div class="actions">
+                <a href="{% url 'add_weekly_update' demand_id=demand.id %}" class="btn btn-primary">Add Weekly
+                    Update</a>
+                <a href="{% url 'weekly_summary' %}" class="btn btn-success">View All Demands Summary</a>
+                <a href="{% url 'demand_list' %}" class="btn btn-secondary">Back to Timeline</a>
+            </div>
+        </div>
+
+        <div class="weekly-updates">
+            {% if weekly_updates %}
+            {% for update in weekly_updates %}
+            <div class="update-card">
+                <div class="update-header">
+                    <div class="week-info">
+                        <div class="week-number">Week {{ update.week_number }}</div>
+                        <div class="week-dates">{{ update.week_start_date|date:"M d" }} - {{
+                            update.week_end_date|date:"M d, Y" }}</div>
+                    </div>
+                    <div class="update-actions">
+                        {% if update.current_stage %}
+                        <span class="stage-badge">{{ update.get_current_stage_display }}</span>
+                        {% endif %}
+                        <a href="{% url 'edit_weekly_update' update_id=update.id %}"
+                            class="btn btn-primary btn-small">Edit</a>
+                        <a href="{% url 'delete_weekly_update' update_id=update.id %}"
+                            class="btn btn-secondary btn-small"
+                            onclick="return confirm('Are you sure you want to delete this weekly update?')">Delete</a>
+                    </div>
+                </div>
+
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: {{ update.progress_percentage }}%"></div>
+                </div>
+                <div style="text-align: center; font-size: 14px; color: #666; margin-bottom: 15px;">
+                    {{ update.progress_percentage }}% Complete
+                </div>
+
+                <div class="update-content">
+                    {% if update.achievements %}
+                    <div class="content-section">
+                        <h4>Achievements</h4>
+                        <p>{{ update.achievements|linebreaks }}</p>
+                    </div>
+                    {% endif %}
+
+                    {% if update.challenges %}
+                    <div class="content-section">
+                        <h4>Challenges</h4>
+                        <p>{{ update.challenges|linebreaks }}</p>
+                    </div>
+                    {% endif %}
+
+                    {% if update.next_week_plan %}
+                    <div class="content-section">
+                        <h4>Next Week Plan</h4>
+                        <p>{{ update.next_week_plan|linebreaks }}</p>
+                    </div>
+                    {% endif %}
+
+                    <div class="content-section">
+                        <h4>Update Info</h4>
+                        <p><strong>Created:</strong> {{ update.created_at|date:"M d, Y H:i" }}</p>
+                        {% if update.updated_at != update.created_at %}
+                        <p><strong>Last Updated:</strong> {{ update.updated_at|date:"M d, Y H:i" }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <div class="no-updates">
+                <h3>No Weekly Updates Yet</h3>
+                <p>Start tracking progress by adding your first weekly update.</p>
+                <a href="{% url 'add_weekly_update' demand_id=demand.id %}" class="btn btn-primary">Add First Update</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+
+</html>

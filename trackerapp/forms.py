@@ -1,5 +1,5 @@
 from django import forms
-from .models import Demand, DemandStagePeriod
+from .models import Demand, DemandStagePeriod, WeeklyUpdate, Stage
 from datetime import datetime, timedelta
 
 class DemandForm(forms.ModelForm):
@@ -100,7 +100,7 @@ class DemandForm(forms.ModelForm):
 class DemandStagePeriodForm(forms.ModelForm):
     class Meta:
         model = DemandStagePeriod
-        fields = ['demand', 'stage', 'start_date', 'end_date']
+        fields = ['stage', 'start_date', 'end_date']
         widgets = {
             'start_date': forms.DateInput(attrs={'type': 'date'}),
             'end_date': forms.DateInput(attrs={'type': 'date'}),
@@ -115,5 +115,45 @@ class DemandStagePeriodForm(forms.ModelForm):
         
         if start_date and end_date and end_date < start_date:
             self.add_error('end_date', 'End date cannot be before start date')
+        
+        return cleaned_data
+
+class WeeklyUpdateForm(forms.ModelForm):
+    class Meta:
+        model = WeeklyUpdate
+        fields = ['week_number', 'week_start_date', 'week_end_date', 'current_stage', 'progress_percentage', 'challenges', 'achievements', 'next_week_plan']
+        widgets = {
+            'week_start_date': forms.DateInput(attrs={
+                'type': 'date',
+                'class': 'form-control',
+                'placeholder': 'Select start date'
+            }),
+            'week_end_date': forms.DateInput(attrs={
+                'type': 'date',
+                'class': 'form-control',
+                'placeholder': 'Select end date'
+            }),
+            'challenges': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Describe any challenges faced this week...'}),
+            'achievements': forms.Textarea(attrs={'rows': 3, 'placeholder': 'List key achievements for this week...'}),
+            'next_week_plan': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Outline plans for next week...'}),
+            'progress_percentage': forms.NumberInput(attrs={'min': 0, 'max': 100}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['current_stage'].choices = [('', 'Select Stage')] + list(Stage.choices)
+        
+        # Add help text for date fields
+        self.fields['week_start_date'].help_text = 'Select the start date of this week'
+        self.fields['week_end_date'].help_text = 'Select the end date of this week'
+        
+    def clean(self):
+        cleaned_data = super().clean()
+        week_start_date = cleaned_data.get('week_start_date')
+        week_end_date = cleaned_data.get('week_end_date')
+        
+        # Ensure end_date is not before start_date
+        if week_start_date and week_end_date and week_end_date < week_start_date:
+            self.add_error('week_end_date', 'End date cannot be before start date')
         
         return cleaned_data
