@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.contrib import messages
+from django.http import JsonResponse
 from .models import Demand, STAGE_COLORS, DemandStagePeriod, Stage, STAGE_ORDER, WeeklyUpdate
 from .forms import DemandForm, DemandStagePeriodForm, WeeklyUpdateForm
 from datetime import datetime, date
@@ -872,8 +873,15 @@ def delete_weekly_update(request, update_id):
     
     if request.method == 'POST':
         weekly_update.delete()
-        messages.success(request, 'Weekly update deleted successfully.')
-        return redirect('weekly_history', demand_id=demand_id)
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({
+                'success': True,
+                'message': 'Weekly update deleted successfully.',
+                'redirect_url': reverse('weekly_history', kwargs={'demand_id': demand_id})
+            })
+        else:
+            messages.success(request, 'Weekly update deleted successfully.')
+            return redirect('weekly_history', demand_id=demand_id)
     
     return render(request, 'trackerapp/delete_weekly_update.html', {
         'weekly_update': weekly_update,
