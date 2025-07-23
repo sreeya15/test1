@@ -273,9 +273,11 @@
                 <div class="overview-card">
                     <div class="overview-number">
                         {% if weekly_summaries %}
-                        {% with first_week=weekly_summaries.values|first %}
-                        {{ first_week.demand_count }}
-                        {% endwith %}
+                        {% for week_key, week_data in weekly_summaries.items %}
+                        {% if forloop.first %}
+                        {{ week_data.demand_count }}
+                        {% endif %}
+                        {% endfor %}
                         {% else %}
                         0
                         {% endif %}
@@ -285,9 +287,11 @@
                 <div class="overview-card">
                     <div class="overview-number">
                         {% if weekly_summaries %}
-                        {% with avg_progress=weekly_summaries.values|first %}
-                        {{ avg_progress.avg_progress }}%
-                        {% endwith %}
+                        {% for week_key, week_data in weekly_summaries.items %}
+                        {% if forloop.first %}
+                        {{ week_data.avg_progress }}%
+                        {% endif %}
+                        {% endfor %}
                         {% else %}
                         0%
                         {% endif %}
@@ -297,9 +301,11 @@
                 <div class="overview-card">
                     <div class="overview-number">
                         {% if weekly_summaries %}
-                        {% with latest_week=weekly_summaries.values|first %}
-                        Week {{ latest_week.week_number }}
-                        {% endwith %}
+                        {% for week_key, week_data in weekly_summaries.items %}
+                        {% if forloop.first %}
+                        Week {{ week_data.week_number }}
+                        {% endif %}
+                        {% endfor %}
                         {% else %}
                         N/A
                         {% endif %}
