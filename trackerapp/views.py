@@ -168,16 +168,25 @@ def demand_list(request):
             stage_start_percent = demand_start_percent + (demand_width_percent * stage_relative_start / 100)
             stage_width_percent = demand_width_percent * stage_relative_width / 100
             
-            # Calculate positions for fixed timeline 2025-2029 by months for more precision
-            # Each year is 20% of timeline (5 years total)
-            # Each month is 1.667% of the timeline (12 months per year)
-            start_year = s.start_date.year
-            start_month = s.start_date.month
-            start_day = s.start_date.day
-            
-            end_year = s.end_date.year
-            end_month = s.end_date.month
-            end_day = s.end_date.day
+            # For mini progress bars, use the full demand timeline instead of stage timeline
+            if s.stage == 'mini_progress':
+                # Use demand start and end dates for the full timeline
+                start_year = demand_start.year
+                start_month = demand_start.month
+                start_day = demand_start.day
+                
+                end_year = demand_end.year
+                end_month = demand_end.month
+                end_day = demand_end.day
+            else:
+                # Use stage start and end dates for regular stages
+                start_year = s.start_date.year
+                start_month = s.start_date.month
+                start_day = s.start_date.day
+                
+                end_year = s.end_date.year
+                end_month = s.end_date.month
+                end_day = s.end_date.day
             
             # Calculate month-based positions (more precise than quarters)
             # For each year, add 20% to the position
@@ -198,6 +207,29 @@ def demand_list(request):
             
             # Calculate width precisely based on actual start and end positions
             width = end_pos - start_pos
+            
+            # For mini progress bars, ensure they have a reasonable width
+            if s.stage == 'mini_progress':
+                # Calculate width based on demand duration in months
+                demand_duration_months = demand.duration_months or 1
+                # Each month should be at least 1% of the timeline width
+                min_width_based_on_duration = max(2.0, demand_duration_months * 1.0)
+                
+                if width < min_width_based_on_duration:
+                    # Expand the width to minimum while keeping it centered
+                    center_pos = (start_pos + end_pos) / 2
+                    start_pos = center_pos - (min_width_based_on_duration / 2)
+                    end_pos = center_pos + (min_width_based_on_duration / 2)
+                    width = min_width_based_on_duration
+            else:
+                # For regular stages, ensure minimum width for visibility
+                min_width = 1.0  # 1% of the timeline
+                if width < min_width:
+                    # Expand the width to minimum while keeping it centered
+                    center_pos = (start_pos + end_pos) / 2
+                    start_pos = center_pos - (min_width / 2)
+                    end_pos = center_pos + (min_width / 2)
+                    width = min_width
             
             # For quarter display in the template, still keep quarter calculations
             start_quarter = (start_month - 1) // 3
@@ -239,14 +271,17 @@ def demand_list(request):
                         # Segment 1: Colored portion from demand start to current stage end
                         segment1_width = split_pos - start_pos
                         if segment1_width > 0:
+                            # Ensure minimum width for segment 1
+                            if segment1_width < 1.0:  # At least 1% of timeline
+                                segment1_width = 1.0
                             stage_bars.append({
                                 'id': f"{s.id}_colored",
                                 'stage': 'mini_progress_colored',
                                 'stage_number': STAGE_ORDER.get(current_stage, 0),
                                 'stage_verbose': stage_verbose,
                                 'color': stage_color,
-                                'start_percent': stage_start_percent,
-                                'width_percent': stage_width_percent * (segment1_width / width),
+                                'start_percent': start_pos,
+                                'width_percent': segment1_width,
                                 'relative_start_percent': stage_relative_start,
                                 'relative_width_percent': stage_relative_width * (segment1_width / width),
                                 'duration': (split_date - s.start_date).days,
@@ -268,6 +303,9 @@ def demand_list(request):
                         # Segment 2: Dark grey portion from current stage end to demand end
                         segment2_width = end_pos - split_pos
                         if segment2_width > 0:
+                            # Ensure minimum width for segment 2
+                            if segment2_width < 1.0:  # At least 1% of timeline
+                                segment2_width = 1.0
                             # Calculate the start position for the second segment
                             segment2_start_percent = stage_start_percent + (stage_width_percent * (segment1_width / width))
                             segment2_relative_start = stage_relative_start + (stage_relative_width * (segment1_width / width))
@@ -278,8 +316,8 @@ def demand_list(request):
                                 'stage_number': None,
                                 'stage_verbose': "Remaining Duration",
                                 'color': '#444444',  # Dark grey
-                                'start_percent': segment2_start_percent,
-                                'width_percent': stage_width_percent * (segment2_width / width),
+                                'start_percent': split_pos,
+                                'width_percent': segment2_width,
                                 'relative_start_percent': segment2_relative_start,
                                 'relative_width_percent': stage_relative_width * (segment2_width / width),
                                 'duration': (s.end_date - split_date).days,
@@ -305,8 +343,8 @@ def demand_list(request):
                             'stage_number': STAGE_ORDER.get(current_stage, 0),
                             'stage_verbose': stage_verbose,
                             'color': stage_color,
-                            'start_percent': stage_start_percent,
-                            'width_percent': stage_width_percent,
+                            'start_percent': start_pos,
+                            'width_percent': width,
                             'relative_start_percent': stage_relative_start,
                             'relative_width_percent': stage_relative_width,
                             'duration': stage_duration,
@@ -336,8 +374,8 @@ def demand_list(request):
                         'stage_number': 0,
                         'stage_verbose': stage_verbose,
                         'color': stage_color,
-                        'start_percent': stage_start_percent,
-                        'width_percent': stage_width_percent,
+                        'start_percent': start_pos,
+                        'width_percent': width,
                         'relative_start_percent': stage_relative_start,
                         'relative_width_percent': stage_relative_width,
                         'duration': stage_duration,
