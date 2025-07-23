@@ -1433,76 +1433,76 @@
     return stageColors[stageNumber] || '#cccccc'; // Default color if not found
   }
   
-  // Function to handle form submission and update the detail bar
-  document.addEventListener('DOMContentLoaded', function() {
-    const editForm = document.querySelector('#editModalContent form');
-    if (editForm) {
-      editForm.addEventListener('submit', function(event) {
-        // Don't prevent default - we want the form to actually submit
+  // // Function to handle form submission and update the detail bar
+  // document.addEventListener('DOMContentLoaded', function() {
+  //   const editForm = document.querySelector('#editModalContent form');
+  //   if (editForm) {
+  //     editForm.addEventListener('submit', function(event) {
+  //       // Don't prevent default - we want the form to actually submit
         
-        // Get the values
-        const stageId = document.getElementById('modalStageId').value;
-        const startDate = document.getElementById('modalStartDate').value;
-        const endDate = document.getElementById('modalEndDate').value;
+  //       // Get the values
+  //       const stageId = document.getElementById('modalStageId').value;
+  //       const startDate = document.getElementById('modalStartDate').value;
+  //       const endDate = document.getElementById('modalEndDate').value;
         
-        // Calculate the new duration
-        const newDuration = calculateDuration(startDate, endDate);
+  //       // Calculate the new duration
+  //       const newDuration = calculateDuration(startDate, endDate);
         
-        // Store the values in sessionStorage to retrieve after page reload
-        sessionStorage.setItem('updatedStageId', stageId);
-        sessionStorage.setItem('updatedDuration', newDuration);
-        sessionStorage.setItem('updatedStartDate', startDate);
-        sessionStorage.setItem('updatedEndDate', endDate);
-      });
-    }
+  //       // Store the values in sessionStorage to retrieve after page reload
+  //       sessionStorage.setItem('updatedStageId', stageId);
+  //       sessionStorage.setItem('updatedDuration', newDuration);
+  //       sessionStorage.setItem('updatedStartDate', startDate);
+  //       sessionStorage.setItem('updatedEndDate', endDate);
+  //     });
+  //   }
     
-    // Check if we have stored values from a previous form submission
-    const updatedStageId = sessionStorage.getItem('updatedStageId');
-    if (updatedStageId) {
-      const updatedDuration = sessionStorage.getItem('updatedDuration');
-      const updatedStartDate = sessionStorage.getItem('updatedStartDate');
-      const updatedEndDate = sessionStorage.getItem('updatedEndDate');
+  //   // Check if we have stored values from a previous form submission
+  //   const updatedStageId = sessionStorage.getItem('updatedStageId');
+  //   if (updatedStageId) {
+  //     const updatedDuration = sessionStorage.getItem('updatedDuration');
+  //     const updatedStartDate = sessionStorage.getItem('updatedStartDate');
+  //     const updatedEndDate = sessionStorage.getItem('updatedEndDate');
       
-      // Update the stage detail segment with the new duration
-      const stageDetailSegment = document.getElementById(`stage-detail-segment-${updatedStageId}`);
-      if (stageDetailSegment) {
-        stageDetailSegment.textContent = updatedDuration;
-        console.log(`Updated stage ${updatedStageId} detail segment with duration ${updatedDuration}`);
-      }
+  //     // Update the stage detail segment with the new duration
+  //     const stageDetailSegment = document.getElementById(`stage-detail-segment-${updatedStageId}`);
+  //     if (stageDetailSegment) {
+  //       stageDetailSegment.textContent = updatedDuration;
+  //       console.log(`Updated stage ${updatedStageId} detail segment with duration ${updatedDuration}`);
+  //     }
       
-      // Update the progress bar with new data attributes but preserve its size
-      const progressBar = document.querySelector(`[data-stage-id="${updatedStageId}"]`);
-      if (progressBar) {
-        // Update the data attributes
-        progressBar.setAttribute('data-duration', updatedDuration);
-        progressBar.setAttribute('data-start-date', updatedStartDate);
-        progressBar.setAttribute('data-end-date', updatedEndDate);
+  //     // Update the progress bar with new data attributes but preserve its size
+  //     const progressBar = document.querySelector(`[data-stage-id="${updatedStageId}"]`);
+  //     if (progressBar) {
+  //       // Update the data attributes
+  //       progressBar.setAttribute('data-duration', updatedDuration);
+  //       progressBar.setAttribute('data-start-date', updatedStartDate);
+  //       progressBar.setAttribute('data-end-date', updatedEndDate);
         
-        // Explicitly update the background color for cross-browser compatibility
-        const stageNumber = progressBar.getAttribute('data-stage-number');
-        if (stageNumber) {
-          progressBar.style.backgroundColor = getStageColor(stageNumber);
-          console.log(`Updated progress bar color for stage ${updatedStageId} to ${getStageColor(stageNumber)}`);
-        }
+  //       // Explicitly update the background color for cross-browser compatibility
+  //       const stageNumber = progressBar.getAttribute('data-stage-number');
+  //       if (stageNumber) {
+  //         progressBar.style.backgroundColor = getStageColor(stageNumber);
+  //         console.log(`Updated progress bar color for stage ${updatedStageId} to ${getStageColor(stageNumber)}`);
+  //       }
         
-        // Update the tooltip content with new dates and duration
-        const tooltip = progressBar.querySelector('.tooltip');
-        if (tooltip) {
-          // Get stage name from existing tooltip
-          const stageName = tooltip.querySelector('strong').innerText;
-          tooltip.innerHTML = `<strong>${stageName}</strong><br />${updatedStartDate} - ${updatedEndDate}<br />Duration: ${updatedDuration} days`;
-        }
+  //       // Update the tooltip content with new dates and duration
+  //       const tooltip = progressBar.querySelector('.tooltip');
+  //       if (tooltip) {
+  //         // Get stage name from existing tooltip
+  //         const stageName = tooltip.querySelector('strong').innerText;
+  //         tooltip.innerHTML = `<strong>${stageName}</strong><br />${updatedStartDate} - ${updatedEndDate}<br />Duration: ${updatedDuration} days`;
+  //       }
         
-        console.log(`Updated progress bar data for stage ${updatedStageId}`);
-      }
+  //       console.log(`Updated progress bar data for stage ${updatedStageId}`);
+  //     }
       
-      // Clear the sessionStorage
-      sessionStorage.removeItem('updatedStageId');
-      sessionStorage.removeItem('updatedDuration');
-      sessionStorage.removeItem('updatedStartDate');
-      sessionStorage.removeItem('updatedEndDate');
-    }
-  });
+  //     // Clear the sessionStorage
+  //     sessionStorage.removeItem('updatedStageId');
+  //     sessionStorage.removeItem('updatedDuration');
+  //     sessionStorage.removeItem('updatedStartDate');
+  //     sessionStorage.removeItem('updatedEndDate');
+  //   }
+  // });
   </script>
 
 <script>
@@ -1582,58 +1582,58 @@
   }
   
   // When the page loads, hide all detail bars, weekly update cells, and demand info labels
-  document.addEventListener('DOMContentLoaded', function() {
-    // Hide all detail bars
-    document.querySelectorAll('[id^="stage-detail-"]').forEach(function(detailBar) {
-      detailBar.style.display = 'none';
-    });
+  // document.addEventListener('DOMContentLoaded', function() {
+  //   // Hide all detail bars
+  //   document.querySelectorAll('[id^="stage-detail-"]').forEach(function(detailBar) {
+  //     detailBar.style.display = 'none';
+  //   });
     
-    // Hide all weekly update cells
-    document.querySelectorAll('.weekly-update-cell').forEach(function(weeklyUpdateCell) {
-      weeklyUpdateCell.style.display = 'none';
-    });
+  //   // Hide all weekly update cells
+  //   document.querySelectorAll('.weekly-update-cell').forEach(function(weeklyUpdateCell) {
+  //     weeklyUpdateCell.style.display = 'none';
+  //   });
     
-    // Hide weekly update header
-    document.querySelectorAll('.weekly-update-header').forEach(function(weeklyUpdateHeader) {
-      weeklyUpdateHeader.style.display = 'none';
-    });
+  //   // Hide weekly update header
+  //   document.querySelectorAll('.weekly-update-header').forEach(function(weeklyUpdateHeader) {
+  //     weeklyUpdateHeader.style.display = 'none';
+  //   });
     
-    // Hide all demand info labels
-    document.querySelectorAll('.demand-info-label').forEach(function(infoLabel) {
-      infoLabel.style.display = 'none';
-    });
+  //   // Hide all demand info labels
+  //   document.querySelectorAll('.demand-info-label').forEach(function(infoLabel) {
+  //     infoLabel.style.display = 'none';
+  //   });
     
-    // Hide all demand tab contents except the first one for each demand
-    document.querySelectorAll('.demand-tab-content').forEach(function(tabContent) {
-      tabContent.classList.remove('active');
-    });
+  //   // Hide all demand tab contents except the first one for each demand
+  //   document.querySelectorAll('.demand-tab-content').forEach(function(tabContent) {
+  //     tabContent.classList.remove('active');
+  //   });
     
-    // Show only the weekly update content for each demand by default
-    document.querySelectorAll('[id^="weekly-update-content-"]').forEach(function(weeklyContent) {
-      weeklyContent.classList.add('active');
-    });
+  //   // Show only the weekly update content for each demand by default
+  //   document.querySelectorAll('[id^="weekly-update-content-"]').forEach(function(weeklyContent) {
+  //     weeklyContent.classList.add('active');
+  //   });
     
-    // Add tab functionality
-    const tabs = document.querySelectorAll('.tab');
-    const tabContents = document.querySelectorAll('.tab-content');
+  //   // Add tab functionality
+  //   const tabs = document.querySelectorAll('.tab');
+  //   const tabContents = document.querySelectorAll('.tab-content');
     
-    tabs.forEach(tab => {
-      tab.addEventListener('click', function() {
-        // Remove active class from all tabs
-        tabs.forEach(t => t.classList.remove('active'));
+  //   tabs.forEach(tab => {
+  //     tab.addEventListener('click', function() {
+  //       // Remove active class from all tabs
+  //       tabs.forEach(t => t.classList.remove('active'));
         
-        // Add active class to clicked tab
-        this.classList.add('active');
+  //       // Add active class to clicked tab
+  //       this.classList.add('active');
         
-        // Hide all tab contents
-        tabContents.forEach(content => content.classList.remove('active'));
+  //       // Hide all tab contents
+  //       tabContents.forEach(content => content.classList.remove('active'));
         
-        // Show the selected tab content
-        const tabId = this.getAttribute('data-tab');
-        document.getElementById('tab-' + tabId).classList.add('active');
-      });
-    });
-  });
+  //       // Show the selected tab content
+  //       const tabId = this.getAttribute('data-tab');
+  //       document.getElementById('tab-' + tabId).classList.add('active');
+  //     });
+  //   });
+  // });
   
   document.onclick = function(event) {
     if (event.target == document.getElementById('editModal')) {
