@@ -100,7 +100,7 @@ class DemandForm(forms.ModelForm):
 class DemandStagePeriodForm(forms.ModelForm):
     class Meta:
         model = DemandStagePeriod
-        fields = ['stage', 'start_date', 'end_date']
+        fields = ['demand', 'stage', 'start_date', 'end_date']
         widgets = {
             'start_date': forms.DateInput(attrs={'type': 'date'}),
             'end_date': forms.DateInput(attrs={'type': 'date'}),
