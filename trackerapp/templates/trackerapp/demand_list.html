@@ -623,15 +623,15 @@
             </td>
             <td>
               <div class="progress-bar-container">
-                <!-- Using the global timeline (2025-2029) instead of demand-specific timeline -->
+                <!-- Using the dynamic global timeline based on actual demand data -->
                 <div class="demand-timeline-wrapper">
                   <div class="demand-timeline" style="width: 100%; left: 0%;">
-                    <!-- Removed dynamic timeline labels in favor of global timeline -->
+                    <!-- Dynamic timeline based on actual demand data -->
                     {% for stage in d.stages %}
-                      {% if 'mini_progress' in stage.stage and stage.start_year >= 2025 and stage.start_year <= 2029 and stage.end_year >= 2025 and stage.end_year <= 2029 %}
+                      {% if 'mini_progress' in stage.stage %}
                             <div
                               class="progress-bar"
-                              style="width: {{ stage.quarter_width }}%; background-color: {{ stage.color }}; left: {{ stage.quarter_start_pos }}%;"
+                              style="width: {{ stage.width_percent }}%; background-color: {{ stage.color }}; left: {{ stage.start_percent }}%;"
                               data-stage-id="{{ stage.id }}"
                               data-stage-name="{{ stage.stage_verbose }}"
                               data-stage-number="{{ stage.number }}"
@@ -813,7 +813,7 @@
         
         <!-- Tab content for GEM Demands -->
         <div id="tab-gem" class="tab-content">
-          <div class="timeline-container" style="max-width: calc(100% - 20px);">
+          <div class="timeline-container" style="max-width: calc(100% - 20px); width: 100%;">
             <table>
               <thead>
                 <tr>
@@ -825,47 +825,65 @@
                       <colgroup>
                         <!-- 5 years x 4 quarters = 20 columns -->
                         <col style="width:15%">
-                        {% for i in "01234567891012345678"|make_list %}
-                          <col style="width:5%">
-                        {% endfor %}
+                        <col style="width:15%">
+                        <col style="width:15%">
+                        <col style="width:15%">
+                        <col style="width:15%">
+                        <col style="width:15%">
+                        <col style="width:15%">
+                        <col style="width:15%">
+                        <col style="width:15%">
+                        <col style="width:15%">
+                        <col style="width:15%">
+                        <col style="width:15%">
+                        <col style="width:15%">
+                        <col style="width:15%">
+                        <col style="width:15%">
+                        <col style="width:15%">
+                        <col style="width:15%">
+                        <col style="width:15%">
+                        <col style="width:15%">
+                        <col style="width:15%">
                       </colgroup>
                       <tr>
-                        <th></th>
-                        <th colspan="4" style="text-align:center; border:1px solid #999; background-color:#f0f0f0;">2025</th>
-                        <th colspan="4" style="text-align:center; border:1px solid #999; background-color:#f0f0f0;">2026</th>
-                        <th colspan="4" style="text-align:center; border:1px solid #999; background-color:#f0f0f0;">2027</th>
-                        <th colspan="4" style="text-align:center; border:1px solid #999; background-color:#f0f0f0;">2028</th>
-                        <th colspan="4" style="text-align:center; border:1px solid #999; background-color:#f0f0f0;">2029</th>
+                        <th colspan="4" style="text-align:center; padding:6px; font-weight:bold; font-size:14px; border:2px solid #999; background-color:#f0f0f0; height:30px;">2025</th>
+                        <th colspan="4" style="text-align:center; padding:6px; font-weight:bold; font-size:14px; border:2px solid #999; background-color:#f0f0f0; height:30px;">2026</th>
+                        <th colspan="4" style="text-align:center; padding:6px; font-weight:bold; font-size:14px; border:2px solid #999; background-color:#f0f0f0; height:30px;">2027</th>
+                        <th colspan="4" style="text-align:center; padding:6px; font-weight:bold; font-size:14px; border:2px solid #999; background-color:#f0f0f0; height:30px;">2028</th>
+                        <th colspan="4" style="text-align:center; padding:6px; font-weight:bold; font-size:14px; border:2px solid #999; background-color:#f0f0f0; height:30px;">2029</th>
                       </tr>
-                      <tr>
-                        <th></th>
+                      <tr class="quarter-row">
                         <!-- 2025 Quarters -->
-                        <th class="quarter-cell">Q1</th>
-                        <th class="quarter-cell">Q2</th>
-                        <th class="quarter-cell">Q3</th>
-                        <th class="quarter-cell">Q4</th>
+                        <td class="quarter-cell">Q1</td>
+                        <td class="quarter-cell">Q2</td>
+                        <td class="quarter-cell">Q3</td>
+                        <td class="quarter-cell">Q4</td>
                         <!-- 2026 Quarters -->
-                        <th class="quarter-cell">Q1</th>
-                        <th class="quarter-cell">Q2</th>
-                        <th class="quarter-cell">Q3</th>
-                        <th class="quarter-cell">Q4</th>
+                        <td class="quarter-cell">Q1</td>
+                        <td class="quarter-cell">Q2</td>
+                        <td class="quarter-cell">Q3</td>
+                        <td class="quarter-cell">Q4</td>
                         <!-- 2027 Quarters -->
-                        <th class="quarter-cell">Q1</th>
-                        <th class="quarter-cell">Q2</th>
-                        <th class="quarter-cell">Q3</th>
-                        <th class="quarter-cell">Q4</th>
+                        <td class="quarter-cell">Q1</td>
+                        <td class="quarter-cell">Q2</td>
+                        <td class="quarter-cell">Q3</td>
+                        <td class="quarter-cell">Q4</td>
                         <!-- 2028 Quarters -->
-                        <th class="quarter-cell">Q1</th>
-                        <th class="quarter-cell">Q2</th>
-                        <th class="quarter-cell">Q3</th>
-                        <th class="quarter-cell">Q4</th>
+                        <td class="quarter-cell">Q1</td>
+                        <td class="quarter-cell">Q2</td>
+                        <td class="quarter-cell">Q3</td>
+                        <td class="quarter-cell">Q4</td>
                         <!-- 2029 Quarters -->
-                        <th class="quarter-cell">Q1</th>
-                        <th class="quarter-cell">Q2</th>
-                        <th class="quarter-cell">Q3</th>
-                        <th class="quarter-cell">Q4</th>
+                        <td class="quarter-cell">Q1</td>
+                        <td class="quarter-cell">Q2</td>
+                        <td class="quarter-cell">Q3</td>
+                        <td class="quarter-cell">Q4</td>
                       </tr>
                     </table>
+                    </div>
+                    
+                    <div class="timeline-global-date">
+                      2025 to 2029
                     </div>
                   </th>
                 </tr>
@@ -880,30 +898,56 @@
                           <a href="{% url 'edit_demand' d.demand.id %}" class="edit-button" title="Edit Demand">✏️</a>
                         </span>
                       </td>
-                      <td style="position: relative; padding: 0;">
-                        <div class="demand-timeline-wrapper">
-                          <div class="demand-timeline" style="left: {{ d.position.start_percent }}%; width: {{ d.position.width_percent }}%;">
-                            {% for stage in d.stages %}
-                              <div class="progress-bar" 
-                                   style="left: {{ stage.quarter_start_pos }}%; 
-                                          width: {{ stage.quarter_width }}%; 
-                                          background-color: {{ stage.color }};"
-                                   data-demand-id="{{ d.demand.id }}"
-                                   data-stage="{{ stage.stage }}"
-                                   data-start="{{ stage.start_date }}"
-                                   data-end="{{ stage.end_date }}"
-                                   data-stage-number="{{ stage.number }}"
-                                   onclick="openModal(this)">
-                                {% if stage.should_show_number %}
-                                  <span class="stage-number">{{ stage.number }}</span>
+                      <td>
+                        <div class="progress-bar-container">
+                          <!-- Using the dynamic global timeline based on actual demand data -->
+                          <div class="demand-timeline-wrapper">
+                            <div class="demand-timeline" style="width: 100%; left: 0%;">
+                              <!-- Dynamic timeline based on actual demand data -->
+                              {% for stage in d.stages %}
+                                {% if 'mini_progress' in stage.stage %}
+                                      <div
+                                        class="progress-bar"
+                                        style="width: {{ stage.width_percent }}%; background-color: {{ stage.color }}; left: {{ stage.start_percent }}%;"
+                                        data-stage-id="{{ stage.id }}"
+                                        data-stage-name="{{ stage.stage_verbose }}"
+                                        data-stage-number="{{ stage.number }}"
+                                        data-start-date="{{ stage.start_date }}"
+                                        data-end-date="{{ stage.end_date }}"
+                                        data-duration="{{ stage.duration }}"
+                                        onclick="event.stopPropagation(); openModal(this); return false;"
+                                      >
+                                        {% if stage.should_show_number %}
+                                          <span class="stage-number">{{ stage.number }}</span>
+                                        {% endif %}
+                                        <div class="tooltip">
+                                          <strong>{{ stage.stage_verbose }}</strong><br />
+                                          {{ stage.start_date }} - {{ stage.end_date }}<br />
+                                          Duration: {{ stage.duration }} days
+                                        </div>
+                                      </div>
+                                  {% endif %}
+                              {% endfor %}
+                            </div>
+                          </div>
+                          
+                          <!-- Stage Detail Bar (initially hidden) -->
+                          <div id="stage-detail-{{ d.demand.id }}" class="stage-detail-bar" style="display: none; position: relative; height: 50px; width: 100%; background-color: #f5f5f5; border: 1px solid #ccc; padding: 4px; margin-top: 5px; margin-bottom: 5px; text-align: center; overflow: hidden;">
+                            <div style="display: flex; width: 100%; justify-content: space-evenly; align-items: center;">
+                              {% for box in d.stage_detail_boxes %}
+                                {% if box.id %}
+                                  <div id="stage-detail-segment-{{ box.id }}" class="stage-detail-segment" style="height: 36px; width: 3%; min-width: 12px; background-color: {{ box.color }}; border: 1px solid #555; box-shadow: 0px 1px 2px rgba(0,0,0,0.2); box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; color: white;">
+                                    <span style="font-size: 12px; font-weight: bold;">{{ box.number }}</span>
+                                    <span style="font-size: 10px; font-weight: normal;">{{ box.duration }}d</span>
+                                  </div>
+                                {% else %}
+                                  <div class="stage-detail-segment" style="height: 36px; width: 3%; min-width: 12px; background-color: {{ box.color }}; border: 1px solid #999; box-shadow: 0px 1px 2px rgba(0,0,0,0.1); box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 10px; color: #888;">
+                                    <span style="font-size: 12px; font-weight: bold;">{{ box.number }}</span>
+                                    <span style="font-size: 10px; font-weight: normal;">{{ box.duration }}d</span>
+                                  </div>
                                 {% endif %}
-                                <div class="tooltip">
-                                  <div>Stage: {{ stage.stage_verbose }}</div>
-                                  <div>Duration: {{ stage.duration }} days</div>
-                                  <div>{{ stage.start_date }} - {{ stage.end_date }}</div>
-                                </div>
-                              </div>
-                            {% endfor %}
+                              {% endfor %}
+                            </div>
                           </div>
                         </div>
                       </td>
@@ -919,7 +963,7 @@
         
         <!-- Tab content for LPC Demands -->
         <div id="tab-lpc" class="tab-content">
-          <div class="timeline-container" style="max-width: calc(100% - 20px);">
+          <div class="timeline-container" style="max-width: calc(100% - 20px); width: 100%;">
             <table>
               <thead>
                 <tr>
@@ -931,47 +975,65 @@
                       <colgroup>
                         <!-- 5 years x 4 quarters = 20 columns -->
                         <col style="width:15%">
-                        {% for i in "01234567891012345678"|make_list %}
-                          <col style="width:5%">
-                        {% endfor %}
+                        <col style="width:15%">
+                        <col style="width:15%">
+                        <col style="width:15%">
+                        <col style="width:15%">
+                        <col style="width:15%">
+                        <col style="width:15%">
+                        <col style="width:15%">
+                        <col style="width:15%">
+                        <col style="width:15%">
+                        <col style="width:15%">
+                        <col style="width:15%">
+                        <col style="width:15%">
+                        <col style="width:15%">
+                        <col style="width:15%">
+                        <col style="width:15%">
+                        <col style="width:15%">
+                        <col style="width:15%">
+                        <col style="width:15%">
+                        <col style="width:15%">
                       </colgroup>
                       <tr>
-                        <th></th>
-                        <th colspan="4" style="text-align:center; border:1px solid #999; background-color:#f0f0f0;">2025</th>
-                        <th colspan="4" style="text-align:center; border:1px solid #999; background-color:#f0f0f0;">2026</th>
-                        <th colspan="4" style="text-align:center; border:1px solid #999; background-color:#f0f0f0;">2027</th>
-                        <th colspan="4" style="text-align:center; border:1px solid #999; background-color:#f0f0f0;">2028</th>
-                        <th colspan="4" style="text-align:center; border:1px solid #999; background-color:#f0f0f0;">2029</th>
+                        <th colspan="4" style="text-align:center; padding:6px; font-weight:bold; font-size:14px; border:2px solid #999; background-color:#f0f0f0; height:30px;">2025</th>
+                        <th colspan="4" style="text-align:center; padding:6px; font-weight:bold; font-size:14px; border:2px solid #999; background-color:#f0f0f0; height:30px;">2026</th>
+                        <th colspan="4" style="text-align:center; padding:6px; font-weight:bold; font-size:14px; border:2px solid #999; background-color:#f0f0f0; height:30px;">2027</th>
+                        <th colspan="4" style="text-align:center; padding:6px; font-weight:bold; font-size:14px; border:2px solid #999; background-color:#f0f0f0; height:30px;">2028</th>
+                        <th colspan="4" style="text-align:center; padding:6px; font-weight:bold; font-size:14px; border:2px solid #999; background-color:#f0f0f0; height:30px;">2029</th>
                       </tr>
-                      <tr>
-                        <th></th>
+                      <tr class="quarter-row">
                         <!-- 2025 Quarters -->
-                        <th class="quarter-cell">Q1</th>
-                        <th class="quarter-cell">Q2</th>
-                        <th class="quarter-cell">Q3</th>
-                        <th class="quarter-cell">Q4</th>
+                        <td class="quarter-cell">Q1</td>
+                        <td class="quarter-cell">Q2</td>
+                        <td class="quarter-cell">Q3</td>
+                        <td class="quarter-cell">Q4</td>
                         <!-- 2026 Quarters -->
-                        <th class="quarter-cell">Q1</th>
-                        <th class="quarter-cell">Q2</th>
-                        <th class="quarter-cell">Q3</th>
-                        <th class="quarter-cell">Q4</th>
+                        <td class="quarter-cell">Q1</td>
+                        <td class="quarter-cell">Q2</td>
+                        <td class="quarter-cell">Q3</td>
+                        <td class="quarter-cell">Q4</td>
                         <!-- 2027 Quarters -->
-                        <th class="quarter-cell">Q1</th>
-                        <th class="quarter-cell">Q2</th>
-                        <th class="quarter-cell">Q3</th>
-                        <th class="quarter-cell">Q4</th>
+                        <td class="quarter-cell">Q1</td>
+                        <td class="quarter-cell">Q2</td>
+                        <td class="quarter-cell">Q3</td>
+                        <td class="quarter-cell">Q4</td>
                         <!-- 2028 Quarters -->
-                        <th class="quarter-cell">Q1</th>
-                        <th class="quarter-cell">Q2</th>
-                        <th class="quarter-cell">Q3</th>
-                        <th class="quarter-cell">Q4</th>
+                        <td class="quarter-cell">Q1</td>
+                        <td class="quarter-cell">Q2</td>
+                        <td class="quarter-cell">Q3</td>
+                        <td class="quarter-cell">Q4</td>
                         <!-- 2029 Quarters -->
-                        <th class="quarter-cell">Q1</th>
-                        <th class="quarter-cell">Q2</th>
-                        <th class="quarter-cell">Q3</th>
-                        <th class="quarter-cell">Q4</th>
+                        <td class="quarter-cell">Q1</td>
+                        <td class="quarter-cell">Q2</td>
+                        <td class="quarter-cell">Q3</td>
+                        <td class="quarter-cell">Q4</td>
                       </tr>
                     </table>
+                    </div>
+                    
+                    <div class="timeline-global-date">
+                      2025 to 2029
                     </div>
                   </th>
                 </tr>
@@ -986,30 +1048,56 @@
                           <a href="{% url 'edit_demand' d.demand.id %}" class="edit-button" title="Edit Demand">✏️</a>
                         </span>
                       </td>
-                      <td style="position: relative; padding: 0;">
-                        <div class="demand-timeline-wrapper">
-                          <div class="demand-timeline" style="left: {{ d.position.start_percent }}%; width: {{ d.position.width_percent }}%;">
-                            {% for stage in d.stages %}
-                              <div class="progress-bar" 
-                                   style="left: {{ stage.quarter_start_pos }}%; 
-                                          width: {{ stage.quarter_width }}%; 
-                                          background-color: {{ stage.color }};"
-                                   data-demand-id="{{ d.demand.id }}"
-                                   data-stage="{{ stage.stage }}"
-                                   data-start="{{ stage.start_date }}"
-                                   data-end="{{ stage.end_date }}"
-                                   data-stage-number="{{ stage.number }}"
-                                   onclick="openModal(this)">
-                                {% if stage.should_show_number %}
-                                  <span class="stage-number">{{ stage.number }}</span>
+                      <td>
+                        <div class="progress-bar-container">
+                          <!-- Using the dynamic global timeline based on actual demand data -->
+                          <div class="demand-timeline-wrapper">
+                            <div class="demand-timeline" style="width: 100%; left: 0%;">
+                              <!-- Dynamic timeline based on actual demand data -->
+                              {% for stage in d.stages %}
+                                {% if 'mini_progress' in stage.stage %}
+                                      <div
+                                        class="progress-bar"
+                                        style="width: {{ stage.width_percent }}%; background-color: {{ stage.color }}; left: {{ stage.start_percent }}%;"
+                                        data-stage-id="{{ stage.id }}"
+                                        data-stage-name="{{ stage.stage_verbose }}"
+                                        data-stage-number="{{ stage.number }}"
+                                        data-start-date="{{ stage.start_date }}"
+                                        data-end-date="{{ stage.end_date }}"
+                                        data-duration="{{ stage.duration }}"
+                                        onclick="event.stopPropagation(); openModal(this); return false;"
+                                      >
+                                        {% if stage.should_show_number %}
+                                          <span class="stage-number">{{ stage.number }}</span>
+                                        {% endif %}
+                                        <div class="tooltip">
+                                          <strong>{{ stage.stage_verbose }}</strong><br />
+                                          {{ stage.start_date }} - {{ stage.end_date }}<br />
+                                          Duration: {{ stage.duration }} days
+                                        </div>
+                                      </div>
+                                  {% endif %}
+                              {% endfor %}
+                            </div>
+                          </div>
+                          
+                          <!-- Stage Detail Bar (initially hidden) -->
+                          <div id="stage-detail-{{ d.demand.id }}" class="stage-detail-bar" style="display: none; position: relative; height: 50px; width: 100%; background-color: #f5f5f5; border: 1px solid #ccc; padding: 4px; margin-top: 5px; margin-bottom: 5px; text-align: center; overflow: hidden;">
+                            <div style="display: flex; width: 100%; justify-content: space-evenly; align-items: center;">
+                              {% for box in d.stage_detail_boxes %}
+                                {% if box.id %}
+                                  <div id="stage-detail-segment-{{ box.id }}" class="stage-detail-segment" style="height: 36px; width: 3%; min-width: 12px; background-color: {{ box.color }}; border: 1px solid #555; box-shadow: 0px 1px 2px rgba(0,0,0,0.2); box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; color: white;">
+                                    <span style="font-size: 12px; font-weight: bold;">{{ box.number }}</span>
+                                    <span style="font-size: 10px; font-weight: normal;">{{ box.duration }}d</span>
+                                  </div>
+                                {% else %}
+                                  <div class="stage-detail-segment" style="height: 36px; width: 3%; min-width: 12px; background-color: {{ box.color }}; border: 1px solid #999; box-shadow: 0px 1px 2px rgba(0,0,0,0.1); box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 10px; color: #888;">
+                                    <span style="font-size: 12px; font-weight: bold;">{{ box.number }}</span>
+                                    <span style="font-size: 10px; font-weight: normal;">{{ box.duration }}d</span>
+                                  </div>
                                 {% endif %}
-                                <div class="tooltip">
-                                  <div>Stage: {{ stage.stage_verbose }}</div>
-                                  <div>Duration: {{ stage.duration }} days</div>
-                                  <div>{{ stage.start_date }} - {{ stage.end_date }}</div>
-                                </div>
-                              </div>
-                            {% endfor %}
+                              {% endfor %}
+                            </div>
                           </div>
                         </div>
                       </td>
@@ -1025,7 +1113,7 @@
         
         <!-- Tab content for CASH Demands -->
         <div id="tab-cash" class="tab-content">
-          <div class="timeline-container" style="max-width: calc(100% - 20px);">
+          <div class="timeline-container" style="max-width: calc(100% - 20px); width: 100%;">
             <table>
               <thead>
                 <tr>
@@ -1037,47 +1125,65 @@
                       <colgroup>
                         <!-- 5 years x 4 quarters = 20 columns -->
                         <col style="width:15%">
-                        {% for i in "01234567891012345678"|make_list %}
-                          <col style="width:5%">
-                        {% endfor %}
+                        <col style="width:15%">
+                        <col style="width:15%">
+                        <col style="width:15%">
+                        <col style="width:15%">
+                        <col style="width:15%">
+                        <col style="width:15%">
+                        <col style="width:15%">
+                        <col style="width:15%">
+                        <col style="width:15%">
+                        <col style="width:15%">
+                        <col style="width:15%">
+                        <col style="width:15%">
+                        <col style="width:15%">
+                        <col style="width:15%">
+                        <col style="width:15%">
+                        <col style="width:15%">
+                        <col style="width:15%">
+                        <col style="width:15%">
+                        <col style="width:15%">
                       </colgroup>
                       <tr>
-                        <th></th>
-                        <th colspan="4" style="text-align:center; border:1px solid #999; background-color:#f0f0f0;">2025</th>
-                        <th colspan="4" style="text-align:center; border:1px solid #999; background-color:#f0f0f0;">2026</th>
-                        <th colspan="4" style="text-align:center; border:1px solid #999; background-color:#f0f0f0;">2027</th>
-                        <th colspan="4" style="text-align:center; border:1px solid #999; background-color:#f0f0f0;">2028</th>
-                        <th colspan="4" style="text-align:center; border:1px solid #999; background-color:#f0f0f0;">2029</th>
+                        <th colspan="4" style="text-align:center; padding:6px; font-weight:bold; font-size:14px; border:2px solid #999; background-color:#f0f0f0; height:30px;">2025</th>
+                        <th colspan="4" style="text-align:center; padding:6px; font-weight:bold; font-size:14px; border:2px solid #999; background-color:#f0f0f0; height:30px;">2026</th>
+                        <th colspan="4" style="text-align:center; padding:6px; font-weight:bold; font-size:14px; border:2px solid #999; background-color:#f0f0f0; height:30px;">2027</th>
+                        <th colspan="4" style="text-align:center; padding:6px; font-weight:bold; font-size:14px; border:2px solid #999; background-color:#f0f0f0; height:30px;">2028</th>
+                        <th colspan="4" style="text-align:center; padding:6px; font-weight:bold; font-size:14px; border:2px solid #999; background-color:#f0f0f0; height:30px;">2029</th>
                       </tr>
-                      <tr>
-                        <th></th>
+                      <tr class="quarter-row">
                         <!-- 2025 Quarters -->
-                        <th class="quarter-cell">Q1</th>
-                        <th class="quarter-cell">Q2</th>
-                        <th class="quarter-cell">Q3</th>
-                        <th class="quarter-cell">Q4</th>
+                        <td class="quarter-cell">Q1</td>
+                        <td class="quarter-cell">Q2</td>
+                        <td class="quarter-cell">Q3</td>
+                        <td class="quarter-cell">Q4</td>
                         <!-- 2026 Quarters -->
-                        <th class="quarter-cell">Q1</th>
-                        <th class="quarter-cell">Q2</th>
-                        <th class="quarter-cell">Q3</th>
-                        <th class="quarter-cell">Q4</th>
+                        <td class="quarter-cell">Q1</td>
+                        <td class="quarter-cell">Q2</td>
+                        <td class="quarter-cell">Q3</td>
+                        <td class="quarter-cell">Q4</td>
                         <!-- 2027 Quarters -->
-                        <th class="quarter-cell">Q1</th>
-                        <th class="quarter-cell">Q2</th>
-                        <th class="quarter-cell">Q3</th>
-                        <th class="quarter-cell">Q4</th>
+                        <td class="quarter-cell">Q1</td>
+                        <td class="quarter-cell">Q2</td>
+                        <td class="quarter-cell">Q3</td>
+                        <td class="quarter-cell">Q4</td>
                         <!-- 2028 Quarters -->
-                        <th class="quarter-cell">Q1</th>
-                        <th class="quarter-cell">Q2</th>
-                        <th class="quarter-cell">Q3</th>
-                        <th class="quarter-cell">Q4</th>
+                        <td class="quarter-cell">Q1</td>
+                        <td class="quarter-cell">Q2</td>
+                        <td class="quarter-cell">Q3</td>
+                        <td class="quarter-cell">Q4</td>
                         <!-- 2029 Quarters -->
-                        <th class="quarter-cell">Q1</th>
-                        <th class="quarter-cell">Q2</th>
-                        <th class="quarter-cell">Q3</th>
-                        <th class="quarter-cell">Q4</th>
+                        <td class="quarter-cell">Q1</td>
+                        <td class="quarter-cell">Q2</td>
+                        <td class="quarter-cell">Q3</td>
+                        <td class="quarter-cell">Q4</td>
                       </tr>
                     </table>
+                    </div>
+                    
+                    <div class="timeline-global-date">
+                      2025 to 2029
                     </div>
                   </th>
                 </tr>
@@ -1092,30 +1198,56 @@
                           <a href="{% url 'edit_demand' d.demand.id %}" class="edit-button" title="Edit Demand">✏️</a>
                         </span>
                       </td>
-                      <td style="position: relative; padding: 0;">
-                        <div class="demand-timeline-wrapper">
-                          <div class="demand-timeline" style="left: {{ d.position.start_percent }}%; width: {{ d.position.width_percent }}%;">
-                            {% for stage in d.stages %}
-                              <div class="progress-bar" 
-                                   style="left: {{ stage.quarter_start_pos }}%; 
-                                          width: {{ stage.quarter_width }}%; 
-                                          background-color: {{ stage.color }};"
-                                   data-demand-id="{{ d.demand.id }}"
-                                   data-stage="{{ stage.stage }}"
-                                   data-start="{{ stage.start_date }}"
-                                   data-end="{{ stage.end_date }}"
-                                   data-stage-number="{{ stage.number }}"
-                                   onclick="openModal(this)">
-                                {% if stage.should_show_number %}
-                                  <span class="stage-number">{{ stage.number }}</span>
+                      <td>
+                        <div class="progress-bar-container">
+                          <!-- Using the dynamic global timeline based on actual demand data -->
+                          <div class="demand-timeline-wrapper">
+                            <div class="demand-timeline" style="width: 100%; left: 0%;">
+                              <!-- Dynamic timeline based on actual demand data -->
+                              {% for stage in d.stages %}
+                                {% if 'mini_progress' in stage.stage %}
+                                      <div
+                                        class="progress-bar"
+                                        style="width: {{ stage.width_percent }}%; background-color: {{ stage.color }}; left: {{ stage.start_percent }}%;"
+                                        data-stage-id="{{ stage.id }}"
+                                        data-stage-name="{{ stage.stage_verbose }}"
+                                        data-stage-number="{{ stage.number }}"
+                                        data-start-date="{{ stage.start_date }}"
+                                        data-end-date="{{ stage.end_date }}"
+                                        data-duration="{{ stage.duration }}"
+                                        onclick="event.stopPropagation(); openModal(this); return false;"
+                                      >
+                                        {% if stage.should_show_number %}
+                                          <span class="stage-number">{{ stage.number }}</span>
+                                        {% endif %}
+                                        <div class="tooltip">
+                                          <strong>{{ stage.stage_verbose }}</strong><br />
+                                          {{ stage.start_date }} - {{ stage.end_date }}<br />
+                                          Duration: {{ stage.duration }} days
+                                        </div>
+                                      </div>
+                                  {% endif %}
+                              {% endfor %}
+                            </div>
+                          </div>
+                          
+                          <!-- Stage Detail Bar (initially hidden) -->
+                          <div id="stage-detail-{{ d.demand.id }}" class="stage-detail-bar" style="display: none; position: relative; height: 50px; width: 100%; background-color: #f5f5f5; border: 1px solid #ccc; padding: 4px; margin-top: 5px; margin-bottom: 5px; text-align: center; overflow: hidden;">
+                            <div style="display: flex; width: 100%; justify-content: space-evenly; align-items: center;">
+                              {% for box in d.stage_detail_boxes %}
+                                {% if box.id %}
+                                  <div id="stage-detail-segment-{{ box.id }}" class="stage-detail-segment" style="height: 36px; width: 3%; min-width: 12px; background-color: {{ box.color }}; border: 1px solid #555; box-shadow: 0px 1px 2px rgba(0,0,0,0.2); box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; color: white;">
+                                    <span style="font-size: 12px; font-weight: bold;">{{ box.number }}</span>
+                                    <span style="font-size: 10px; font-weight: normal;">{{ box.duration }}d</span>
+                                  </div>
+                                {% else %}
+                                  <div class="stage-detail-segment" style="height: 36px; width: 3%; min-width: 12px; background-color: {{ box.color }}; border: 1px solid #999; box-shadow: 0px 1px 2px rgba(0,0,0,0.1); box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 10px; color: #888;">
+                                    <span style="font-size: 12px; font-weight: bold;">{{ box.number }}</span>
+                                    <span style="font-size: 10px; font-weight: normal;">{{ box.duration }}d</span>
+                                  </div>
                                 {% endif %}
-                                <div class="tooltip">
-                                  <div>Stage: {{ stage.stage_verbose }}</div>
-                                  <div>Duration: {{ stage.duration }} days</div>
-                                  <div>{{ stage.start_date }} - {{ stage.end_date }}</div>
-                                </div>
-                              </div>
-                            {% endfor %}
+                              {% endfor %}
+                            </div>
                           </div>
                         </div>
                       </td>
