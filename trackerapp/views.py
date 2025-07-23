@@ -1,10 +1,11 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.contrib import messages
-from .models import Demand, STAGE_COLORS, DemandStagePeriod, Stage, STAGE_ORDER
-from .forms import DemandForm, DemandStagePeriodForm
+from .models import Demand, STAGE_COLORS, DemandStagePeriod, Stage, STAGE_ORDER, WeeklyUpdate
+from .forms import DemandForm, DemandStagePeriodForm, WeeklyUpdateForm
 from datetime import datetime, date
 from dateutil.relativedelta import relativedelta
+from django.db import models
 
 def demand_list(request):
     demands = Demand.objects.all().prefetch_related('stages')
@@ -418,11 +419,16 @@ def demand_list(request):
             'duration_days': demand_duration_days
         }
         
+        # Get only the latest weekly update for this demand
+        latest_weekly_update = WeeklyUpdate.objects.filter(demand=demand).order_by('-week_number').first()
+        
         demand_data.append({
             'demand': demand, 
             'stages': stage_bars,
             'stage_detail_boxes': stage_detail_boxes,
-            'position': demand_position
+            'position': demand_position,
+            'latest_weekly_update': latest_weekly_update,
+            'total_weekly_updates': WeeklyUpdate.objects.filter(demand=demand).count()
         })
 
     # === Stage Legend ===
@@ -782,3 +788,131 @@ def update_weekly_challenge(request):
             return JsonResponse({'success': False, 'error': str(e)})
     
     return JsonResponse({'success': False, 'error': 'Invalid request method'})
+
+def add_weekly_update(request, demand_id):
+    demand = get_object_or_404(Demand, id=demand_id)
+    
+    if request.method == 'POST':
+        form = WeeklyUpdateForm(request.POST)
+        if form.is_valid():
+            weekly_update = form.save(commit=False)
+            weekly_update.demand = demand
+            
+            # Check if week number already exists for this demand
+            if WeeklyUpdate.objects.filter(demand=demand, week_number=weekly_update.week_number).exists():
+                messages.error(request, f'Week {weekly_update.week_number} already exists for this demand.')
+                return render(request, 'trackerapp/add_weekly_update.html', {
+                    'form': form,
+                    'demand': demand
+                })
+            
+            weekly_update.save()
+            messages.success(request, f'Weekly update for Week {weekly_update.week_number} added successfully.')
+            return redirect('demand_list')
+    else:
+        # Auto-calculate next week number
+        last_week = WeeklyUpdate.objects.filter(demand=demand).order_by('-week_number').first()
+        next_week_number = (last_week.week_number + 1) if last_week else 1
+        
+        form = WeeklyUpdateForm(initial={'week_number': next_week_number})
+    
+    return render(request, 'trackerapp/add_weekly_update.html', {
+        'form': form,
+        'demand': demand
+    })
+
+def weekly_history(request, demand_id):
+    demand = get_object_or_404(Demand, id=demand_id)
+    weekly_updates = WeeklyUpdate.objects.filter(demand=demand).order_by('-week_number')
+    
+    # Calculate summary statistics
+    total_weeks = weekly_updates.count()
+    avg_progress = weekly_updates.aggregate(avg_progress=models.Avg('progress_percentage'))['avg_progress'] or 0
+    
+    # Get stage progression
+    stage_progression = []
+    for update in weekly_updates.order_by('week_number'):
+        if update.current_stage:
+            stage_progression.append({
+                'week': update.week_number,
+                'stage': update.current_stage,
+                'progress': update.progress_percentage,
+                'date': update.week_start_date
+            })
+    
+    return render(request, 'trackerapp/weekly_history.html', {
+        'demand': demand,
+        'weekly_updates': weekly_updates,
+        'total_weeks': total_weeks,
+        'avg_progress': round(avg_progress, 1),
+        'stage_progression': stage_progression
+    })
+
+def edit_weekly_update(request, update_id):
+    weekly_update = get_object_or_404(WeeklyUpdate, id=update_id)
+    
+    if request.method == 'POST':
+        form = WeeklyUpdateForm(request.POST, instance=weekly_update)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Weekly update updated successfully.')
+            return redirect('weekly_history', demand_id=weekly_update.demand.id)
+    else:
+        form = WeeklyUpdateForm(instance=weekly_update)
+    
+    return render(request, 'trackerapp/edit_weekly_update.html', {
+        'form': form,
+        'weekly_update': weekly_update,
+        'demand': weekly_update.demand
+    })
+
+def delete_weekly_update(request, update_id):
+    weekly_update = get_object_or_404(WeeklyUpdate, id=update_id)
+    demand_id = weekly_update.demand.id
+    
+    if request.method == 'POST':
+        weekly_update.delete()
+        messages.success(request, 'Weekly update deleted successfully.')
+        return redirect('weekly_history', demand_id=demand_id)
+    
+    return render(request, 'trackerapp/delete_weekly_update.html', {
+        'weekly_update': weekly_update,
+        'demand': weekly_update.demand
+    })
+
+def weekly_summary(request):
+    """View for overall weekly summary across all demands"""
+    all_weekly_updates = WeeklyUpdate.objects.all().order_by('-created_at')
+    
+    # Group by week number across all demands
+    weekly_summaries = {}
+    for update in all_weekly_updates:
+        week_key = f"Week {update.week_number}"
+        if week_key not in weekly_summaries:
+            weekly_summaries[week_key] = {
+                'week_number': update.week_number,
+                'demands': [],
+                'total_progress': 0,
+                'demand_count': 0
+            }
+        
+        weekly_summaries[week_key]['demands'].append({
+            'demand_name': update.demand.name,
+            'current_stage': update.current_stage,
+            'progress': update.progress_percentage,
+            'challenges': update.challenges,
+            'achievements': update.achievements
+        })
+        weekly_summaries[week_key]['total_progress'] += update.progress_percentage
+        weekly_summaries[week_key]['demand_count'] += 1
+    
+    # Calculate average progress for each week
+    for week_data in weekly_summaries.values():
+        if week_data['demand_count'] > 0:
+            week_data['avg_progress'] = round(week_data['total_progress'] / week_data['demand_count'], 1)
+        else:
+            week_data['avg_progress'] = 0
+    
+    return render(request, 'trackerapp/weekly_summary.html', {
+        'weekly_summaries': weekly_summaries
+    })
