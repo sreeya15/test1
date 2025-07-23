@@ -149,7 +149,9 @@ def demand_list(request):
         demand_duration_days = (demand_end - demand_start).days + 1
         demand_start_offset = (demand_start - global_timeline_start).days
         demand_start_percent = max(0, (demand_start_offset / global_timeline_days) * 100)
-        demand_width_percent = max(0.5, (demand_duration_days / global_timeline_days) * 100)
+        # Apply a scaling factor to make progress bars shorter
+        scaling_factor = 0.8  # Reduce width by 20%
+        demand_width_percent = max(0.5, (demand_duration_days / global_timeline_days) * 100 * scaling_factor)
         
         for s in stages:
             if not (s.start_date and s.end_date):
