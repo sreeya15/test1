@@ -856,7 +856,7 @@ def edit_weekly_update(request, update_id):
         if form.is_valid():
             form.save()
             messages.success(request, 'Weekly update updated successfully.')
-            return redirect('weekly_history', demand_id=weekly_update.demand.id)
+            return redirect('demand_list')
     else:
         form = WeeklyUpdateForm(instance=weekly_update)
     
