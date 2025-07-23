@@ -737,7 +737,7 @@
                             
                             {% if d.latest_weekly_update.achievements %}
                               <div style="margin-bottom: 8px;">
-                                <div style="font-size: 11px; color: #666; font-weight: bold; margin-bottom: 3px;">✅ Achievements:</div>
+                                <div style="font-size: 11px; color: #666; font-weight: bold; margin-bottom: 3px;">✅ Stage Details :</div>
                                 <div style="background-color: white; border: 1px solid #ddd; border-radius: 3px; padding: 6px; font-size: 12px; color: #333; line-height: 1.4; word-wrap: break-word; overflow-wrap: break-word; white-space: normal;">
                                   <span id="achievements-short-{{ d.latest_weekly_update.id }}" style="display: inline-block; max-width: 100%;">{{ d.latest_weekly_update.achievements|truncatechars:20 }}</span>
                                   {% if d.latest_weekly_update.achievements|length > 20 %}
