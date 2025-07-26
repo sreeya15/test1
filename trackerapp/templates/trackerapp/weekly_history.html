@@ -294,10 +294,6 @@
                     <div class="stat-label">Total Weeks</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-number">{{ avg_progress }}%</div>
-                    <div class="stat-label">Avg Progress</div>
-                </div>
-                <div class="stat-card">
                     <div class="stat-number">{{ weekly_updates.count }}</div>
                     <div class="stat-label">Updates</div>
                 </div>
@@ -336,12 +332,7 @@
                     </div>
                 </div>
 
-                <div class="progress-bar">
-                    <div class="progress-fill" style="width: {{ update.progress_percentage }}%"></div>
-                </div>
-                <div style="text-align: center; font-size: 14px; color: #666; margin-bottom: 15px;">
-                    {{ update.progress_percentage }}% Complete
-                </div>
+
 
                 <div class="update-content">
                     {% if update.achievements %}
@@ -358,12 +349,7 @@
                     </div>
                     {% endif %}
 
-                    {% if update.next_week_plan %}
-                    <div class="content-section">
-                        <h4>Next Week Plan</h4>
-                        <p>{{ update.next_week_plan|linebreaks }}</p>
-                    </div>
-                    {% endif %}
+
 
                     <div class="content-section">
                         <h4>Update Info</h4>
