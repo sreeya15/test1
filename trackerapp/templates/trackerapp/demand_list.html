@@ -663,13 +663,13 @@
                 <div id="stage-detail-{{ d.demand.id }}" class="stage-detail-bar" style="display: none; position: relative; height: 50px; width: 100%; background-color: #f5f5f5; border: 1px solid #ccc; padding: 4px; margin-top: 5px; margin-bottom: 5px; text-align: center; overflow: hidden;">
                   <div style="display: flex; width: 100%; justify-content: space-evenly; align-items: center;">
                     {% for box in d.stage_detail_boxes %}
-                      {% if box.id %}
-                        <div id="stage-detail-segment-{{ box.id }}" class="stage-detail-segment" style="height: 36px; width: 3%; min-width: 12px; background-color: {{ box.color }}; border: 1px solid #555; box-shadow: 0px 1px 2px rgba(0,0,0,0.2); box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; color: white;">
+                      {% if box.has_data %}
+                        <div id="stage-detail-segment-{{ box.id }}" class="stage-detail-segment" style="height: 36px; width: 3%; min-width: 12px; background-color: {{ box.color }}; border: 1px solid #555; box-shadow: 0px 1px 2px rgba(0,0,0,0.2); box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; color: white; cursor: pointer;" title="Stage {{ box.number }}: {{ box.stage_name }}&#10;Duration: {{ box.duration }} days&#10;Start: {{ box.start_date }}&#10;End: {{ box.end_date }}">
                           <span style="font-size: 12px; font-weight: bold;">{{ box.number }}</span>
                           <span style="font-size: 10px; font-weight: normal;">{{ box.duration }}d</span>
                         </div>
                       {% else %}
-                        <div class="stage-detail-segment" style="height: 36px; width: 3%; min-width: 12px; background-color: {{ box.color }}; border: 1px solid #999; box-shadow: 0px 1px 2px rgba(0,0,0,0.1); box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 10px; color: #888;">
+                        <div class="stage-detail-segment" style="height: 36px; width: 3%; min-width: 12px; background-color: {{ box.color }}; border: 1px solid #999; box-shadow: 0px 1px 2px rgba(0,0,0,0.1); box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 10px; color: #888; cursor: pointer;" title="Stage {{ box.number }}: {{ box.stage_name }}&#10;No data available">
                           <span style="font-size: 12px; font-weight: bold;">{{ box.number }}</span>
                           <span style="font-size: 10px; font-weight: normal;">{{ box.duration }}d</span>
                         </div>
@@ -978,13 +978,13 @@
                           <div id="stage-detail-{{ d.demand.id }}" class="stage-detail-bar" style="display: none; position: relative; height: 50px; width: 100%; background-color: #f5f5f5; border: 1px solid #ccc; padding: 4px; margin-top: 5px; margin-bottom: 5px; text-align: center; overflow: hidden;">
                             <div style="display: flex; width: 100%; justify-content: space-evenly; align-items: center;">
                               {% for box in d.stage_detail_boxes %}
-                                {% if box.id %}
-                                  <div id="stage-detail-segment-{{ box.id }}" class="stage-detail-segment" style="height: 36px; width: 3%; min-width: 12px; background-color: {{ box.color }}; border: 1px solid #555; box-shadow: 0px 1px 2px rgba(0,0,0,0.2); box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; color: white;">
+                                {% if box.has_data %}
+                                  <div id="stage-detail-segment-{{ box.id }}" class="stage-detail-segment" style="height: 36px; width: 3%; min-width: 12px; background-color: {{ box.color }}; border: 1px solid #555; box-shadow: 0px 1px 2px rgba(0,0,0,0.2); box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; color: white; cursor: pointer;" title="Stage {{ box.number }}: {{ box.stage_name }}&#10;Duration: {{ box.duration }} days&#10;Start: {{ box.start_date }}&#10;End: {{ box.end_date }}">
                                     <span style="font-size: 12px; font-weight: bold;">{{ box.number }}</span>
                                     <span style="font-size: 10px; font-weight: normal;">{{ box.duration }}d</span>
                                   </div>
                                 {% else %}
-                                  <div class="stage-detail-segment" style="height: 36px; width: 3%; min-width: 12px; background-color: {{ box.color }}; border: 1px solid #999; box-shadow: 0px 1px 2px rgba(0,0,0,0.1); box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 10px; color: #888;">
+                                  <div class="stage-detail-segment" style="height: 36px; width: 3%; min-width: 12px; background-color: {{ box.color }}; border: 1px solid #999; box-shadow: 0px 1px 2px rgba(0,0,0,0.1); box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 10px; color: #888; cursor: pointer;" title="Stage {{ box.number }}: {{ box.stage_name }}&#10;No data available">
                                     <span style="font-size: 12px; font-weight: bold;">{{ box.number }}</span>
                                     <span style="font-size: 10px; font-weight: normal;">{{ box.duration }}d</span>
                                   </div>
@@ -1290,13 +1290,13 @@
                           <div id="stage-detail-{{ d.demand.id }}" class="stage-detail-bar" style="display: none; position: relative; height: 50px; width: 100%; background-color: #f5f5f5; border: 1px solid #ccc; padding: 4px; margin-top: 5px; margin-bottom: 5px; text-align: center; overflow: hidden;">
                             <div style="display: flex; width: 100%; justify-content: space-evenly; align-items: center;">
                               {% for box in d.stage_detail_boxes %}
-                                {% if box.id %}
-                                  <div id="stage-detail-segment-{{ box.id }}" class="stage-detail-segment" style="height: 36px; width: 3%; min-width: 12px; background-color: {{ box.color }}; border: 1px solid #555; box-shadow: 0px 1px 2px rgba(0,0,0,0.2); box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; color: white;">
+                                {% if box.has_data %}
+                                  <div id="stage-detail-segment-{{ box.id }}" class="stage-detail-segment" style="height: 36px; width: 3%; min-width: 12px; background-color: {{ box.color }}; border: 1px solid #555; box-shadow: 0px 1px 2px rgba(0,0,0,0.2); box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; color: white; cursor: pointer;" title="Stage {{ box.number }}: {{ box.stage_name }}&#10;Duration: {{ box.duration }} days&#10;Start: {{ box.start_date }}&#10;End: {{ box.end_date }}">
                                     <span style="font-size: 12px; font-weight: bold;">{{ box.number }}</span>
                                     <span style="font-size: 10px; font-weight: normal;">{{ box.duration }}d</span>
                                   </div>
                                 {% else %}
-                                  <div class="stage-detail-segment" style="height: 36px; width: 3%; min-width: 12px; background-color: {{ box.color }}; border: 1px solid #999; box-shadow: 0px 1px 2px rgba(0,0,0,0.1); box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 10px; color: #888;">
+                                  <div class="stage-detail-segment" style="height: 36px; width: 3%; min-width: 12px; background-color: {{ box.color }}; border: 1px solid #999; box-shadow: 0px 1px 2px rgba(0,0,0,0.1); box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 10px; color: #888; cursor: pointer;" title="Stage {{ box.number }}: {{ box.stage_name }}&#10;No data available">
                                     <span style="font-size: 12px; font-weight: bold;">{{ box.number }}</span>
                                     <span style="font-size: 10px; font-weight: normal;">{{ box.duration }}d</span>
                                   </div>
@@ -1602,13 +1602,13 @@
                           <div id="stage-detail-{{ d.demand.id }}" class="stage-detail-bar" style="display: none; position: relative; height: 50px; width: 100%; background-color: #f5f5f5; border: 1px solid #ccc; padding: 4px; margin-top: 5px; margin-bottom: 5px; text-align: center; overflow: hidden;">
                             <div style="display: flex; width: 100%; justify-content: space-evenly; align-items: center;">
                               {% for box in d.stage_detail_boxes %}
-                                {% if box.id %}
-                                  <div id="stage-detail-segment-{{ box.id }}" class="stage-detail-segment" style="height: 36px; width: 3%; min-width: 12px; background-color: {{ box.color }}; border: 1px solid #555; box-shadow: 0px 1px 2px rgba(0,0,0,0.2); box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; color: white;">
+                                {% if box.has_data %}
+                                  <div id="stage-detail-segment-{{ box.id }}" class="stage-detail-segment" style="height: 36px; width: 3%; min-width: 12px; background-color: {{ box.color }}; border: 1px solid #555; box-shadow: 0px 1px 2px rgba(0,0,0,0.2); box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; color: white; cursor: pointer;" title="Stage {{ box.number }}: {{ box.stage_name }}&#10;Duration: {{ box.duration }} days&#10;Start: {{ box.start_date }}&#10;End: {{ box.end_date }}">
                                     <span style="font-size: 12px; font-weight: bold;">{{ box.number }}</span>
                                     <span style="font-size: 10px; font-weight: normal;">{{ box.duration }}d</span>
                                   </div>
                                 {% else %}
-                                  <div class="stage-detail-segment" style="height: 36px; width: 3%; min-width: 12px; background-color: {{ box.color }}; border: 1px solid #999; box-shadow: 0px 1px 2px rgba(0,0,0,0.1); box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 10px; color: #888;">
+                                  <div class="stage-detail-segment" style="height: 36px; width: 3%; min-width: 12px; background-color: {{ box.color }}; border: 1px solid #999; box-shadow: 0px 1px 2px rgba(0,0,0,0.1); box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 10px; color: #888; cursor: pointer;" title="Stage {{ box.number }}: {{ box.stage_name }}&#10;No data available">
                                     <span style="font-size: 12px; font-weight: bold;">{{ box.number }}</span>
                                     <span style="font-size: 10px; font-weight: normal;">{{ box.duration }}d</span>
                                   </div>

@@ -442,14 +442,22 @@ def demand_list(request):
                     'number': stage_num,
                     'duration': found_stage['duration'],
                     'color': found_stage['color'],
-                    'id': found_stage['id']
+                    'id': found_stage['id'],
+                    'stage_name': found_stage.get('stage_verbose', f'Stage {stage_num}'),
+                    'start_date': found_stage.get('start_date', ''),
+                    'end_date': found_stage.get('end_date', ''),
+                    'has_data': True
                 })
             else:
                 stage_detail_boxes.append({
                     'number': stage_num,
                     'duration': 0,
                     'color': '#ddd',
-                    'id': None
+                    'id': None,
+                    'stage_name': f'(Not Set)',
+                    'start_date': '',
+                    'end_date': '',
+                    'has_data': False
                 })
         
         demand_position = {
