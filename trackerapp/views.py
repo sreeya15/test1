@@ -939,27 +939,51 @@ def delete_weekly_update(request, update_id):
 
 def weekly_summary(request):
     """View for overall weekly summary across all demands"""
-    all_weekly_updates = WeeklyUpdate.objects.all().order_by('-created_at')
+    # Get all demands for the dropdown
+    all_demands = Demand.objects.all().order_by('name')
     
-    # Group by week number across all demands
+    # Get selected demand from request
+    selected_demand_id = request.GET.get('demand_id')
+    selected_demand = None
+    
+    if selected_demand_id and selected_demand_id != 'all':
+        selected_demand = get_object_or_404(Demand, id=selected_demand_id)
+        weekly_updates = WeeklyUpdate.objects.filter(demand=selected_demand).order_by('-week_number')
+    else:
+        # Show all demands
+        weekly_updates = WeeklyUpdate.objects.all().order_by('-week_number')
+    
+    # Group by week number
     weekly_summaries = {}
-    for update in all_weekly_updates:
+    for update in weekly_updates:
         week_key = f"Week {update.week_number}"
         if week_key not in weekly_summaries:
             weekly_summaries[week_key] = {
                 'week_number': update.week_number,
-                'demands': [],
-                'demand_count': 0
+                'week_start_date': update.week_start_date,
+                'week_end_date': update.week_end_date,
+                'updates': [],
+                'update_count': 0
             }
         
-        weekly_summaries[week_key]['demands'].append({
+        weekly_summaries[week_key]['updates'].append({
+            'id': update.id,
             'demand_name': update.demand.name,
-            'current_stage': update.current_stage,
+            'demand_id': update.demand.id,
+            'current_stage': update.get_current_stage_display() if update.current_stage else None,
             'challenges': update.challenges,
-            'achievements': update.achievements
+            'achievements': update.achievements,
+            'created_at': update.created_at,
+            'updated_at': update.updated_at
         })
-        weekly_summaries[week_key]['demand_count'] += 1
+        weekly_summaries[week_key]['update_count'] += 1
+    
+    # Sort by week number (newest first)
+    weekly_summaries = dict(sorted(weekly_summaries.items(), key=lambda x: x[1]['week_number'], reverse=True))
     
     return render(request, 'trackerapp/weekly_summary.html', {
-        'weekly_summaries': weekly_summaries
+        'weekly_summaries': weekly_summaries,
+        'all_demands': all_demands,
+        'selected_demand': selected_demand,
+        'selected_demand_id': selected_demand_id or 'all'
     })
