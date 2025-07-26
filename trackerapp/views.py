@@ -868,7 +868,6 @@ def weekly_history(request, demand_id):
     
     # Calculate summary statistics
     total_weeks = weekly_updates.count()
-    avg_progress = weekly_updates.aggregate(avg_progress=models.Avg('progress_percentage'))['avg_progress'] or 0
     
     # Get stage progression
     stage_progression = []
@@ -877,7 +876,6 @@ def weekly_history(request, demand_id):
             stage_progression.append({
                 'week': update.week_number,
                 'stage': update.current_stage,
-                'progress': update.progress_percentage,
                 'date': update.week_start_date
             })
     
@@ -885,7 +883,6 @@ def weekly_history(request, demand_id):
         'demand': demand,
         'weekly_updates': weekly_updates,
         'total_weeks': total_weeks,
-        'avg_progress': round(avg_progress, 1),
         'stage_progression': stage_progression
     })
 
@@ -940,26 +937,16 @@ def weekly_summary(request):
             weekly_summaries[week_key] = {
                 'week_number': update.week_number,
                 'demands': [],
-                'total_progress': 0,
                 'demand_count': 0
             }
         
         weekly_summaries[week_key]['demands'].append({
             'demand_name': update.demand.name,
             'current_stage': update.current_stage,
-            'progress': update.progress_percentage,
             'challenges': update.challenges,
             'achievements': update.achievements
         })
-        weekly_summaries[week_key]['total_progress'] += update.progress_percentage
         weekly_summaries[week_key]['demand_count'] += 1
-    
-    # Calculate average progress for each week
-    for week_data in weekly_summaries.values():
-        if week_data['demand_count'] > 0:
-            week_data['avg_progress'] = round(week_data['total_progress'] / week_data['demand_count'], 1)
-        else:
-            week_data['avg_progress'] = 0
     
     return render(request, 'trackerapp/weekly_summary.html', {
         'weekly_summaries': weekly_summaries

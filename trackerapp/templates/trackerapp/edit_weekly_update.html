@@ -132,7 +132,6 @@
             <p><strong>Demand:</strong> {{ demand.name }}</p>
             <p><strong>Week:</strong> {{ weekly_update.week_number }}</p>
             <p><strong>Current Stage:</strong> {{ weekly_update.get_current_stage_display|default:"Not set" }}</p>
-            <p><strong>Progress:</strong> {{ weekly_update.progress_percentage }}%</p>
         </div>
 
         <form method="post">
@@ -190,14 +189,6 @@
             </div>
 
             <div class="form-group">
-                <label for="{{ form.progress_percentage.id_for_label }}">Progress Percentage:</label>
-                {{ form.progress_percentage }}
-                {% if form.progress_percentage.errors %}
-                <div class="error-message">{{ form.progress_percentage.errors.0 }}</div>
-                {% endif %}
-            </div>
-
-            <div class="form-group">
                 <label for="{{ form.achievements.id_for_label }}">Achievements:</label>
                 {{ form.achievements }}
                 {% if form.achievements.errors %}
@@ -210,14 +201,6 @@
                 {{ form.challenges }}
                 {% if form.challenges.errors %}
                 <div class="error-message">{{ form.challenges.errors.0 }}</div>
-                {% endif %}
-            </div>
-
-            <div class="form-group">
-                <label for="{{ form.next_week_plan.id_for_label }}">Next Week Plan:</label>
-                {{ form.next_week_plan }}
-                {% if form.next_week_plan.errors %}
-                <div class="error-message">{{ form.next_week_plan.errors.0 }}</div>
                 {% endif %}
             </div>
 

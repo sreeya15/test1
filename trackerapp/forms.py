@@ -121,7 +121,7 @@ class DemandStagePeriodForm(forms.ModelForm):
 class WeeklyUpdateForm(forms.ModelForm):
     class Meta:
         model = WeeklyUpdate
-        fields = ['week_number', 'week_start_date', 'week_end_date', 'current_stage', 'progress_percentage', 'challenges', 'achievements', 'next_week_plan']
+        fields = ['week_number', 'week_start_date', 'week_end_date', 'current_stage', 'challenges', 'achievements']
         widgets = {
             'week_start_date': forms.DateInput(attrs={
                 'type': 'date',
@@ -135,8 +135,6 @@ class WeeklyUpdateForm(forms.ModelForm):
             }),
             'challenges': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Describe any challenges faced this week...'}),
             'achievements': forms.Textarea(attrs={'rows': 3, 'placeholder': 'List key achievements for this week...'}),
-            'next_week_plan': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Outline plans for next week...'}),
-            'progress_percentage': forms.NumberInput(attrs={'min': 0, 'max': 100}),
         }
 
     def __init__(self, *args, **kwargs):

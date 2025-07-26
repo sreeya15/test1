@@ -215,18 +215,6 @@
             </div>
 
             <div class="form-group">
-                <label for="{{ form.progress_percentage.id_for_label }}">Progress Percentage:</label>
-                <div class="progress-input">
-                    {{ form.progress_percentage }}
-                    <span>%</span>
-                </div>
-                {% if form.progress_percentage.errors %}
-                <div class="error-message">{{ form.progress_percentage.errors.0 }}</div>
-                {% endif %}
-                <div class="help-text">Enter a value between 0 and 100</div>
-            </div>
-
-            <div class="form-group">
                 <label for="{{ form.achievements.id_for_label }}">Stage Details:</label>
                 {{ form.achievements }}
                 {% if form.achievements.errors %}
@@ -242,15 +230,6 @@
                 <div class="error-message">{{ form.challenges.errors.0 }}</div>
                 {% endif %}
                 <div class="help-text">Describe any challenges or obstacles faced this week</div>
-            </div>
-
-            <div class="form-group">
-                <label for="{{ form.next_week_plan.id_for_label }}">Next Week Plan:</label>
-                {{ form.next_week_plan }}
-                {% if form.next_week_plan.errors %}
-                <div class="error-message">{{ form.next_week_plan.errors.0 }}</div>
-                {% endif %}
-                <div class="help-text">Outline plans and goals for the upcoming week</div>
             </div>
 
             <div style="margin-top: 30px;">
