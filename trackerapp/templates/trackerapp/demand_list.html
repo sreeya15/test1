@@ -891,6 +891,7 @@
                       2025 to 2029
                     </div>
                   </th>
+                  <th style="width: 280px; display: none;" class="weekly-update-header">STATUS</th>
                 </tr>
               </thead>
               <tbody>
@@ -961,10 +962,134 @@
                           </div>
                         </div>
                       </td>
+
+                      <td style="vertical-align: top; padding: 10px; display: none;" class="weekly-update-cell">
+                        <!-- Weekly Update Cell for each demand (third column) -->
+                        <div class="weekly-update-section" style="background-color: #f9f9f9; border: 1px solid #ddd; padding: 10px; border-radius: 4px;">
+                          <!-- Tabs for Weekly Update and Demand Details -->
+                          <div class="demand-tabs" style="margin-bottom: 10px;">
+                            <div class="demand-tab active" data-tab="weekly-update-{{ d.demand.id }}" onclick="switchDemandTab('weekly-update-{{ d.demand.id }}', '{{ d.demand.id }}')">Weekly Update</div>
+                            <div class="demand-tab" data-tab="demand-details-{{ d.demand.id }}" onclick="switchDemandTab('demand-details-{{ d.demand.id }}', '{{ d.demand.id }}')">Demand Details</div>
+                          </div>
+                          
+                          <!-- Weekly Update Tab Content -->
+                          <div id="weekly-update-content-{{ d.demand.id }}" class="demand-tab-content active">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                              <h5 style="margin: 0; font-size: 14px;">Weekly Updates</h5>
+                              <a href="{% url 'add_weekly_update' demand_id=d.demand.id %}" style="background-color: #28a745; color: white; padding: 4px 8px; border-radius: 3px; font-size: 11px; text-decoration: none;">Add Update</a>
+                            </div>
+                            
+                            <!-- Weekly History Section -->
+                            <div style="margin-bottom: 15px;">
+                              <div style="font-size: 12px; color: #666; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+                                <strong>Latest Update ({{ d.total_weekly_updates }} total)</strong>
+                                {% if d.total_weekly_updates > 1 %}
+                                  <a href="{% url 'weekly_history' demand_id=d.demand.id %}" style="background-color: #6c757d; color: white; padding: 4px 8px; border-radius: 3px; font-size: 10px; text-decoration: none;">
+                                    📊 View History
+                                  </a>
+                                {% endif %}
+                              </div>
+                            
+                              {% if d.latest_weekly_update %}
+                                <div style="border: 1px solid #ddd; border-radius: 4px; padding: 12px; background-color: white;">
+                                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                    <div style="font-weight: bold; font-size: 13px; color: #1f78b4;">
+                                      Week {{ d.latest_weekly_update.week_number }}
+                                    </div>
+                                    <div style="font-size: 11px; color: #666;">
+                                      {{ d.latest_weekly_update.week_start_date|date:"M d" }} - {{ d.latest_weekly_update.week_end_date|date:"M d, Y" }}
+                                    </div>
+                                  </div>
+                                  
+                                  {% if d.latest_weekly_update.current_stage %}
+                                    <div style="margin-bottom: 8px;">
+                                      <span style="background-color: #1f78b4; color: white; padding: 3px 8px; border-radius: 12px; font-size: 11px;">
+                                        {{ d.latest_weekly_update.get_current_stage_display }}
+                                      </span>
+                                    </div>
+                                  {% endif %}
+                                  
+                                  <div style="margin-bottom: 10px;">
+                                    <div style="width: 100%; height: 10px; background-color: #e9ecef; border-radius: 5px; overflow: hidden;">
+                                      <div style="height: 100%; background-color: #1f78b4; width: {{ d.latest_weekly_update.progress_percentage }}%;"></div>
+                                    </div>
+                                    <div style="text-align: center; font-size: 11px; color: #666; margin-top: 3px;">
+                                      {{ d.latest_weekly_update.progress_percentage }}% Complete
+                                    </div>
+                                  </div>
+                                  
+                                  {% if d.latest_weekly_update.achievements %}
+                                    <div style="margin-bottom: 8px;">
+                                      <div style="font-size: 11px; color: #666; font-weight: bold; margin-bottom: 3px;">✅ Stage Details :</div>
+                                      <div style="background-color: white; border: 1px solid #ddd; border-radius: 3px; padding: 6px; font-size: 12px; color: #333; line-height: 1.4; word-wrap: break-word; overflow-wrap: break-word; white-space: normal;">
+                                        <span id="achievements-short-{{ d.latest_weekly_update.id }}" style="display: inline-block; max-width: 100%;">{{ d.latest_weekly_update.achievements|truncatechars:20 }}</span>
+                                        {% if d.latest_weekly_update.achievements|length > 20 %}
+                                          <span id="achievements-full-{{ d.latest_weekly_update.id }}" style="display: none; word-wrap: break-word; overflow-wrap: break-word; white-space: normal;">{{ d.latest_weekly_update.achievements }}</span>
+                                          <button type="button" onclick="toggleText('achievements-short-{{ d.latest_weekly_update.id }}', 'achievements-full-{{ d.latest_weekly_update.id }}', 'achievements-btn-{{ d.latest_weekly_update.id }}')" id="achievements-btn-{{ d.latest_weekly_update.id }}" style="background: none; border: none; color: #1f78b4; cursor: pointer; font-size: 10px; margin-left: 5px; text-decoration: underline; white-space: nowrap;">View More</button>
+                                        {% endif %}
+                                      </div>
+                                    </div>
+                                  {% endif %}
+                                  
+                                  {% if d.latest_weekly_update.challenges %}
+                                    <div style="margin-bottom: 8px;">
+                                      <div style="font-size: 11px; color: #666; font-weight: bold; margin-bottom: 3px;">⚠️ Challenges:</div>
+                                      <div style="background-color: white; border: 1px solid #ddd; border-radius: 3px; padding: 6px; font-size: 12px; color: #333; line-height: 1.4; word-wrap: break-word; overflow-wrap: break-word; white-space: normal;">
+                                        <span id="challenges-short-{{ d.latest_weekly_update.id }}" style="display: inline-block; max-width: 100%;">{{ d.latest_weekly_update.challenges|truncatechars:20 }}</span>
+                                        {% if d.latest_weekly_update.challenges|length > 20 %}
+                                          <span id="challenges-full-{{ d.latest_weekly_update.id }}" style="display: none; word-wrap: break-word; overflow-wrap: break-word; white-space: normal;">{{ d.latest_weekly_update.challenges }}</span>
+                                          <button type="button" onclick="toggleText('challenges-short-{{ d.latest_weekly_update.id }}', 'challenges-full-{{ d.latest_weekly_update.id }}', 'challenges-btn-{{ d.latest_weekly_update.id }}')" id="challenges-btn-{{ d.latest_weekly_update.id }}" style="background: none; border: none; color: #1f78b4; cursor: pointer; font-size: 10px; margin-left: 5px; text-decoration: underline; white-space: nowrap;">View More</button>
+                                        {% endif %}
+                                      </div>
+                                    </div>
+                                  {% endif %}
+                                  
+                                  {% if d.latest_weekly_update.next_week_plan %}
+                                    <div style="margin-bottom: 8px;">
+                                      <div style="font-size: 11px; color: #666; font-weight: bold; margin-bottom: 3px;">📋 Next Week Plan:</div>
+                                      <div style="font-size: 12px; color: #333; line-height: 1.4;">{{ d.latest_weekly_update.next_week_plan|truncatewords:20 }}</div>
+                                    </div>
+                                  {% endif %}
+                                  
+                                  <div style="margin-top: 10px; display: flex; gap: 6px;">
+                                    <a href="{% url 'edit_weekly_update' update_id=d.latest_weekly_update.id %}" style="background-color: #ffc107; color: #333; padding: 3px 8px; border-radius: 3px; font-size: 10px; text-decoration: none;">✏️ Edit</a>
+                                    <a href="javascript:void(0)" style="background-color: #dc3545; color: white; padding: 3px 8px; border-radius: 3px; font-size: 10px; text-decoration: none;" onclick="deleteWeeklyUpdate({{ d.latest_weekly_update.id }}, '{{ d.demand.id }}')">🗑️ Delete</a>
+                                  </div>
+                                </div>
+                              {% else %}
+                                <div style="text-align: center; padding: 20px; color: #666; background-color: #f8f9fa; border-radius: 4px;">
+                                  <div style="font-size: 12px; margin-bottom: 10px;">No weekly updates yet</div>
+                                  <a href="{% url 'add_weekly_update' demand_id=d.demand.id %}" style="background-color: #28a745; color: white; padding: 6px 12px; border-radius: 3px; font-size: 11px; text-decoration: none;">Add First Update</a>
+                                </div>
+                              {% endif %}
+                            </div>
+                          </div>
+                          
+                          <!-- Demand Details Tab Content -->
+                          <div id="demand-details-content-{{ d.demand.id }}" class="demand-tab-content">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                              <h5 style="margin: 0; font-size: 14px;">Demand Details</h5>
+                              <a href="{% url 'edit_demand' d.demand.id %}" style="background: none; border: none; color: #2196F3; cursor: pointer; font-size: 13px; text-decoration: none;">
+                                <i class="fas fa-edit"></i> Edit
+                              </a>
+                            </div>
+                            <div>
+                              <div style="margin-bottom: 3px; font-size: 13px;"><strong>Demand Name:</strong> <span>{{ d.demand.name }}</span></div>
+                              <div style="margin-bottom: 3px; font-size: 13px;"><strong>IO Name:</strong> <span>{{ d.demand.io_name|default:'Not set' }}</span></div>
+                              <div style="margin-bottom: 3px; font-size: 13px;"><strong>Demand Amount:</strong> <span>{{ d.demand.demand_amount|default:'Not set' }}</span></div>
+                              <div style="margin-bottom: 3px; font-size: 13px;"><strong>File Type:</strong> <span>{{ d.demand.file_type|default:'Not set' }}</span></div>
+                              <div style="margin-bottom: 3px; font-size: 13px;"><strong>File Subtype:</strong> <span>{{ d.demand.file_subtype|default:'Not set' }}</span></div>
+                              <div style="margin-bottom: 3px; font-size: 13px;"><strong>Start Date:</strong> <span>{{ d.demand.start_date|default:'Not set' }}</span></div>
+                              <div style="margin-bottom: 3px; font-size: 13px;"><strong>End Date:</strong> <span>{{ d.demand.end_date|default:'Not set' }}</span></div>
+                              <div style="font-size: 13px;"><strong>Duration (Months):</strong> <span>{{ d.demand.duration_months|default:'Not set' }}</span></div>
+                            </div>
+                          </div>
+                        </div>
+                      </td>
                     </tr>
                   {% endif %}
                 {% empty %}
-                  <tr><td colspan="2">No GEM demands found.</td></tr>
+                  <tr><td colspan="3">No GEM demands found.</td></tr>
                 {% endfor %}
               </tbody>
             </table>
@@ -1046,6 +1171,7 @@
                       2025 to 2029
                     </div>
                   </th>
+                  <th style="width: 280px; display: none;" class="weekly-update-header">STATUS</th>
                 </tr>
               </thead>
               <tbody>
@@ -1116,10 +1242,134 @@
                           </div>
                         </div>
                       </td>
+
+                      <td style="vertical-align: top; padding: 10px; display: none;" class="weekly-update-cell">
+                        <!-- Weekly Update Cell for each demand (third column) -->
+                        <div class="weekly-update-section" style="background-color: #f9f9f9; border: 1px solid #ddd; padding: 10px; border-radius: 4px;">
+                          <!-- Tabs for Weekly Update and Demand Details -->
+                          <div class="demand-tabs" style="margin-bottom: 10px;">
+                            <div class="demand-tab active" data-tab="weekly-update-{{ d.demand.id }}" onclick="switchDemandTab('weekly-update-{{ d.demand.id }}', '{{ d.demand.id }}')">Weekly Update</div>
+                            <div class="demand-tab" data-tab="demand-details-{{ d.demand.id }}" onclick="switchDemandTab('demand-details-{{ d.demand.id }}', '{{ d.demand.id }}')">Demand Details</div>
+                          </div>
+                          
+                          <!-- Weekly Update Tab Content -->
+                          <div id="weekly-update-content-{{ d.demand.id }}" class="demand-tab-content active">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                              <h5 style="margin: 0; font-size: 14px;">Weekly Updates</h5>
+                              <a href="{% url 'add_weekly_update' demand_id=d.demand.id %}" style="background-color: #28a745; color: white; padding: 4px 8px; border-radius: 3px; font-size: 11px; text-decoration: none;">Add Update</a>
+                            </div>
+                            
+                            <!-- Weekly History Section -->
+                            <div style="margin-bottom: 15px;">
+                              <div style="font-size: 12px; color: #666; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+                                <strong>Latest Update ({{ d.total_weekly_updates }} total)</strong>
+                                {% if d.total_weekly_updates > 1 %}
+                                  <a href="{% url 'weekly_history' demand_id=d.demand.id %}" style="background-color: #6c757d; color: white; padding: 4px 8px; border-radius: 3px; font-size: 10px; text-decoration: none;">
+                                    📊 View History
+                                  </a>
+                                {% endif %}
+                              </div>
+                            
+                              {% if d.latest_weekly_update %}
+                                <div style="border: 1px solid #ddd; border-radius: 4px; padding: 12px; background-color: white;">
+                                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                    <div style="font-weight: bold; font-size: 13px; color: #1f78b4;">
+                                      Week {{ d.latest_weekly_update.week_number }}
+                                    </div>
+                                    <div style="font-size: 11px; color: #666;">
+                                      {{ d.latest_weekly_update.week_start_date|date:"M d" }} - {{ d.latest_weekly_update.week_end_date|date:"M d, Y" }}
+                                    </div>
+                                  </div>
+                                  
+                                  {% if d.latest_weekly_update.current_stage %}
+                                    <div style="margin-bottom: 8px;">
+                                      <span style="background-color: #1f78b4; color: white; padding: 3px 8px; border-radius: 12px; font-size: 11px;">
+                                        {{ d.latest_weekly_update.get_current_stage_display }}
+                                      </span>
+                                    </div>
+                                  {% endif %}
+                                  
+                                  <div style="margin-bottom: 10px;">
+                                    <div style="width: 100%; height: 10px; background-color: #e9ecef; border-radius: 5px; overflow: hidden;">
+                                      <div style="height: 100%; background-color: #1f78b4; width: {{ d.latest_weekly_update.progress_percentage }}%;"></div>
+                                    </div>
+                                    <div style="text-align: center; font-size: 11px; color: #666; margin-top: 3px;">
+                                      {{ d.latest_weekly_update.progress_percentage }}% Complete
+                                    </div>
+                                  </div>
+                                  
+                                  {% if d.latest_weekly_update.achievements %}
+                                    <div style="margin-bottom: 8px;">
+                                      <div style="font-size: 11px; color: #666; font-weight: bold; margin-bottom: 3px;">✅ Stage Details :</div>
+                                      <div style="background-color: white; border: 1px solid #ddd; border-radius: 3px; padding: 6px; font-size: 12px; color: #333; line-height: 1.4; word-wrap: break-word; overflow-wrap: break-word; white-space: normal;">
+                                        <span id="achievements-short-{{ d.latest_weekly_update.id }}" style="display: inline-block; max-width: 100%;">{{ d.latest_weekly_update.achievements|truncatechars:20 }}</span>
+                                        {% if d.latest_weekly_update.achievements|length > 20 %}
+                                          <span id="achievements-full-{{ d.latest_weekly_update.id }}" style="display: none; word-wrap: break-word; overflow-wrap: break-word; white-space: normal;">{{ d.latest_weekly_update.achievements }}</span>
+                                          <button type="button" onclick="toggleText('achievements-short-{{ d.latest_weekly_update.id }}', 'achievements-full-{{ d.latest_weekly_update.id }}', 'achievements-btn-{{ d.latest_weekly_update.id }}')" id="achievements-btn-{{ d.latest_weekly_update.id }}" style="background: none; border: none; color: #1f78b4; cursor: pointer; font-size: 10px; margin-left: 5px; text-decoration: underline; white-space: nowrap;">View More</button>
+                                        {% endif %}
+                                      </div>
+                                    </div>
+                                  {% endif %}
+                                  
+                                  {% if d.latest_weekly_update.challenges %}
+                                    <div style="margin-bottom: 8px;">
+                                      <div style="font-size: 11px; color: #666; font-weight: bold; margin-bottom: 3px;">⚠️ Challenges:</div>
+                                      <div style="background-color: white; border: 1px solid #ddd; border-radius: 3px; padding: 6px; font-size: 12px; color: #333; line-height: 1.4; word-wrap: break-word; overflow-wrap: break-word; white-space: normal;">
+                                        <span id="challenges-short-{{ d.latest_weekly_update.id }}" style="display: inline-block; max-width: 100%;">{{ d.latest_weekly_update.challenges|truncatechars:20 }}</span>
+                                        {% if d.latest_weekly_update.challenges|length > 20 %}
+                                          <span id="challenges-full-{{ d.latest_weekly_update.id }}" style="display: none; word-wrap: break-word; overflow-wrap: break-word; white-space: normal;">{{ d.latest_weekly_update.challenges }}</span>
+                                          <button type="button" onclick="toggleText('challenges-short-{{ d.latest_weekly_update.id }}', 'challenges-full-{{ d.latest_weekly_update.id }}', 'challenges-btn-{{ d.latest_weekly_update.id }}')" id="challenges-btn-{{ d.latest_weekly_update.id }}" style="background: none; border: none; color: #1f78b4; cursor: pointer; font-size: 10px; margin-left: 5px; text-decoration: underline; white-space: nowrap;">View More</button>
+                                        {% endif %}
+                                      </div>
+                                    </div>
+                                  {% endif %}
+                                  
+                                  {% if d.latest_weekly_update.next_week_plan %}
+                                    <div style="margin-bottom: 8px;">
+                                      <div style="font-size: 11px; color: #666; font-weight: bold; margin-bottom: 3px;">📋 Next Week Plan:</div>
+                                      <div style="font-size: 12px; color: #333; line-height: 1.4;">{{ d.latest_weekly_update.next_week_plan|truncatewords:20 }}</div>
+                                    </div>
+                                  {% endif %}
+                                  
+                                  <div style="margin-top: 10px; display: flex; gap: 6px;">
+                                    <a href="{% url 'edit_weekly_update' update_id=d.latest_weekly_update.id %}" style="background-color: #ffc107; color: #333; padding: 3px 8px; border-radius: 3px; font-size: 10px; text-decoration: none;">✏️ Edit</a>
+                                    <a href="javascript:void(0)" style="background-color: #dc3545; color: white; padding: 3px 8px; border-radius: 3px; font-size: 10px; text-decoration: none;" onclick="deleteWeeklyUpdate({{ d.latest_weekly_update.id }}, '{{ d.demand.id }}')">🗑️ Delete</a>
+                                  </div>
+                                </div>
+                              {% else %}
+                                <div style="text-align: center; padding: 20px; color: #666; background-color: #f8f9fa; border-radius: 4px;">
+                                  <div style="font-size: 12px; margin-bottom: 10px;">No weekly updates yet</div>
+                                  <a href="{% url 'add_weekly_update' demand_id=d.demand.id %}" style="background-color: #28a745; color: white; padding: 6px 12px; border-radius: 3px; font-size: 11px; text-decoration: none;">Add First Update</a>
+                                </div>
+                              {% endif %}
+                            </div>
+                          </div>
+                          
+                          <!-- Demand Details Tab Content -->
+                          <div id="demand-details-content-{{ d.demand.id }}" class="demand-tab-content">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                              <h5 style="margin: 0; font-size: 14px;">Demand Details</h5>
+                              <a href="{% url 'edit_demand' d.demand.id %}" style="background: none; border: none; color: #2196F3; cursor: pointer; font-size: 13px; text-decoration: none;">
+                                <i class="fas fa-edit"></i> Edit
+                              </a>
+                            </div>
+                            <div>
+                              <div style="margin-bottom: 3px; font-size: 13px;"><strong>Demand Name:</strong> <span>{{ d.demand.name }}</span></div>
+                              <div style="margin-bottom: 3px; font-size: 13px;"><strong>IO Name:</strong> <span>{{ d.demand.io_name|default:'Not set' }}</span></div>
+                              <div style="margin-bottom: 3px; font-size: 13px;"><strong>Demand Amount:</strong> <span>{{ d.demand.demand_amount|default:'Not set' }}</span></div>
+                              <div style="margin-bottom: 3px; font-size: 13px;"><strong>File Type:</strong> <span>{{ d.demand.file_type|default:'Not set' }}</span></div>
+                              <div style="margin-bottom: 3px; font-size: 13px;"><strong>File Subtype:</strong> <span>{{ d.demand.file_subtype|default:'Not set' }}</span></div>
+                              <div style="margin-bottom: 3px; font-size: 13px;"><strong>Start Date:</strong> <span>{{ d.demand.start_date|default:'Not set' }}</span></div>
+                              <div style="margin-bottom: 3px; font-size: 13px;"><strong>End Date:</strong> <span>{{ d.demand.end_date|default:'Not set' }}</span></div>
+                              <div style="font-size: 13px;"><strong>Duration (Months):</strong> <span>{{ d.demand.duration_months|default:'Not set' }}</span></div>
+                            </div>
+                          </div>
+                        </div>
+                      </td>
                     </tr>
                   {% endif %}
                 {% empty %}
-                  <tr><td colspan="2">No LPC demands found.</td></tr>
+                  <tr><td colspan="3">No LPC demands found.</td></tr>
                 {% endfor %}
               </tbody>
             </table>
@@ -1201,11 +1451,12 @@
                       2025 to 2029
                     </div>
                   </th>
+                  <th style="width: 280px; display: none;" class="weekly-update-header">STATUS</th>
                 </tr>
               </thead>
               <tbody>
                 {% for d in demand_data %}
-                  {% if d.demand.file_type == 'CASh' %}
+                  {% if d.demand.file_type == 'CASH' %}
                     <tr data-demand-id="{{ d.demand.id }}">
                       <td class="demand-name">
                         {{ d.demand.name }}
@@ -1271,10 +1522,134 @@
                           </div>
                         </div>
                       </td>
+
+                      <td style="vertical-align: top; padding: 10px; display: none;" class="weekly-update-cell">
+                        <!-- Weekly Update Cell for each demand (third column) -->
+                        <div class="weekly-update-section" style="background-color: #f9f9f9; border: 1px solid #ddd; padding: 10px; border-radius: 4px;">
+                          <!-- Tabs for Weekly Update and Demand Details -->
+                          <div class="demand-tabs" style="margin-bottom: 10px;">
+                            <div class="demand-tab active" data-tab="weekly-update-{{ d.demand.id }}" onclick="switchDemandTab('weekly-update-{{ d.demand.id }}', '{{ d.demand.id }}')">Weekly Update</div>
+                            <div class="demand-tab" data-tab="demand-details-{{ d.demand.id }}" onclick="switchDemandTab('demand-details-{{ d.demand.id }}', '{{ d.demand.id }}')">Demand Details</div>
+                          </div>
+                          
+                          <!-- Weekly Update Tab Content -->
+                          <div id="weekly-update-content-{{ d.demand.id }}" class="demand-tab-content active">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                              <h5 style="margin: 0; font-size: 14px;">Weekly Updates</h5>
+                              <a href="{% url 'add_weekly_update' demand_id=d.demand.id %}" style="background-color: #28a745; color: white; padding: 4px 8px; border-radius: 3px; font-size: 11px; text-decoration: none;">Add Update</a>
+                            </div>
+                            
+                            <!-- Weekly History Section -->
+                            <div style="margin-bottom: 15px;">
+                              <div style="font-size: 12px; color: #666; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+                                <strong>Latest Update ({{ d.total_weekly_updates }} total)</strong>
+                                {% if d.total_weekly_updates > 1 %}
+                                  <a href="{% url 'weekly_history' demand_id=d.demand.id %}" style="background-color: #6c757d; color: white; padding: 4px 8px; border-radius: 3px; font-size: 10px; text-decoration: none;">
+                                    📊 View History
+                                  </a>
+                                {% endif %}
+                              </div>
+                            
+                              {% if d.latest_weekly_update %}
+                                <div style="border: 1px solid #ddd; border-radius: 4px; padding: 12px; background-color: white;">
+                                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                    <div style="font-weight: bold; font-size: 13px; color: #1f78b4;">
+                                      Week {{ d.latest_weekly_update.week_number }}
+                                    </div>
+                                    <div style="font-size: 11px; color: #666;">
+                                      {{ d.latest_weekly_update.week_start_date|date:"M d" }} - {{ d.latest_weekly_update.week_end_date|date:"M d, Y" }}
+                                    </div>
+                                  </div>
+                                  
+                                  {% if d.latest_weekly_update.current_stage %}
+                                    <div style="margin-bottom: 8px;">
+                                      <span style="background-color: #1f78b4; color: white; padding: 3px 8px; border-radius: 12px; font-size: 11px;">
+                                        {{ d.latest_weekly_update.get_current_stage_display }}
+                                      </span>
+                                    </div>
+                                  {% endif %}
+                                  
+                                  <div style="margin-bottom: 10px;">
+                                    <div style="width: 100%; height: 10px; background-color: #e9ecef; border-radius: 5px; overflow: hidden;">
+                                      <div style="height: 100%; background-color: #1f78b4; width: {{ d.latest_weekly_update.progress_percentage }}%;"></div>
+                                    </div>
+                                    <div style="text-align: center; font-size: 11px; color: #666; margin-top: 3px;">
+                                      {{ d.latest_weekly_update.progress_percentage }}% Complete
+                                    </div>
+                                  </div>
+                                  
+                                  {% if d.latest_weekly_update.achievements %}
+                                    <div style="margin-bottom: 8px;">
+                                      <div style="font-size: 11px; color: #666; font-weight: bold; margin-bottom: 3px;">✅ Stage Details :</div>
+                                      <div style="background-color: white; border: 1px solid #ddd; border-radius: 3px; padding: 6px; font-size: 12px; color: #333; line-height: 1.4; word-wrap: break-word; overflow-wrap: break-word; white-space: normal;">
+                                        <span id="achievements-short-{{ d.latest_weekly_update.id }}" style="display: inline-block; max-width: 100%;">{{ d.latest_weekly_update.achievements|truncatechars:20 }}</span>
+                                        {% if d.latest_weekly_update.achievements|length > 20 %}
+                                          <span id="achievements-full-{{ d.latest_weekly_update.id }}" style="display: none; word-wrap: break-word; overflow-wrap: break-word; white-space: normal;">{{ d.latest_weekly_update.achievements }}</span>
+                                          <button type="button" onclick="toggleText('achievements-short-{{ d.latest_weekly_update.id }}', 'achievements-full-{{ d.latest_weekly_update.id }}', 'achievements-btn-{{ d.latest_weekly_update.id }}')" id="achievements-btn-{{ d.latest_weekly_update.id }}" style="background: none; border: none; color: #1f78b4; cursor: pointer; font-size: 10px; margin-left: 5px; text-decoration: underline; white-space: nowrap;">View More</button>
+                                        {% endif %}
+                                      </div>
+                                    </div>
+                                  {% endif %}
+                                  
+                                  {% if d.latest_weekly_update.challenges %}
+                                    <div style="margin-bottom: 8px;">
+                                      <div style="font-size: 11px; color: #666; font-weight: bold; margin-bottom: 3px;">⚠️ Challenges:</div>
+                                      <div style="background-color: white; border: 1px solid #ddd; border-radius: 3px; padding: 6px; font-size: 12px; color: #333; line-height: 1.4; word-wrap: break-word; overflow-wrap: break-word; white-space: normal;">
+                                        <span id="challenges-short-{{ d.latest_weekly_update.id }}" style="display: inline-block; max-width: 100%;">{{ d.latest_weekly_update.challenges|truncatechars:20 }}</span>
+                                        {% if d.latest_weekly_update.challenges|length > 20 %}
+                                          <span id="challenges-full-{{ d.latest_weekly_update.id }}" style="display: none; word-wrap: break-word; overflow-wrap: break-word; white-space: normal;">{{ d.latest_weekly_update.challenges }}</span>
+                                          <button type="button" onclick="toggleText('challenges-short-{{ d.latest_weekly_update.id }}', 'challenges-full-{{ d.latest_weekly_update.id }}', 'challenges-btn-{{ d.latest_weekly_update.id }}')" id="challenges-btn-{{ d.latest_weekly_update.id }}" style="background: none; border: none; color: #1f78b4; cursor: pointer; font-size: 10px; margin-left: 5px; text-decoration: underline; white-space: nowrap;">View More</button>
+                                        {% endif %}
+                                      </div>
+                                    </div>
+                                  {% endif %}
+                                  
+                                  {% if d.latest_weekly_update.next_week_plan %}
+                                    <div style="margin-bottom: 8px;">
+                                      <div style="font-size: 11px; color: #666; font-weight: bold; margin-bottom: 3px;">📋 Next Week Plan:</div>
+                                      <div style="font-size: 12px; color: #333; line-height: 1.4;">{{ d.latest_weekly_update.next_week_plan|truncatewords:20 }}</div>
+                                    </div>
+                                  {% endif %}
+                                  
+                                  <div style="margin-top: 10px; display: flex; gap: 6px;">
+                                    <a href="{% url 'edit_weekly_update' update_id=d.latest_weekly_update.id %}" style="background-color: #ffc107; color: #333; padding: 3px 8px; border-radius: 3px; font-size: 10px; text-decoration: none;">✏️ Edit</a>
+                                    <a href="javascript:void(0)" style="background-color: #dc3545; color: white; padding: 3px 8px; border-radius: 3px; font-size: 10px; text-decoration: none;" onclick="deleteWeeklyUpdate({{ d.latest_weekly_update.id }}, '{{ d.demand.id }}')">🗑️ Delete</a>
+                                  </div>
+                                </div>
+                              {% else %}
+                                <div style="text-align: center; padding: 20px; color: #666; background-color: #f8f9fa; border-radius: 4px;">
+                                  <div style="font-size: 12px; margin-bottom: 10px;">No weekly updates yet</div>
+                                  <a href="{% url 'add_weekly_update' demand_id=d.demand.id %}" style="background-color: #28a745; color: white; padding: 6px 12px; border-radius: 3px; font-size: 11px; text-decoration: none;">Add First Update</a>
+                                </div>
+                              {% endif %}
+                            </div>
+                          </div>
+                          
+                          <!-- Demand Details Tab Content -->
+                          <div id="demand-details-content-{{ d.demand.id }}" class="demand-tab-content">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                              <h5 style="margin: 0; font-size: 14px;">Demand Details</h5>
+                              <a href="{% url 'edit_demand' d.demand.id %}" style="background: none; border: none; color: #2196F3; cursor: pointer; font-size: 13px; text-decoration: none;">
+                                <i class="fas fa-edit"></i> Edit
+                              </a>
+                            </div>
+                            <div>
+                              <div style="margin-bottom: 3px; font-size: 13px;"><strong>Demand Name:</strong> <span>{{ d.demand.name }}</span></div>
+                              <div style="margin-bottom: 3px; font-size: 13px;"><strong>IO Name:</strong> <span>{{ d.demand.io_name|default:'Not set' }}</span></div>
+                              <div style="margin-bottom: 3px; font-size: 13px;"><strong>Demand Amount:</strong> <span>{{ d.demand.demand_amount|default:'Not set' }}</span></div>
+                              <div style="margin-bottom: 3px; font-size: 13px;"><strong>File Type:</strong> <span>{{ d.demand.file_type|default:'Not set' }}</span></div>
+                              <div style="margin-bottom: 3px; font-size: 13px;"><strong>File Subtype:</strong> <span>{{ d.demand.file_subtype|default:'Not set' }}</span></div>
+                              <div style="margin-bottom: 3px; font-size: 13px;"><strong>Start Date:</strong> <span>{{ d.demand.start_date|default:'Not set' }}</span></div>
+                              <div style="margin-bottom: 3px; font-size: 13px;"><strong>End Date:</strong> <span>{{ d.demand.end_date|default:'Not set' }}</span></div>
+                              <div style="font-size: 13px;"><strong>Duration (Months):</strong> <span>{{ d.demand.duration_months|default:'Not set' }}</span></div>
+                            </div>
+                          </div>
+                        </div>
+                      </td>
                     </tr>
                   {% endif %}
                 {% empty %}
-                  <tr><td colspan="2">No CASH demands found.</td></tr>
+                  <tr><td colspan="3">No CASH demands found.</td></tr>
                 {% endfor %}
               </tbody>
             </table>
@@ -1602,17 +1977,37 @@
 
 <script>
   function toggleDetailBar(demandId) {    
-    // Target elements
+    console.log('toggleDetailBar called with demandId:', demandId);
+    
+    // Find the currently active tab
+    const activeTab = document.querySelector('.tab.active');
+    const activeTabId = activeTab ? activeTab.getAttribute('data-tab') : 'all';
+    console.log('Active tab:', activeTabId);
+    
+    // Find the active tab content
+    const activeTabContent = document.getElementById(`tab-${activeTabId}`);
+    console.log('Active tab content:', activeTabContent);
+    
+    // Target elements within the active tab only
     const detailBarId = 'stage-detail-' + demandId;
-    const detailBar = document.getElementById(detailBarId);
+    const detailBar = activeTabContent ? activeTabContent.querySelector(`#${detailBarId}`) : document.getElementById(detailBarId);
+    console.log('Detail bar found:', detailBar);
     
-    // Target weekly update cell for this specific demand - find it by looking for the demand row
-    const demandRow = document.querySelector(`[data-demand-id="${demandId}"]`) || 
+    // Target weekly update cell for this specific demand - find it by looking for the demand row within the active tab
+    const demandRow = activeTabContent ? 
+                     activeTabContent.querySelector(`[data-demand-id="${demandId}"]`) : 
+                     document.querySelector(`[data-demand-id="${demandId}"]`) || 
                      document.querySelector(`#weekly-start-date-${demandId}`)?.closest('tr');
-    const weeklyUpdateCell = demandRow?.querySelector('.weekly-update-cell');
+    console.log('Demand row found:', demandRow);
     
-    // Target demand info label
-    const demandInfoLabel = document.getElementById(`demand-info-${demandId}`);
+    const weeklyUpdateCell = demandRow?.querySelector('.weekly-update-cell');
+    console.log('Weekly update cell found:', weeklyUpdateCell);
+    
+    // Target demand info label within the active tab
+    const demandInfoLabel = activeTabContent ? 
+                           activeTabContent.querySelector(`#demand-info-${demandId}`) : 
+                           document.getElementById(`demand-info-${demandId}`);
+    console.log('Demand info label found:', demandInfoLabel);
     
     // Check if any detail bar is currently visible
     const anyDetailBarVisible = document.querySelector('[id^="stage-detail-"]:not([style*="display: none"])');
@@ -1628,7 +2023,9 @@
         }
         
         // Hide the weekly update header if no detail bars are visible
-        const weeklyUpdateHeader = document.querySelector('.weekly-update-header');
+        const weeklyUpdateHeader = activeTabContent ? 
+                                  activeTabContent.querySelector('.weekly-update-header') : 
+                                  document.querySelector('.weekly-update-header');
         if (weeklyUpdateHeader) {
           weeklyUpdateHeader.style.display = 'none';
         }
@@ -1641,7 +2038,9 @@
         }
         
         // Show the weekly update header
-        const weeklyUpdateHeader = document.querySelector('.weekly-update-header');
+        const weeklyUpdateHeader = activeTabContent ? 
+                                  activeTabContent.querySelector('.weekly-update-header') : 
+                                  document.querySelector('.weekly-update-header');
         if (weeklyUpdateHeader) {
           weeklyUpdateHeader.style.display = 'table-cell';
         }
@@ -1650,6 +2049,14 @@
       console.error('Could not find elements for demand ID:', demandId);
       console.error('Detail bar:', detailBar);
       console.error('Weekly update cell:', weeklyUpdateCell);
+      console.error('Demand info label:', demandInfoLabel);
+      
+      // Try to find all elements with this demand ID to debug
+      const allElementsWithId = document.querySelectorAll(`[id*="${demandId}"]`);
+      console.log('All elements with demand ID:', allElementsWithId);
+      
+      const allDemandRows = document.querySelectorAll(`[data-demand-id="${demandId}"]`);
+      console.log('All demand rows with this ID:', allDemandRows);
     }
   }
   

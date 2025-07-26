@@ -573,7 +573,7 @@ def edit_demand(request, demand_id):
 def delete_demand(request, demand_id):
     demand = get_object_or_404(Demand, id=demand_id)
     demand.delete()
-    messages.success(request, 'Demand deleted successfully.')
+    # messages.success(request, 'Demand deleted successfully.')
     return redirect('demand_list')
 
 def update_stage(request):
@@ -848,7 +848,7 @@ def add_weekly_update(request, demand_id):
                 })
             
             weekly_update.save()
-            messages.success(request, f'Weekly update for Week {weekly_update.week_number} added successfully.')
+            # messages.success(request, f'Weekly update for Week {weekly_update.week_number} added successfully.')
             return redirect('demand_list')
     else:
         # Auto-calculate next week number
@@ -896,7 +896,7 @@ def edit_weekly_update(request, update_id):
         form = WeeklyUpdateForm(request.POST, instance=weekly_update)
         if form.is_valid():
             form.save()
-            messages.success(request, 'Weekly update updated successfully.')
+            # messages.success(request, 'Weekly update updated successfully.')
             return redirect('demand_list')
     else:
         form = WeeklyUpdateForm(instance=weekly_update)
