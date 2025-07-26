@@ -786,21 +786,49 @@
                 
                 <!-- Demand Details Tab Content -->
                 <div id="demand-details-content-{{ d.demand.id }}" class="demand-tab-content">
-                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
-                    <h5 style="margin: 0; font-size: 14px;">Demand Details</h5>
-                    <a href="{% url 'edit_demand' d.demand.id %}" style="background: none; border: none; color: #2196F3; cursor: pointer; font-size: 13px; text-decoration: none;">
-                      <i class="fas fa-edit"></i> Edit
-                    </a>
-                  </div>
-                  <div>
-                    <div style="margin-bottom: 3px; font-size: 13px;"><strong>Demand Name:</strong> <span>{{ d.demand.name }}</span></div>
-                    <div style="margin-bottom: 3px; font-size: 13px;"><strong>IO Name:</strong> <span>{{ d.demand.io_name|default:'Not set' }}</span></div>
-                    <div style="margin-bottom: 3px; font-size: 13px;"><strong>Demand Amount:</strong> <span>{{ d.demand.demand_amount|default:'Not set' }}</span></div>
-                    <div style="margin-bottom: 3px; font-size: 13px;"><strong>File Type:</strong> <span>{{ d.demand.file_type|default:'Not set' }}</span></div>
-                    <div style="margin-bottom: 3px; font-size: 13px;"><strong>File Subtype:</strong> <span>{{ d.demand.file_subtype|default:'Not set' }}</span></div>
-                    <div style="margin-bottom: 3px; font-size: 13px;"><strong>Start Date:</strong> <span>{{ d.demand.start_date|default:'Not set' }}</span></div>
-                    <div style="margin-bottom: 3px; font-size: 13px;"><strong>End Date:</strong> <span>{{ d.demand.end_date|default:'Not set' }}</span></div>
-                    <div style="font-size: 13px;"><strong>Duration (Months):</strong> <span>{{ d.demand.duration_months|default:'Not set' }}</span></div>
+                  <div style="border: 1px solid #ddd; border-radius: 4px; padding: 12px; background-color: white;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                      <div style="font-weight: bold; font-size: 14px; color: #1f78b4;">
+                        📋 Demand Details
+                      </div>
+                      <a href="{% url 'edit_demand' d.demand.id %}" style="background-color: #ffc107; color: #333; padding: 3px 8px; border-radius: 3px; font-size: 10px; text-decoration: none;">✏️ Edit</a>
+                    </div>
+                    
+                    <div style="margin-bottom: 10px;">
+                      <div style="font-size: 11px; color: #666; font-weight: bold; margin-bottom: 3px;">📝 Basic Information:</div>
+                      <div style="background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 3px; padding: 8px; font-size: 12px; color: #333; line-height: 1.4;">
+                        <div style="margin-bottom: 4px;"><strong>Demand Name:</strong> <span>{{ d.demand.name }}</span></div>
+                        <div style="margin-bottom: 4px;"><strong>IO Name:</strong> <span>{{ d.demand.io_name|default:'Not set' }}</span></div>
+                        <div style="margin-bottom: 4px;"><strong>Demand Amount:</strong> <span>₹{{ d.demand.demand_amount|default:'Not set' }}</span></div>
+                      </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 10px;">
+                      <div style="font-size: 11px; color: #666; font-weight: bold; margin-bottom: 3px;">📁 File Information:</div>
+                      <div style="background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 3px; padding: 8px; font-size: 12px; color: #333; line-height: 1.4;">
+                        <div style="margin-bottom: 4px;"><strong>File Type:</strong> <span style="background-color: #1f78b4; color: white; padding: 2px 6px; border-radius: 10px; font-size: 10px;">{{ d.demand.file_type|default:'Not set' }}</span></div>
+                        <div style="margin-bottom: 4px;"><strong>File Subtype:</strong> <span>{{ d.demand.file_subtype|default:'Not set' }}</span></div>
+                        <div style="margin-bottom: 4px;"><strong>File Detail:</strong> <span>{{ d.demand.file_detail|default:'Not set' }}</span></div>
+                      </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 10px;">
+                      <div style="font-size: 11px; color: #666; font-weight: bold; margin-bottom: 3px;">📅 Timeline Information:</div>
+                      <div style="background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 3px; padding: 8px; font-size: 12px; color: #333; line-height: 1.4;">
+                        <div style="margin-bottom: 4px;"><strong>Start Date:</strong> <span>{{ d.demand.start_date|date:"M d, Y"|default:'Not set' }}</span></div>
+                        <div style="margin-bottom: 4px;"><strong>End Date:</strong> <span>{{ d.demand.get_end_date|date:"M d, Y"|default:'Not set' }}</span></div>
+                        <div style="margin-bottom: 4px;"><strong>Duration:</strong> <span>{{ d.demand.duration_months|default:'Not set' }} months</span></div>
+                      </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 10px;">
+                      <div style="font-size: 11px; color: #666; font-weight: bold; margin-bottom: 3px;">📊 Progress Summary:</div>
+                      <div style="background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 3px; padding: 8px; font-size: 12px; color: #333; line-height: 1.4;">
+                        <div style="margin-bottom: 4px;"><strong>Total Stages:</strong> <span>{{ d.stages|length }} stages</span></div>
+                        <div style="margin-bottom: 4px;"><strong>Weekly Updates:</strong> <span>{{ d.total_weekly_updates }} updates</span></div>
+                        <div style="margin-bottom: 4px;"><strong>Created:</strong> <span>{{ d.demand.created_at|date:"M d, Y" }}</span></div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1067,21 +1095,49 @@
                           
                           <!-- Demand Details Tab Content -->
                           <div id="demand-details-content-{{ d.demand.id }}" class="demand-tab-content">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
-                              <h5 style="margin: 0; font-size: 14px;">Demand Details</h5>
-                              <a href="{% url 'edit_demand' d.demand.id %}" style="background: none; border: none; color: #2196F3; cursor: pointer; font-size: 13px; text-decoration: none;">
-                                <i class="fas fa-edit"></i> Edit
-                              </a>
-                            </div>
-                            <div>
-                              <div style="margin-bottom: 3px; font-size: 13px;"><strong>Demand Name:</strong> <span>{{ d.demand.name }}</span></div>
-                              <div style="margin-bottom: 3px; font-size: 13px;"><strong>IO Name:</strong> <span>{{ d.demand.io_name|default:'Not set' }}</span></div>
-                              <div style="margin-bottom: 3px; font-size: 13px;"><strong>Demand Amount:</strong> <span>{{ d.demand.demand_amount|default:'Not set' }}</span></div>
-                              <div style="margin-bottom: 3px; font-size: 13px;"><strong>File Type:</strong> <span>{{ d.demand.file_type|default:'Not set' }}</span></div>
-                              <div style="margin-bottom: 3px; font-size: 13px;"><strong>File Subtype:</strong> <span>{{ d.demand.file_subtype|default:'Not set' }}</span></div>
-                              <div style="margin-bottom: 3px; font-size: 13px;"><strong>Start Date:</strong> <span>{{ d.demand.start_date|default:'Not set' }}</span></div>
-                              <div style="margin-bottom: 3px; font-size: 13px;"><strong>End Date:</strong> <span>{{ d.demand.end_date|default:'Not set' }}</span></div>
-                              <div style="font-size: 13px;"><strong>Duration (Months):</strong> <span>{{ d.demand.duration_months|default:'Not set' }}</span></div>
+                            <div style="border: 1px solid #ddd; border-radius: 4px; padding: 12px; background-color: white;">
+                              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                                <div style="font-weight: bold; font-size: 14px; color: #1f78b4;">
+                                  📋 Demand Details
+                                </div>
+                                <a href="{% url 'edit_demand' d.demand.id %}" style="background-color: #ffc107; color: #333; padding: 3px 8px; border-radius: 3px; font-size: 10px; text-decoration: none;">✏️ Edit</a>
+                              </div>
+                              
+                              <div style="margin-bottom: 10px;">
+                                <div style="font-size: 11px; color: #666; font-weight: bold; margin-bottom: 3px;">📝 Basic Information:</div>
+                                <div style="background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 3px; padding: 8px; font-size: 12px; color: #333; line-height: 1.4;">
+                                  <div style="margin-bottom: 4px;"><strong>Demand Name:</strong> <span>{{ d.demand.name }}</span></div>
+                                  <div style="margin-bottom: 4px;"><strong>IO Name:</strong> <span>{{ d.demand.io_name|default:'Not set' }}</span></div>
+                                  <div style="margin-bottom: 4px;"><strong>Demand Amount:</strong> <span>₹{{ d.demand.demand_amount|default:'Not set' }}</span></div>
+                                </div>
+                              </div>
+                              
+                              <div style="margin-bottom: 10px;">
+                                <div style="font-size: 11px; color: #666; font-weight: bold; margin-bottom: 3px;">📁 File Information:</div>
+                                <div style="background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 3px; padding: 8px; font-size: 12px; color: #333; line-height: 1.4;">
+                                  <div style="margin-bottom: 4px;"><strong>File Type:</strong> <span style="background-color: #1f78b4; color: white; padding: 2px 6px; border-radius: 10px; font-size: 10px;">{{ d.demand.file_type|default:'Not set' }}</span></div>
+                                  <div style="margin-bottom: 4px;"><strong>File Subtype:</strong> <span>{{ d.demand.file_subtype|default:'Not set' }}</span></div>
+                                  <div style="margin-bottom: 4px;"><strong>File Detail:</strong> <span>{{ d.demand.file_detail|default:'Not set' }}</span></div>
+                                </div>
+                              </div>
+                              
+                              <div style="margin-bottom: 10px;">
+                                <div style="font-size: 11px; color: #666; font-weight: bold; margin-bottom: 3px;">📅 Timeline Information:</div>
+                                <div style="background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 3px; padding: 8px; font-size: 12px; color: #333; line-height: 1.4;">
+                                  <div style="margin-bottom: 4px;"><strong>Start Date:</strong> <span>{{ d.demand.start_date|date:"M d, Y"|default:'Not set' }}</span></div>
+                                  <div style="margin-bottom: 4px;"><strong>End Date:</strong> <span>{{ d.demand.get_end_date|date:"M d, Y"|default:'Not set' }}</span></div>
+                                  <div style="margin-bottom: 4px;"><strong>Duration:</strong> <span>{{ d.demand.duration_months|default:'Not set' }} months</span></div>
+                                </div>
+                              </div>
+                              
+                              <div style="margin-bottom: 10px;">
+                                <div style="font-size: 11px; color: #666; font-weight: bold; margin-bottom: 3px;">📊 Progress Summary:</div>
+                                <div style="background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 3px; padding: 8px; font-size: 12px; color: #333; line-height: 1.4;">
+                                  <div style="margin-bottom: 4px;"><strong>Total Stages:</strong> <span>{{ d.stages|length }} stages</span></div>
+                                  <div style="margin-bottom: 4px;"><strong>Weekly Updates:</strong> <span>{{ d.total_weekly_updates }} updates</span></div>
+                                  <div style="margin-bottom: 4px;"><strong>Created:</strong> <span>{{ d.demand.created_at|date:"M d, Y" }}</span></div>
+                                </div>
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -1347,21 +1403,49 @@
                           
                           <!-- Demand Details Tab Content -->
                           <div id="demand-details-content-{{ d.demand.id }}" class="demand-tab-content">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
-                              <h5 style="margin: 0; font-size: 14px;">Demand Details</h5>
-                              <a href="{% url 'edit_demand' d.demand.id %}" style="background: none; border: none; color: #2196F3; cursor: pointer; font-size: 13px; text-decoration: none;">
-                                <i class="fas fa-edit"></i> Edit
-                              </a>
-                            </div>
-                            <div>
-                              <div style="margin-bottom: 3px; font-size: 13px;"><strong>Demand Name:</strong> <span>{{ d.demand.name }}</span></div>
-                              <div style="margin-bottom: 3px; font-size: 13px;"><strong>IO Name:</strong> <span>{{ d.demand.io_name|default:'Not set' }}</span></div>
-                              <div style="margin-bottom: 3px; font-size: 13px;"><strong>Demand Amount:</strong> <span>{{ d.demand.demand_amount|default:'Not set' }}</span></div>
-                              <div style="margin-bottom: 3px; font-size: 13px;"><strong>File Type:</strong> <span>{{ d.demand.file_type|default:'Not set' }}</span></div>
-                              <div style="margin-bottom: 3px; font-size: 13px;"><strong>File Subtype:</strong> <span>{{ d.demand.file_subtype|default:'Not set' }}</span></div>
-                              <div style="margin-bottom: 3px; font-size: 13px;"><strong>Start Date:</strong> <span>{{ d.demand.start_date|default:'Not set' }}</span></div>
-                              <div style="margin-bottom: 3px; font-size: 13px;"><strong>End Date:</strong> <span>{{ d.demand.end_date|default:'Not set' }}</span></div>
-                              <div style="font-size: 13px;"><strong>Duration (Months):</strong> <span>{{ d.demand.duration_months|default:'Not set' }}</span></div>
+                            <div style="border: 1px solid #ddd; border-radius: 4px; padding: 12px; background-color: white;">
+                              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                                <div style="font-weight: bold; font-size: 14px; color: #1f78b4;">
+                                  📋 Demand Details
+                                </div>
+                                <a href="{% url 'edit_demand' d.demand.id %}" style="background-color: #ffc107; color: #333; padding: 3px 8px; border-radius: 3px; font-size: 10px; text-decoration: none;">✏️ Edit</a>
+                              </div>
+                              
+                              <div style="margin-bottom: 10px;">
+                                <div style="font-size: 11px; color: #666; font-weight: bold; margin-bottom: 3px;">📝 Basic Information:</div>
+                                <div style="background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 3px; padding: 8px; font-size: 12px; color: #333; line-height: 1.4;">
+                                  <div style="margin-bottom: 4px;"><strong>Demand Name:</strong> <span>{{ d.demand.name }}</span></div>
+                                  <div style="margin-bottom: 4px;"><strong>IO Name:</strong> <span>{{ d.demand.io_name|default:'Not set' }}</span></div>
+                                  <div style="margin-bottom: 4px;"><strong>Demand Amount:</strong> <span>₹{{ d.demand.demand_amount|default:'Not set' }}</span></div>
+                                </div>
+                              </div>
+                              
+                              <div style="margin-bottom: 10px;">
+                                <div style="font-size: 11px; color: #666; font-weight: bold; margin-bottom: 3px;">📁 File Information:</div>
+                                <div style="background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 3px; padding: 8px; font-size: 12px; color: #333; line-height: 1.4;">
+                                  <div style="margin-bottom: 4px;"><strong>File Type:</strong> <span style="background-color: #1f78b4; color: white; padding: 2px 6px; border-radius: 10px; font-size: 10px;">{{ d.demand.file_type|default:'Not set' }}</span></div>
+                                  <div style="margin-bottom: 4px;"><strong>File Subtype:</strong> <span>{{ d.demand.file_subtype|default:'Not set' }}</span></div>
+                                  <div style="margin-bottom: 4px;"><strong>File Detail:</strong> <span>{{ d.demand.file_detail|default:'Not set' }}</span></div>
+                                </div>
+                              </div>
+                              
+                              <div style="margin-bottom: 10px;">
+                                <div style="font-size: 11px; color: #666; font-weight: bold; margin-bottom: 3px;">📅 Timeline Information:</div>
+                                <div style="background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 3px; padding: 8px; font-size: 12px; color: #333; line-height: 1.4;">
+                                  <div style="margin-bottom: 4px;"><strong>Start Date:</strong> <span>{{ d.demand.start_date|date:"M d, Y"|default:'Not set' }}</span></div>
+                                  <div style="margin-bottom: 4px;"><strong>End Date:</strong> <span>{{ d.demand.get_end_date|date:"M d, Y"|default:'Not set' }}</span></div>
+                                  <div style="margin-bottom: 4px;"><strong>Duration:</strong> <span>{{ d.demand.duration_months|default:'Not set' }} months</span></div>
+                                </div>
+                              </div>
+                              
+                              <div style="margin-bottom: 10px;">
+                                <div style="font-size: 11px; color: #666; font-weight: bold; margin-bottom: 3px;">📊 Progress Summary:</div>
+                                <div style="background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 3px; padding: 8px; font-size: 12px; color: #333; line-height: 1.4;">
+                                  <div style="margin-bottom: 4px;"><strong>Total Stages:</strong> <span>{{ d.stages|length }} stages</span></div>
+                                  <div style="margin-bottom: 4px;"><strong>Weekly Updates:</strong> <span>{{ d.total_weekly_updates }} updates</span></div>
+                                  <div style="margin-bottom: 4px;"><strong>Created:</strong> <span>{{ d.demand.created_at|date:"M d, Y" }}</span></div>
+                                </div>
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -1627,21 +1711,49 @@
                           
                           <!-- Demand Details Tab Content -->
                           <div id="demand-details-content-{{ d.demand.id }}" class="demand-tab-content">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
-                              <h5 style="margin: 0; font-size: 14px;">Demand Details</h5>
-                              <a href="{% url 'edit_demand' d.demand.id %}" style="background: none; border: none; color: #2196F3; cursor: pointer; font-size: 13px; text-decoration: none;">
-                                <i class="fas fa-edit"></i> Edit
-                              </a>
-                            </div>
-                            <div>
-                              <div style="margin-bottom: 3px; font-size: 13px;"><strong>Demand Name:</strong> <span>{{ d.demand.name }}</span></div>
-                              <div style="margin-bottom: 3px; font-size: 13px;"><strong>IO Name:</strong> <span>{{ d.demand.io_name|default:'Not set' }}</span></div>
-                              <div style="margin-bottom: 3px; font-size: 13px;"><strong>Demand Amount:</strong> <span>{{ d.demand.demand_amount|default:'Not set' }}</span></div>
-                              <div style="margin-bottom: 3px; font-size: 13px;"><strong>File Type:</strong> <span>{{ d.demand.file_type|default:'Not set' }}</span></div>
-                              <div style="margin-bottom: 3px; font-size: 13px;"><strong>File Subtype:</strong> <span>{{ d.demand.file_subtype|default:'Not set' }}</span></div>
-                              <div style="margin-bottom: 3px; font-size: 13px;"><strong>Start Date:</strong> <span>{{ d.demand.start_date|default:'Not set' }}</span></div>
-                              <div style="margin-bottom: 3px; font-size: 13px;"><strong>End Date:</strong> <span>{{ d.demand.end_date|default:'Not set' }}</span></div>
-                              <div style="font-size: 13px;"><strong>Duration (Months):</strong> <span>{{ d.demand.duration_months|default:'Not set' }}</span></div>
+                            <div style="border: 1px solid #ddd; border-radius: 4px; padding: 12px; background-color: white;">
+                              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                                <div style="font-weight: bold; font-size: 14px; color: #1f78b4;">
+                                  📋 Demand Details
+                                </div>
+                                <a href="{% url 'edit_demand' d.demand.id %}" style="background-color: #ffc107; color: #333; padding: 3px 8px; border-radius: 3px; font-size: 10px; text-decoration: none;">✏️ Edit</a>
+                              </div>
+                              
+                              <div style="margin-bottom: 10px;">
+                                <div style="font-size: 11px; color: #666; font-weight: bold; margin-bottom: 3px;">📝 Basic Information:</div>
+                                <div style="background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 3px; padding: 8px; font-size: 12px; color: #333; line-height: 1.4;">
+                                  <div style="margin-bottom: 4px;"><strong>Demand Name:</strong> <span>{{ d.demand.name }}</span></div>
+                                  <div style="margin-bottom: 4px;"><strong>IO Name:</strong> <span>{{ d.demand.io_name|default:'Not set' }}</span></div>
+                                  <div style="margin-bottom: 4px;"><strong>Demand Amount:</strong> <span>₹{{ d.demand.demand_amount|default:'Not set' }}</span></div>
+                                </div>
+                              </div>
+                              
+                              <div style="margin-bottom: 10px;">
+                                <div style="font-size: 11px; color: #666; font-weight: bold; margin-bottom: 3px;">📁 File Information:</div>
+                                <div style="background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 3px; padding: 8px; font-size: 12px; color: #333; line-height: 1.4;">
+                                  <div style="margin-bottom: 4px;"><strong>File Type:</strong> <span style="background-color: #1f78b4; color: white; padding: 2px 6px; border-radius: 10px; font-size: 10px;">{{ d.demand.file_type|default:'Not set' }}</span></div>
+                                  <div style="margin-bottom: 4px;"><strong>File Subtype:</strong> <span>{{ d.demand.file_subtype|default:'Not set' }}</span></div>
+                                  <div style="margin-bottom: 4px;"><strong>File Detail:</strong> <span>{{ d.demand.file_detail|default:'Not set' }}</span></div>
+                                </div>
+                              </div>
+                              
+                              <div style="margin-bottom: 10px;">
+                                <div style="font-size: 11px; color: #666; font-weight: bold; margin-bottom: 3px;">📅 Timeline Information:</div>
+                                <div style="background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 3px; padding: 8px; font-size: 12px; color: #333; line-height: 1.4;">
+                                  <div style="margin-bottom: 4px;"><strong>Start Date:</strong> <span>{{ d.demand.start_date|date:"M d, Y"|default:'Not set' }}</span></div>
+                                  <div style="margin-bottom: 4px;"><strong>End Date:</strong> <span>{{ d.demand.get_end_date|date:"M d, Y"|default:'Not set' }}</span></div>
+                                  <div style="margin-bottom: 4px;"><strong>Duration:</strong> <span>{{ d.demand.duration_months|default:'Not set' }} months</span></div>
+                                </div>
+                              </div>
+                              
+                              <div style="margin-bottom: 10px;">
+                                <div style="font-size: 11px; color: #666; font-weight: bold; margin-bottom: 3px;">📊 Progress Summary:</div>
+                                <div style="background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 3px; padding: 8px; font-size: 12px; color: #333; line-height: 1.4;">
+                                  <div style="margin-bottom: 4px;"><strong>Total Stages:</strong> <span>{{ d.stages|length }} stages</span></div>
+                                  <div style="margin-bottom: 4px;"><strong>Weekly Updates:</strong> <span>{{ d.total_weekly_updates }} updates</span></div>
+                                  <div style="margin-bottom: 4px;"><strong>Created:</strong> <span>{{ d.demand.created_at|date:"M d, Y" }}</span></div>
+                                </div>
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -2061,25 +2173,46 @@
   }
   
   function switchDemandTab(tabId, demandId) {
-    // Remove active class from all tabs for this demand
-    const demandTabs = document.querySelectorAll(`[data-tab^="weekly-update-${demandId}"], [data-tab^="demand-details-${demandId}"]`);
-    demandTabs.forEach(tab => tab.classList.remove('active'));
+    console.log('switchDemandTab called with tabId:', tabId, 'demandId:', demandId);
     
-    // Add active class to clicked tab
-    const clickedTab = document.querySelector(`[data-tab="${tabId}"]`);
-    if (clickedTab) {
-      clickedTab.classList.add('active');
-    }
+    // Find the currently active tab content (All Demands, GEM, LPC, or CASH)
+    const activeTabContent = document.querySelector('.tab-content.active');
+    console.log('Active tab content:', activeTabContent);
     
-    // Hide all tab contents for this demand
-    const demandTabContents = document.querySelectorAll(`#weekly-update-content-${demandId}, #demand-details-content-${demandId}`);
-    demandTabContents.forEach(content => content.classList.remove('active'));
-    
-    // Show the selected tab content
-    if (tabId.startsWith('weekly-update-')) {
-      document.getElementById(`weekly-update-content-${demandId}`).classList.add('active');
-    } else if (tabId.startsWith('demand-details-')) {
-      document.getElementById(`demand-details-content-${demandId}`).classList.add('active');
+    if (activeTabContent) {
+      // Remove active class from all tabs for this demand within the active tab
+      const demandTabs = activeTabContent.querySelectorAll(`[data-tab^="weekly-update-${demandId}"], [data-tab^="demand-details-${demandId}"]`);
+      console.log('Found demand tabs:', demandTabs);
+      demandTabs.forEach(tab => tab.classList.remove('active'));
+      
+      // Add active class to clicked tab
+      const clickedTab = activeTabContent.querySelector(`[data-tab="${tabId}"]`);
+      console.log('Clicked tab:', clickedTab);
+      if (clickedTab) {
+        clickedTab.classList.add('active');
+      }
+      
+      // Hide all tab contents for this demand within the active tab
+      const demandTabContents = activeTabContent.querySelectorAll(`#weekly-update-content-${demandId}, #demand-details-content-${demandId}`);
+      console.log('Found demand tab contents:', demandTabContents);
+      demandTabContents.forEach(content => content.classList.remove('active'));
+      
+      // Show the selected tab content
+      if (tabId.startsWith('weekly-update-')) {
+        const weeklyContent = activeTabContent.querySelector(`#weekly-update-content-${demandId}`);
+        if (weeklyContent) {
+          weeklyContent.classList.add('active');
+          console.log('Activated weekly update content');
+        }
+      } else if (tabId.startsWith('demand-details-')) {
+        const demandContent = activeTabContent.querySelector(`#demand-details-content-${demandId}`);
+        if (demandContent) {
+          demandContent.classList.add('active');
+          console.log('Activated demand details content');
+        }
+      }
+    } else {
+      console.error('No active tab content found');
     }
   }
   
