@@ -484,6 +484,17 @@ def demand_list(request):
     # Ensure we have all stages (debug check)
     print(f"Generated {len(stage_legend)} stage legend entries")
 
+    # === File Type Summary ===
+    file_type_summary = []
+    file_types = ['CASH', 'GEM', 'LPC']  # Order as requested
+    
+    for file_type in file_types:
+        count = Demand.objects.filter(file_type=file_type).count()
+        file_type_summary.append({
+            'type': file_type,
+            'count': count
+        })
+
     return render(request, 'trackerapp/demand_list.html', {
         'demand_data': demand_data,
         'stage_legend': stage_legend,
@@ -492,6 +503,7 @@ def demand_list(request):
         'timeline_years': timeline_years,
         'global_timeline_start': global_timeline_start.strftime('%Y-%m-%d'),
         'global_timeline_end': global_timeline_end.strftime('%Y-%m-%d'),
+        'file_type_summary': file_type_summary,
     })
 
 def add_demand(request):
