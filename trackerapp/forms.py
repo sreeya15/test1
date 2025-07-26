@@ -28,7 +28,7 @@ class DemandForm(forms.ModelForm):
     FILE_TYPE_CHOICES = [
         ('GEM', 'GEM'),
         ('LPC', 'LPC'),
-        ('CASh', 'CASh')
+        ('CASH', 'CASH')
     ]
     
     FILE_SUBTYPE_CHOICES = [
