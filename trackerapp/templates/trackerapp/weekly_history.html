@@ -318,8 +318,7 @@
                 <div class="update-header">
                     <div class="week-info">
                         <div class="week-number">Week {{ update.week_number }}</div>
-                        <div class="week-dates">{{ update.week_start_date|date:"M d" }} - {{
-                            update.week_end_date|date:"M d, Y" }}</div>
+                        <div class="week-dates">{{ update.week_start_date|date:"M d" }} - {{ update.week_end_date|date:"M d, Y" }}</div>
                     </div>
                     <div class="update-actions">
                         {% if update.current_stage %}
