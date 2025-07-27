@@ -671,7 +671,7 @@
                 
                 <!-- Stage Detail Bar (initially hidden) -->
                 <div id="stage-detail-{{ d.demand.id }}" class="stage-detail-bar" style="display: none; position: relative; height: 80px; width: 100%; background-color: #f5f5f5; border: 1px solid #ccc; padding: 4px; margin-top: 5px; margin-bottom: 5px; text-align: center; overflow: hidden;">
-                  <div class="details-button" style="text-align: left; overflow: hidden; font-size: 14px;" > STAGE DURATION IN DAYS : </div>
+                  <div class="details-button" style="text-align: left; overflow: hidden; font-size: 14px; margin-bottom: 8px;" > STAGE DURATION IN DAYS :</div>
                   <div style="display: flex; width: 100%; justify-content: space-evenly; align-items: center;">
                     {% for box in d.stage_detail_boxes %}
                       {% if box.has_data %}
@@ -730,7 +730,8 @@
                             </div>
                             
                             {% if d.latest_weekly_update.current_stage %}
-                              <div style="margin-bottom: 8px;">
+                              <div style="margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+                                <div style="font-size: 11px; color: #666; font-weight: bold;">Current Stage :</div>
                                 <span style="background-color: #1f78b4; color: white; padding: 3px 8px; border-radius: 12px; font-size: 11px;">
                                   {{ d.latest_weekly_update.get_current_stage_display }}
                                 </span>
@@ -1045,7 +1046,8 @@
                                   </div>
                                   
                                   {% if d.latest_weekly_update.current_stage %}
-                                    <div style="margin-bottom: 8px;">
+                                    <div style="margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+                                      <div style="font-size: 11px; color: #666; font-weight: bold;">Current Stage :</div>
                                       <span style="background-color: #1f78b4; color: white; padding: 3px 8px; border-radius: 12px; font-size: 11px;">
                                         {{ d.latest_weekly_update.get_current_stage_display }}
                                       </span>
@@ -1343,7 +1345,8 @@
                                   </div>
                                   
                                   {% if d.latest_weekly_update.current_stage %}
-                                    <div style="margin-bottom: 8px;">
+                                    <div style="margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+                                      <div style="font-size: 11px; color: #666; font-weight: bold;">Current Stage :</div>
                                       <span style="background-color: #1f78b4; color: white; padding: 3px 8px; border-radius: 12px; font-size: 11px;">
                                         {{ d.latest_weekly_update.get_current_stage_display }}
                                       </span>
@@ -1641,7 +1644,8 @@
                                   </div>
                                   
                                   {% if d.latest_weekly_update.current_stage %}
-                                    <div style="margin-bottom: 8px;">
+                                    <div style="margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+                                      <div style="font-size: 11px; color: #666; font-weight: bold;">Current Stage :</div>
                                       <span style="background-color: #1f78b4; color: white; padding: 3px 8px; border-radius: 12px; font-size: 11px;">
                                         {{ d.latest_weekly_update.get_current_stage_display }}
                                       </span>
