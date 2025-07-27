@@ -246,9 +246,29 @@ def demand_list(request):
             if s.stage == 'mini_progress':
                 # Get the current stage for this demand from the session
                 demand_id_str = str(demand.id)
+                current_stage = None
+                
+                # First try to get from session
                 if demand_id_str in demand_current_stages:
-                    # Get the current stage information
                     current_stage = demand_current_stages[demand_id_str]
+                else:
+                    # Fallback: derive current stage from database
+                    # Get the highest stage number for this demand
+                    demand_stages = demand.stages.exclude(stage='mini_progress').order_by('-start_date')
+                    if demand_stages.exists():
+                        # Get the most recent stage (highest stage number)
+                        latest_stage = demand_stages.first()
+                        current_stage = latest_stage.stage
+                        
+                        # Update session for future requests
+                        if 'demand_current_stages' not in request.session:
+                            request.session['demand_current_stages'] = {}
+                        demand_current_stages = request.session.get('demand_current_stages', {})
+                        demand_current_stages[demand_id_str] = current_stage
+                        request.session['demand_current_stages'] = demand_current_stages
+                        request.session.modified = True
+                
+                if current_stage:
                     stage_color = STAGE_COLORS.get(current_stage, '#444444')
                     stage_verbose = Stage(current_stage).label
                     should_show_number = True
