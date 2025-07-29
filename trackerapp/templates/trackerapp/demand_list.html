@@ -341,6 +341,10 @@
     min-width: 8px;  /* Increased from 4px for better visibility of 1-day stages */
     transition: min-width 0.1s, box-shadow 0.1s, transform 0.1s;
     transform-origin: center;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
   
   .progress-bar:hover {
@@ -352,9 +356,9 @@
   
   .stage-number {
     display: inline-block;
-    font-size: 12px;
-    font-weight: 500;
-    color: white;
+    font-size: 15px;
+    font-weight: 900;
+    color: black;
     position: absolute;
     top: 50%;
     left: 50%;
@@ -365,11 +369,11 @@
     visibility: hidden;
     position: absolute;
     bottom: 125%;
-    left: 0;
-    transform: translateX(-25%);
+    left: 50%;
+    transform: translateX(-50%);
     background-color: #333;
     color: white;
-    text-align: left;
+    text-align: center;
     border-radius: 5px;
 
     padding: 8px 10px;
@@ -488,7 +492,7 @@
     flex: 1;
     height: 8px;
     background-color: #eee;
-    margin: 0 1px;
+    margin: 0 2px;
     border-radius: 10px;
   }
   
@@ -843,7 +847,7 @@
       
       <!-- File Type Summary for All Demands Tab -->
       {% if file_type_summary %}
-      <div style="margin-top: 20px; padding: 15px; background-color: #f8f9fa; border-radius: 8px; border: 1px solid #e9ecef;">
+      <!-- <div style="margin-top: 20px; padding: 15px; background-color: #f8f9fa; border-radius: 8px; border: 1px solid #e9ecef;">
         <h4 style="margin: 0 0 12px 0; color: #333; font-size: 16px; text-align: center;">📊 File Type Summary</h4>
         <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
           {% for file_type in file_type_summary %}
@@ -854,7 +858,7 @@
           </div>
           {% endfor %}
         </div>
-      </div>
+      </div> -->
       {% endif %}
             </table>
           </div> <!-- Close timeline-container -->
