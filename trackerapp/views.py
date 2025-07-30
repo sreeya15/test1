@@ -268,6 +268,11 @@ def demand_list(request):
                         request.session['demand_current_stages'] = demand_current_stages
                         request.session.modified = True
                 
+                # Check if there's a weekly update with current_stage that should override
+                latest_weekly_update = WeeklyUpdate.objects.filter(demand=demand).order_by('-week_number').first()
+                if latest_weekly_update and latest_weekly_update.current_stage:
+                    current_stage = latest_weekly_update.current_stage
+                
                 if current_stage:
                     stage_color = STAGE_COLORS.get(current_stage, '#444444')
                     stage_verbose = Stage(current_stage).label
@@ -448,6 +453,11 @@ def demand_list(request):
         
         # === Create Stage Detail Boxes (exactly 26 boxes for stage numbers 0-25) ===
         stage_detail_boxes = []
+        
+        # Get the latest weekly update to check for current_stage
+        latest_weekly_update = WeeklyUpdate.objects.filter(demand=demand).order_by('-week_number').first()
+        weekly_current_stage = latest_weekly_update.current_stage if latest_weekly_update else None
+        
         for stage_num in range(26):
             # Look for the first non-mini_progress stage with this number
             found_stage = None
@@ -458,16 +468,44 @@ def demand_list(request):
                     break
             
             if found_stage:
-                stage_detail_boxes.append({
-                    'number': stage_num,
-                    'duration': found_stage['duration'],
-                    'color': found_stage['color'],
-                    'id': found_stage['id'],
-                    'stage_name': found_stage.get('stage_verbose', f'Stage {stage_num}'),
-                    'start_date': found_stage.get('start_date', ''),
-                    'end_date': found_stage.get('end_date', ''),
-                    'has_data': True
-                })
+                # If this is the current stage from weekly update, use that data
+                if weekly_current_stage and STAGE_ORDER.get(weekly_current_stage, -1) == stage_num:
+                    # Find the current stage object to get its actual dates
+                    current_stage_obj = demand.stages.filter(stage=weekly_current_stage).first()
+                    if current_stage_obj:
+                        stage_detail_boxes.append({
+                            'number': stage_num,
+                            'duration': current_stage_obj.duration_in_days(),
+                            'color': STAGE_COLORS.get(weekly_current_stage, '#888'),
+                            'id': current_stage_obj.id,
+                            'stage_name': Stage(weekly_current_stage).label,
+                            'start_date': current_stage_obj.start_date.strftime('%Y-%m-%d'),
+                            'end_date': current_stage_obj.end_date.strftime('%Y-%m-%d'),
+                            'has_data': True
+                        })
+                    else:
+                        # Fallback to found stage data
+                        stage_detail_boxes.append({
+                            'number': stage_num,
+                            'duration': found_stage['duration'],
+                            'color': found_stage['color'],
+                            'id': found_stage['id'],
+                            'stage_name': found_stage.get('stage_verbose', f'Stage {stage_num}'),
+                            'start_date': found_stage.get('start_date', ''),
+                            'end_date': found_stage.get('end_date', ''),
+                            'has_data': True
+                        })
+                else:
+                    stage_detail_boxes.append({
+                        'number': stage_num,
+                        'duration': found_stage['duration'],
+                        'color': found_stage['color'],
+                        'id': found_stage['id'],
+                        'stage_name': found_stage.get('stage_verbose', f'Stage {stage_num}'),
+                        'start_date': found_stage.get('start_date', ''),
+                        'end_date': found_stage.get('end_date', ''),
+                        'has_data': True
+                    })
             else:
                 stage_detail_boxes.append({
                     'number': stage_num,
@@ -888,6 +926,34 @@ def add_weekly_update(request, demand_id):
                 })
             
             weekly_update.save()
+            
+            # If current_stage is set, update the session data for mini progress bar
+            if weekly_update.current_stage:
+                if 'demand_current_stages' not in request.session:
+                    request.session['demand_current_stages'] = {}
+                
+                demand_current_stages = request.session.get('demand_current_stages', {})
+                demand_current_stages[str(demand.id)] = weekly_update.current_stage
+                request.session['demand_current_stages'] = demand_current_stages
+                request.session.modified = True
+                
+                # Update the corresponding stage dates to match the weekly update dates
+                stage_obj = demand.stages.filter(stage=weekly_update.current_stage).first()
+                if stage_obj:
+                    # Update the stage start date to match the weekly update start date
+                    # Update the stage end date to match the weekly update end date
+                    stage_obj.start_date = weekly_update.week_start_date
+                    stage_obj.end_date = weekly_update.week_end_date
+                    stage_obj.save()
+                else:
+                    # Create the stage if it doesn't exist
+                    stage_obj = DemandStagePeriod.objects.create(
+                        demand=demand,
+                        stage=weekly_update.current_stage,
+                        start_date=weekly_update.week_start_date,
+                        end_date=weekly_update.week_end_date
+                    )
+            
             # messages.success(request, f'Weekly update for Week {weekly_update.week_number} added successfully.')
             return redirect('demand_list')
     else:
@@ -933,6 +999,34 @@ def edit_weekly_update(request, update_id):
         form = WeeklyUpdateForm(request.POST, instance=weekly_update)
         if form.is_valid():
             form.save()
+            
+            # If current_stage is set, update the session data for mini progress bar
+            if weekly_update.current_stage:
+                if 'demand_current_stages' not in request.session:
+                    request.session['demand_current_stages'] = {}
+                
+                demand_current_stages = request.session.get('demand_current_stages', {})
+                demand_current_stages[str(weekly_update.demand.id)] = weekly_update.current_stage
+                request.session['demand_current_stages'] = demand_current_stages
+                request.session.modified = True
+                
+                # Update the corresponding stage dates to match the weekly update dates
+                stage_obj = weekly_update.demand.stages.filter(stage=weekly_update.current_stage).first()
+                if stage_obj:
+                    # Update the stage start date to match the weekly update start date
+                    # Update the stage end date to match the weekly update end date
+                    stage_obj.start_date = weekly_update.week_start_date
+                    stage_obj.end_date = weekly_update.week_end_date
+                    stage_obj.save()
+                else:
+                    # Create the stage if it doesn't exist
+                    stage_obj = DemandStagePeriod.objects.create(
+                        demand=weekly_update.demand,
+                        stage=weekly_update.current_stage,
+                        start_date=weekly_update.week_start_date,
+                        end_date=weekly_update.week_end_date
+                    )
+            
             # messages.success(request, 'Weekly update updated successfully.')
             return redirect('demand_list')
     else:
@@ -949,7 +1043,28 @@ def delete_weekly_update(request, update_id):
     demand_id = weekly_update.demand.id
     
     if request.method == 'POST':
+        # Check if this was the latest weekly update with current_stage
+        was_latest_with_stage = False
+        if weekly_update.current_stage:
+            latest_with_stage = WeeklyUpdate.objects.filter(
+                demand=weekly_update.demand, 
+                current_stage__isnull=False
+            ).exclude(id=weekly_update.id).order_by('-week_number').first()
+            
+            if not latest_with_stage or latest_with_stage.week_number < weekly_update.week_number:
+                was_latest_with_stage = True
+        
         weekly_update.delete()
+        
+        # If this was the latest update with current_stage, clear the session data
+        if was_latest_with_stage:
+            if 'demand_current_stages' in request.session:
+                demand_current_stages = request.session.get('demand_current_stages', {})
+                if str(demand_id) in demand_current_stages:
+                    del demand_current_stages[str(demand_id)]
+                    request.session['demand_current_stages'] = demand_current_stages
+                    request.session.modified = True
+        
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
             return JsonResponse({
                 'success': True,
