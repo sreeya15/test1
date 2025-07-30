@@ -949,7 +949,7 @@ def add_weekly_update(request, demand_id):
     demand = get_object_or_404(Demand, id=demand_id)
     
     if request.method == 'POST':
-        form = WeeklyUpdateForm(request.POST)
+        form = WeeklyUpdateForm(request.POST, demand=demand)
         if form.is_valid():
             weekly_update = form.save(commit=False)
             weekly_update.demand = demand
@@ -1033,7 +1033,7 @@ def edit_weekly_update(request, update_id):
     weekly_update = get_object_or_404(WeeklyUpdate, id=update_id)
     
     if request.method == 'POST':
-        form = WeeklyUpdateForm(request.POST, instance=weekly_update)
+        form = WeeklyUpdateForm(request.POST, instance=weekly_update, demand=weekly_update.demand)
         if form.is_valid():
             form.save()
             
@@ -1167,3 +1167,20 @@ def weekly_summary(request):
         'selected_demand': selected_demand,
         'selected_demand_id': selected_demand_id or 'all'
     })
+
+def debug_demand_stages(request, demand_id):
+    """Debug view to see what's in a demand's selected_stages field"""
+    from django.http import JsonResponse
+    
+    demand = get_object_or_404(Demand, id=demand_id)
+    
+    debug_info = {
+        'demand_id': demand.id,
+        'demand_name': demand.name,
+        'selected_stages': demand.selected_stages,
+        'selected_stages_type': type(demand.selected_stages).__name__,
+        'all_stage_choices': list(Stage.choices),
+        'stage_values': list(Stage.values),
+    }
+    
+    return JsonResponse(debug_info)

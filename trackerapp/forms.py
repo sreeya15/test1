@@ -145,12 +145,31 @@ class WeeklyUpdateForm(forms.ModelForm):
         if demand and demand.selected_stages:
             # Only show stages that were selected when creating the demand
             available_choices = [('', 'Select Stage')]
+            print(f"DEBUG: Demand {demand.id} selected_stages: {demand.selected_stages}")
+            print(f"DEBUG: Selected stages type: {type(demand.selected_stages)}")
+            
             for stage_value in demand.selected_stages:
-                stage_label = dict(Stage.choices).get(stage_value, stage_value)
-                available_choices.append((stage_value, stage_label))
+                print(f"DEBUG: Processing stage_value: {stage_value}")
+                # Get the stage label from Stage.choices
+                stage_label = None
+                for choice_value, choice_label in Stage.choices:
+                    if choice_value == stage_value:
+                        stage_label = choice_label
+                        break
+                
+                if stage_label:
+                    available_choices.append((stage_value, stage_label))
+                    print(f"DEBUG: Added stage {stage_value} with label {stage_label}")
+                else:
+                    # Fallback to the value itself if label not found
+                    available_choices.append((stage_value, stage_value))
+                    print(f"DEBUG: Added stage {stage_value} with fallback label")
+            
+            print(f"DEBUG: Final available choices: {available_choices}")
             self.fields['current_stage'].choices = available_choices
         else:
             # If no stages were selected, show only the default option
+            print(f"DEBUG: No selected stages for demand {demand.id if demand else 'None'}")
             self.fields['current_stage'].choices = [('', 'No stages selected for this demand')]
         
         # Add help text for date fields
@@ -161,9 +180,17 @@ class WeeklyUpdateForm(forms.ModelForm):
         cleaned_data = super().clean()
         week_start_date = cleaned_data.get('week_start_date')
         week_end_date = cleaned_data.get('week_end_date')
+        current_stage = cleaned_data.get('current_stage')
         
         # Ensure end_date is not before start_date
         if week_start_date and week_end_date and week_end_date < week_start_date:
             self.add_error('week_end_date', 'End date cannot be before start date')
+        
+        # Validate current_stage if provided
+        if current_stage:
+            # Check if the stage is in the available choices
+            available_stages = [choice[0] for choice in self.fields['current_stage'].choices if choice[0]]
+            if current_stage not in available_stages:
+                self.add_error('current_stage', f'Select a valid choice. {current_stage} is not one of the available choices.')
         
         return cleaned_data

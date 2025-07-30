@@ -187,18 +187,18 @@
     <div class="form-container">
       <h3>Demand Details</h3>
       {% if form.errors %}
-        <div style="color: red; margin-bottom: 1em;">
-          <ul>
-            {% for field in form %}
-              {% for error in field.errors %}
-                <li><strong>{{ field.label }}:</strong> {{ error }}</li>
-              {% endfor %}
-            {% endfor %}
-            {% for error in form.non_field_errors %}
-              <li>{{ error }}</li>
-            {% endfor %}
-          </ul>
-        </div>
+      <div style="color: red; margin-bottom: 1em;">
+        <ul>
+          {% for field in form %}
+          {% for error in field.errors %}
+          <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+          {% endfor %}
+          {% endfor %}
+          {% for error in form.non_field_errors %}
+          <li>{{ error }}</li>
+          {% endfor %}
+        </ul>
+      </div>
       {% endif %}
       <form method="post">
         {% csrf_token %}
@@ -243,56 +243,55 @@
             <input type="submit" value="Add Demand" />
           </div>
         </div>
-      </form>
-      <a href="{% url 'demand_list' %}">Back to timeline</a>
+        <a href="{% url 'demand_list' %}">Back to timeline</a>
 
-      <script>
-        // JavaScript to handle the multi-level dropdown functionality
-        document.addEventListener('DOMContentLoaded', function () {
-          const fileTypeSelect = document.getElementById('id_file_type');
-          const subtypeSelect = document.getElementById('id_file_subtype');
-          const detailSelect = document.getElementById('id_file_detail');
-          const subtypeContainer = document.getElementById('subtype_container');
-          const detailContainer = document.getElementById('detail_container');
+        <script>
+          // JavaScript to handle the multi-level dropdown functionality
+          document.addEventListener('DOMContentLoaded', function () {
+            const fileTypeSelect = document.getElementById('id_file_type');
+            const subtypeSelect = document.getElementById('id_file_subtype');
+            const detailSelect = document.getElementById('id_file_detail');
+            const subtypeContainer = document.getElementById('subtype_container');
+            const detailContainer = document.getElementById('detail_container');
 
-          // Initially show the subtype container
-          subtypeContainer.style.display = 'block';
-
-          // Initially hide the detail container until Project is selected
-          updateDetailVisibility();
-
-          // Add event listener to file type dropdown
-          fileTypeSelect.addEventListener('change', function () {
-            // Always show the subtype container when file type changes
+            // Initially show the subtype container
             subtypeContainer.style.display = 'block';
-            // Reset subtype selection
-            subtypeSelect.selectedIndex = 0;
-            // Reset detail selection
-            detailSelect.selectedIndex = 0;
-            // Update detail visibility
-            updateDetailVisibility();
-          });
 
-          // Add event listener to subtype dropdown
-          subtypeSelect.addEventListener('change', function () {
-            // Reset detail selection
-            detailSelect.selectedIndex = 0;
-            // Update detail visibility
+            // Initially hide the detail container until Project is selected
             updateDetailVisibility();
-          });
 
-          // Function to update the visibility of the detail dropdown
-          function updateDetailVisibility() {
-            if (subtypeSelect.value === 'Project') {
-              detailContainer.style.display = 'block';
-            } else {
-              detailContainer.style.display = 'none';
-              // Reset detail selection when not visible
+            // Add event listener to file type dropdown
+            fileTypeSelect.addEventListener('change', function () {
+              // Always show the subtype container when file type changes
+              subtypeContainer.style.display = 'block';
+              // Reset subtype selection
+              subtypeSelect.selectedIndex = 0;
+              // Reset detail selection
               detailSelect.selectedIndex = 0;
+              // Update detail visibility
+              updateDetailVisibility();
+            });
+
+            // Add event listener to subtype dropdown
+            subtypeSelect.addEventListener('change', function () {
+              // Reset detail selection
+              detailSelect.selectedIndex = 0;
+              // Update detail visibility
+              updateDetailVisibility();
+            });
+
+            // Function to update the visibility of the detail dropdown
+            function updateDetailVisibility() {
+              if (subtypeSelect.value === 'Project') {
+                detailContainer.style.display = 'block';
+              } else {
+                detailContainer.style.display = 'none';
+                // Reset detail selection when not visible
+                detailSelect.selectedIndex = 0;
+              }
             }
-          }
-        });
-      </script>
+          });
+        </script>
     </div>
 
     <!-- Stage Checklist Section -->
@@ -388,40 +387,39 @@
             </label>
           </div>
 
-          <!-- Stage 7 - Financial Benchmarking -->
+          <!-- Stage 7 - TCEC Approved -->
           <div class="stage-item">
             <label>
-              <input type="checkbox" name="stage_financial_benchmarking" class="stage-checkbox"
-                data-stage="financial_benchmarking">
+              <input type="checkbox" name="stage_tcec_approved" class="stage-checkbox" data-stage="tcec_approved">
               <div class="stage-text">
                 <span class="stage-color" style="background-color: #6a3d9a;"></span>
                 <span class="stage-number">7.</span>
-                <span>Financial Benchmarking</span>
+                <span>TCEC Approved</span>
               </div>
             </label>
           </div>
 
-          <!-- Stage 8 - Tech Evaluation -->
+          <!-- Stage 8 - TPC Approved -->
           <div class="stage-item">
             <label>
-              <input type="checkbox" name="stage_tech_evaluation" class="stage-checkbox" data-stage="tech_evaluation">
+              <input type="checkbox" name="stage_tpc_approved" class="stage-checkbox" data-stage="tpc_approved">
               <div class="stage-text">
-                <span class="stage-color" style="background-color: #ffff99;"></span>
+                <span class="stage-color" style="background-color: #b2df8a;"></span>
                 <span class="stage-number">8.</span>
-                <span>Tech Evaluation</span>
+                <span>TPC Approved</span>
               </div>
             </label>
           </div>
 
-          <!-- Stage 9 - Financial Evaluation -->
+          <!-- Stage 9 - Financial Sanction -->
           <div class="stage-item">
             <label>
-              <input type="checkbox" name="stage_financial_evaluation" class="stage-checkbox"
-                data-stage="financial_evaluation">
+              <input type="checkbox" name="stage_financial_sanction" class="stage-checkbox"
+                data-stage="financial_sanction">
               <div class="stage-text">
-                <span class="stage-color" style="background-color: #b15928;"></span>
+                <span class="stage-color" style="background-color: #a6cee3;"></span>
                 <span class="stage-number">9.</span>
-                <span>Financial Evaluation</span>
+                <span>Financial Sanction</span>
               </div>
             </label>
           </div>
@@ -429,14 +427,14 @@
 
         <!-- Column 2: Stages 10-19 -->
         <div class="stage-column">
-          <!-- Stage 10 - Tech Sanction -->
+          <!-- Stage 10 - Order Placement -->
           <div class="stage-item">
             <label>
-              <input type="checkbox" name="stage_tech_sanction" class="stage-checkbox" data-stage="tech_sanction">
+              <input type="checkbox" name="stage_order_placement" class="stage-checkbox" data-stage="order_placement">
               <div class="stage-text">
-                <span class="stage-color" style="background-color: #66c2a5;"></span>
+                <span class="stage-color" style="background-color: #1f78b4;"></span>
                 <span class="stage-number">10.</span>
-                <span>Tech Sanction</span>
+                <span>Order Placement</span>
               </div>
             </label>
           </div>
@@ -453,15 +451,15 @@
             </label>
           </div>
 
-          <!-- Stage 12 - Material Planning Conference -->
+          <!-- Stage 12 - SO for Critical BoM by Dev Partner -->
           <div class="stage-item">
             <label>
-              <input type="checkbox" name="stage_material_planning_conference" class="stage-checkbox"
-                data-stage="material_planning_conference">
+              <input type="checkbox" name="stage_so_for_critical_bom_by_dev_partner" class="stage-checkbox"
+                data-stage="so_for_critical_bom_by_dev_partner">
               <div class="stage-text">
                 <span class="stage-color" style="background-color: #fb9a99;"></span>
                 <span class="stage-number">12.</span>
-                <span>Material Planning Conference</span>
+                <span>SO for Critical BoM by Dev Partner</span>
               </div>
             </label>
           </div>
@@ -490,14 +488,15 @@
             </label>
           </div>
 
-          <!-- Stage 15 - QAP Approval -->
+          <!-- Stage 15 - Acceptance of Critical BoM by Dev Partner -->
           <div class="stage-item">
             <label>
-              <input type="checkbox" name="stage_qap_approval" class="stage-checkbox" data-stage="qap_approval">
+              <input type="checkbox" name="stage_acceptance_of_critical_bom_by_dev_partner" class="stage-checkbox"
+                data-stage="acceptance_of_critical_bom_by_dev_partner">
               <div class="stage-text">
                 <span class="stage-color" style="background-color: #ff7f00;"></span>
                 <span class="stage-number">15.</span>
-                <span>QAP Approval</span>
+                <span>Acceptance of Critical BoM by Dev Partner</span>
               </div>
             </label>
           </div>
@@ -527,26 +526,28 @@
             </label>
           </div>
 
-          <!-- Stage 18 - Delivered -->
+          <!-- Stage 18 - ATP/QTP Completed -->
           <div class="stage-item">
             <label>
-              <input type="checkbox" name="stage_delivered" class="stage-checkbox" data-stage="delivered">
+              <input type="checkbox" name="stage_atp_qtp_completed" class="stage-checkbox"
+                data-stage="atp_qtp_completed">
               <div class="stage-text">
-                <span class="stage-color" style="background-color: #ffff99;"></span>
+                <span class="stage-color" style="background-color: #b2df8a;"></span>
                 <span class="stage-number">18.</span>
-                <span>Delivered</span>
+                <span>ATP/QTP Completed</span>
               </div>
             </label>
           </div>
 
-          <!-- Stage 19 - SAT Completed -->
+          <!-- Stage 19 - Delivery at Stores -->
           <div class="stage-item">
             <label>
-              <input type="checkbox" name="stage_sat_completed" class="stage-checkbox" data-stage="sat_completed">
+              <input type="checkbox" name="stage_delivery_at_stores" class="stage-checkbox"
+                data-stage="delivery_at_stores">
               <div class="stage-text">
-                <span class="stage-color" style="background-color: #b15928;"></span>
+                <span class="stage-color" style="background-color: #a6cee3;"></span>
                 <span class="stage-number">19.</span>
-                <span>SAT Completed</span>
+                <span>Delivery at Stores</span>
               </div>
             </label>
           </div>
@@ -554,14 +555,14 @@
 
         <!-- Column 3: Stages 20-25 -->
         <div class="stage-column">
-          <!-- Stage 20 - HAT Completed -->
+          <!-- Stage 20 - SAT/SoFT -->
           <div class="stage-item">
             <label>
-              <input type="checkbox" name="stage_hat_completed" class="stage-checkbox" data-stage="hat_completed">
+              <input type="checkbox" name="stage_sat_soft" class="stage-checkbox" data-stage="sat_soft">
               <div class="stage-text">
-                <span class="stage-color" style="background-color: #66c2a5;"></span>
+                <span class="stage-color" style="background-color: #1f78b4;"></span>
                 <span class="stage-number">20.</span>
-                <span>HAT Completed</span>
+                <span>SAT/SoFT</span>
               </div>
             </label>
           </div>
@@ -579,14 +580,14 @@
             </label>
           </div>
 
-          <!-- Stage 22 - Commissioned -->
+          <!-- Stage 22 - Payment Process -->
           <div class="stage-item">
             <label>
-              <input type="checkbox" name="stage_commissioned" class="stage-checkbox" data-stage="commissioned">
+              <input type="checkbox" name="stage_payment_process" class="stage-checkbox" data-stage="payment_process">
               <div class="stage-text">
-                <span class="stage-color" style="background-color: #a6cee3;"></span>
+                <span class="stage-color" style="background-color: #fb9a99;"></span>
                 <span class="stage-number">22.</span>
-                <span>Commissioned</span>
+                <span>Payment Process</span>
               </div>
             </label>
           </div>
@@ -603,27 +604,27 @@
             </label>
           </div>
 
-          <!-- Stage 24 - Payment Completed -->
+          <!-- Stage 24 - Payment Released -->
           <div class="stage-item">
             <label>
-              <input type="checkbox" name="stage_payment_completed" class="stage-checkbox"
-                data-stage="payment_completed">
+              <input type="checkbox" name="stage_payment_released" class="stage-checkbox" data-stage="payment_released">
               <div class="stage-text">
-                <span class="stage-color" style="background-color: #1f78b4;"></span>
+                <span class="stage-color" style="background-color: #fdbf6f;"></span>
                 <span class="stage-number">24.</span>
-                <span>Payment Completed</span>
+                <span>Payment Released</span>
               </div>
             </label>
           </div>
 
-          <!-- Stage 25 - Warranty Start -->
+          <!-- Stage 25 - Available for Integration -->
           <div class="stage-item">
             <label>
-              <input type="checkbox" name="stage_warranty_start" class="stage-checkbox" data-stage="warranty_start">
+              <input type="checkbox" name="stage_available_for_integration" class="stage-checkbox"
+                data-stage="available_for_integration">
               <div class="stage-text">
-                <span class="stage-color" style="background-color: #33a02c;"></span>
+                <span class="stage-color" style="background-color: #ff7f00;"></span>
                 <span class="stage-number">25.</span>
-                <span>Warranty Start</span>
+                <span>Available for Integration</span>
               </div>
             </label>
           </div>

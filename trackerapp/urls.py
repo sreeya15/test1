@@ -19,5 +19,8 @@ urlpatterns = [
     path('weekly/<int:update_id>/edit/', views.edit_weekly_update, name='edit_weekly_update'),
     path('weekly/<int:update_id>/delete/', views.delete_weekly_update, name='delete_weekly_update'),
     path('weekly/summary/', views.weekly_summary, name='weekly_summary'),
+    
+    # Debug URL
+    path('debug/demand/<int:demand_id>/stages/', views.debug_demand_stages, name='debug_demand_stages'),
 ]
 
