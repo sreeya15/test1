@@ -15,6 +15,7 @@ class Demand(models.Model):
     duration_months = models.IntegerField(null=True, blank=True)
     weekly_start_date = models.DateField(null=True, blank=True)
     weekly_end_date = models.DateField(null=True, blank=True)
+    selected_stages = models.JSONField(default=list, blank=True)  # Store list of selected stage names
 
     def __str__(self):
         return self.name

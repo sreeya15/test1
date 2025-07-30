@@ -476,6 +476,7 @@ def demand_list(request):
                         stage_detail_boxes.append({
                             'number': stage_num,
                             'duration': current_stage_obj.duration_in_days(),
+                            'duration_text': f"{current_stage_obj.duration_in_days()}d",
                             'color': STAGE_COLORS.get(weekly_current_stage, '#888'),
                             'id': current_stage_obj.id,
                             'stage_name': Stage(weekly_current_stage).label,
@@ -488,6 +489,7 @@ def demand_list(request):
                         stage_detail_boxes.append({
                             'number': stage_num,
                             'duration': found_stage['duration'],
+                            'duration_text': f"{found_stage['duration']}d",
                             'color': found_stage['color'],
                             'id': found_stage['id'],
                             'stage_name': found_stage.get('stage_verbose', f'Stage {stage_num}'),
@@ -499,6 +501,7 @@ def demand_list(request):
                     stage_detail_boxes.append({
                         'number': stage_num,
                         'duration': found_stage['duration'],
+                        'duration_text': f"{found_stage['duration']}d",
                         'color': found_stage['color'],
                         'id': found_stage['id'],
                         'stage_name': found_stage.get('stage_verbose', f'Stage {stage_num}'),
@@ -507,16 +510,39 @@ def demand_list(request):
                         'has_data': True
                     })
             else:
-                stage_detail_boxes.append({
-                    'number': stage_num,
-                    'duration': 0,
-                    'color': '#ddd',
-                    'id': None,
-                    'stage_name': f'(Not Set)',
-                    'start_date': '',
-                    'end_date': '',
-                    'has_data': False
-                })
+                # Check if this stage was selected when creating the demand
+                stage_name = None
+                for stage_key, number in STAGE_ORDER.items():
+                    if number == stage_num:
+                        stage_name = stage_key
+                        break
+                
+                if stage_name and stage_name in demand.selected_stages:
+                    # Stage was selected but no data yet
+                    stage_detail_boxes.append({
+                        'number': stage_num,
+                        'duration': 0,
+                        'duration_text': '0d',
+                        'color': '#ddd',
+                        'id': None,
+                        'stage_name': f'(Not Set)',
+                        'start_date': '',
+                        'end_date': '',
+                        'has_data': False
+                    })
+                else:
+                    # Stage was not selected - show N/A
+                    stage_detail_boxes.append({
+                        'number': stage_num,
+                        'duration': 0,
+                        'duration_text': 'N/A',
+                        'color': '#ddd',
+                        'id': None,
+                        'stage_name': 'N/A',
+                        'start_date': '',
+                        'end_date': '',
+                        'has_data': False
+                    })
         
         demand_position = {
             'start_percent': demand_start_percent,
@@ -588,6 +614,17 @@ def add_demand(request):
             # This approach adds the specified number of months
             end_date = start_date.replace(year=start_date.year + ((start_date.month - 1 + duration_months) // 12),
                                          month=((start_date.month - 1 + duration_months) % 12) + 1)
+            
+            # Process stage checkboxes and save selected stages
+            selected_stages = []
+            for stage_name in Stage.values:
+                checkbox_name = f'stage_{stage_name}'
+                if request.POST.get(checkbox_name):
+                    selected_stages.append(stage_name)
+            
+            # Save selected stages to the demand
+            demand.selected_stages = selected_stages
+            demand.save()
             
             # Create an initial dark grey mini progress bar for the new demand
             # This will be a mini progress bar that spans exactly the demand's duration
@@ -961,7 +998,7 @@ def add_weekly_update(request, demand_id):
         last_week = WeeklyUpdate.objects.filter(demand=demand).order_by('-week_number').first()
         next_week_number = (last_week.week_number + 1) if last_week else 1
         
-        form = WeeklyUpdateForm(initial={'week_number': next_week_number})
+        form = WeeklyUpdateForm(demand=demand, initial={'week_number': next_week_number})
     
     return render(request, 'trackerapp/add_weekly_update.html', {
         'form': form,
@@ -1030,7 +1067,7 @@ def edit_weekly_update(request, update_id):
             # messages.success(request, 'Weekly update updated successfully.')
             return redirect('demand_list')
     else:
-        form = WeeklyUpdateForm(instance=weekly_update)
+        form = WeeklyUpdateForm(demand=weekly_update.demand, instance=weekly_update)
     
     return render(request, 'trackerapp/edit_weekly_update.html', {
         'form': form,

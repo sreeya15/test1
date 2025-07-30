@@ -681,12 +681,20 @@
                       {% if box.has_data %}
                         <div id="stage-detail-segment-{{ box.id }}" class="stage-detail-segment" style="height: 36px; width: 3%; min-width: 12px; background-color: {{ box.color }}; border: 1px solid #555; box-shadow: 0px 1px 2px rgba(0,0,0,0.2); box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; color: white; cursor: pointer;" title="Stage {{ box.number }}: {{ box.stage_name }}&#10;Duration: {{ box.duration }} days&#10;Start: {{ box.start_date }}&#10;End: {{ box.end_date }}">
                           <span style="font-size: 12px; font-weight: bold;">{{ box.number }}</span>
-                          <span style="font-size: 10px; font-weight: normal;">{{ box.duration }}d</span>
+                          {% if box.stage_name == 'N/A' %}
+                            <span style="font-size: 8px; font-weight: normal; color: #999;">N/A</span>
+                          {% else %}
+                            <span style="font-size: 10px; font-weight: normal;">{{ box.duration }}d</span>
+                          {% endif %}
                         </div>
                       {% else %}
                         <div class="stage-detail-segment" style="height: 36px; width: 3%; min-width: 12px; background-color: {{ box.color }}; border: 1px solid #999; box-shadow: 0px 1px 2px rgba(0,0,0,0.1); box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 10px; color: #888; cursor: pointer;" title="Stage {{ box.number }}: {{ box.stage_name }}&#10;No data available">
                           <span style="font-size: 12px; font-weight: bold;">{{ box.number }}</span>
-                          <span style="font-size: 10px; font-weight: normal;">{{ box.duration }}d</span>
+                          {% if box.stage_name == 'N/A' %}
+                            <span style="font-size: 8px; font-weight: normal; color: #999;">N/A</span>
+                          {% else %}
+                            <span style="font-size: 10px; font-weight: normal;">{{ box.duration }}d</span>
+                          {% endif %}
                         </div>
                       {% endif %}
                     {% endfor %}

@@ -138,8 +138,20 @@ class WeeklyUpdateForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
+        demand = kwargs.pop('demand', None)
         super().__init__(*args, **kwargs)
-        self.fields['current_stage'].choices = [('', 'Select Stage')] + list(Stage.choices)
+        
+        # Filter choices based on selected stages for this demand
+        if demand and demand.selected_stages:
+            # Only show stages that were selected when creating the demand
+            available_choices = [('', 'Select Stage')]
+            for stage_value in demand.selected_stages:
+                stage_label = dict(Stage.choices).get(stage_value, stage_value)
+                available_choices.append((stage_value, stage_label))
+            self.fields['current_stage'].choices = available_choices
+        else:
+            # If no stages were selected, show only the default option
+            self.fields['current_stage'].choices = [('', 'No stages selected for this demand')]
         
         # Add help text for date fields
         self.fields['week_start_date'].help_text = 'Select the start date of this week'
