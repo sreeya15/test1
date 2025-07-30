@@ -651,6 +651,17 @@ def edit_demand(request, demand_id):
             start_date = form.cleaned_data['start_date']
             duration_months = form.cleaned_data['duration_months']
             
+            # Process stage checkboxes and save selected stages
+            selected_stages = []
+            for stage_name in Stage.values:
+                checkbox_name = f'stage_{stage_name}'
+                if request.POST.get(checkbox_name):
+                    selected_stages.append(stage_name)
+            
+            # Save selected stages to the demand
+            demand.selected_stages = selected_stages
+            demand.save()
+            
             if start_date and duration_months:
                 # Calculate the end date based on start date and duration in months
                 end_date = start_date.replace(
