@@ -256,7 +256,7 @@
               <div class="stage-item">
                 <label>
                   <input type="checkbox" name="stage_demand_to_be_initiated" class="stage-checkbox"
-                    data-stage="demand_to_be_initiated" {% if 'demand_to_be_initiated' in demand.selected_stages %}checked{% endif %}>
+                    data-stage="demand_to_be_initiated">
                   <div class="stage-text">
                     <span class="stage-color" style="background-color: #1f78b4;"></span>
                     <span class="stage-number">0.</span>
@@ -269,8 +269,7 @@
               <div class="stage-item">
                 <label>
                   <input type="checkbox" name="stage_demand_initiated" class="stage-checkbox"
-                    data-stage="demand_initiated" {% if 'demand_initiated' in demand.selected_stages %}checked{% endif
-                    %}>
+                    data-stage="demand_initiated">
                   <div class="stage-text">
                     <span class="stage-color" style="background-color: #33a02c;"></span>
                     <span class="stage-number">1.</span>
@@ -282,8 +281,7 @@
               <!-- Stage 2 - SPC Cleared -->
               <div class="stage-item">
                 <label>
-                  <input type="checkbox" name="stage_spc_cleared" class="stage-checkbox" data-stage="spc_cleared" {%
-                    if 'spc_cleared' in demand.selected_stages %}checked{% endif %}>
+                  <input type="checkbox" name="stage_spc_cleared" class="stage-checkbox" data-stage="spc_cleared">
                   <div class="stage-text">
                     <span class="stage-color" style="background-color: #fb9a99;"></span>
                     <span class="stage-number">2.</span>
@@ -296,7 +294,7 @@
               <div class="stage-item">
                 <label>
                   <input type="checkbox" name="stage_demand_approved" class="stage-checkbox"
-                    data-stage="demand_approved" {% if 'demand_approved' in demand.selected_stages %}checked{% endif %}>
+                    data-stage="demand_approved">
                   <div class="stage-text">
                     <span class="stage-color" style="background-color: #e31a1c;"></span>
                     <span class="stage-number">3.</span>
@@ -309,7 +307,7 @@
               <div class="stage-item">
                 <label>
                   <input type="checkbox" name="stage_tender_enquiry_floated" class="stage-checkbox"
-                    data-stage="tender_enquiry_floated" {% if 'tender_enquiry_floated' in demand.selected_stages %}checked{% endif %}>
+                    data-stage="tender_enquiry_floated">
                   <div class="stage-text">
                     <span class="stage-color" style="background-color: #fdbf6f;"></span>
                     <span class="stage-number">4.</span>
@@ -322,7 +320,7 @@
               <div class="stage-item">
                 <label>
                   <input type="checkbox" name="stage_receipt_of_quotations" class="stage-checkbox"
-                    data-stage="receipt_of_quotations" {% if 'receipt_of_quotations' in demand.selected_stages %}checked{% endif %}>
+                    data-stage="receipt_of_quotations">
                   <div class="stage-text">
                     <span class="stage-color" style="background-color: #ff7f00;"></span>
                     <span class="stage-number">5.</span>
@@ -334,8 +332,7 @@
               <!-- Stage 6 - Tender Opening -->
               <div class="stage-item">
                 <label>
-                  <input type="checkbox" name="stage_tender_opening" class="stage-checkbox" data-stage="tender_opening"
-                    {% if 'tender_opening' in demand.selected_stages %}checked{% endif %}>
+                  <input type="checkbox" name="stage_tender_opening" class="stage-checkbox" data-stage="tender_opening">
                   <div class="stage-text">
                     <span class="stage-color" style="background-color: #cab2d6;"></span>
                     <span class="stage-number">6.</span>
@@ -347,7 +344,7 @@
               <!-- Stage 7 - TCEC Approved -->
               <div class="stage-item">
                 <label>
-                  <input type="checkbox" name="stage_tcec_approved" class="stage-checkbox" data-stage="tcec_approved" {% if 'tcec_approved' in demand.selected_stages %}checked{% endif %}>
+                  <input type="checkbox" name="stage_tcec_approved" class="stage-checkbox" data-stage="tcec_approved">
                   <div class="stage-text">
                     <span class="stage-color" style="background-color: #6a3d9a;"></span>
                     <span class="stage-number">7.</span>
@@ -359,7 +356,7 @@
               <!-- Stage 8 - TPC Approved -->
               <div class="stage-item">
                 <label>
-                  <input type="checkbox" name="stage_tpc_approved" class="stage-checkbox" data-stage="tpc_approved" {% if 'tpc_approved' in demand.selected_stages %}checked{% endif %}>
+                  <input type="checkbox" name="stage_tpc_approved" class="stage-checkbox" data-stage="tpc_approved">
                   <div class="stage-text">
                     <span class="stage-color" style="background-color: #b2df8a;"></span>
                     <span class="stage-number">8.</span>
@@ -372,8 +369,7 @@
               <div class="stage-item">
                 <label>
                   <input type="checkbox" name="stage_financial_sanction" class="stage-checkbox"
-                    data-stage="financial_sanction" {% if 'financial_sanction' in demand.selected_stages %}checked{%
-                    endif %}>
+                    data-stage="financial_sanction">
                   <div class="stage-text">
                     <span class="stage-color" style="background-color: #a6cee3;"></span>
                     <span class="stage-number">9.</span>
@@ -389,7 +385,7 @@
               <div class="stage-item">
                 <label>
                   <input type="checkbox" name="stage_order_placement" class="stage-checkbox"
-                    data-stage="order_placement" {% if 'order_placement' in demand.selected_stages %}checked{% endif %}>
+                    data-stage="order_placement">
                   <div class="stage-text">
                     <span class="stage-color" style="background-color: #1f78b4;"></span>
                     <span class="stage-number">10.</span>
@@ -401,8 +397,7 @@
               <!-- Stage 11 - PDR -->
               <div class="stage-item">
                 <label>
-                  <input type="checkbox" name="stage_pdr" class="stage-checkbox" data-stage="pdr" {% if 'pdr' in
-                    demand.selected_stages %}checked{% endif %}>
+                  <input type="checkbox" name="stage_pdr" class="stage-checkbox" data-stage="pdr">
                   <div class="stage-text">
                     <span class="stage-color" style="background-color: #33a02c;"></span>
                     <span class="stage-number">11.</span>
@@ -415,7 +410,7 @@
               <div class="stage-item">
                 <label>
                   <input type="checkbox" name="stage_so_for_critical_bom_by_dev_partner" class="stage-checkbox"
-                    data-stage="so_for_critical_bom_by_dev_partner" {% if 'so_for_critical_bom_by_dev_partner' in demand.selected_stages %}checked{% endif %}>
+                    data-stage="so_for_critical_bom_by_dev_partner">
                   <div class="stage-text">
                     <span class="stage-color" style="background-color: #fb9a99;"></span>
                     <span class="stage-number">12.</span>
@@ -427,7 +422,7 @@
               <!-- Stage 13 - DDR -->
               <div class="stage-item">
                 <label>
-                  <input type="checkbox" name="stage_ddr" class="stage-checkbox" data-stage="ddr" {% if 'ddr' in demand.selected_stages %}checked{% endif %}>
+                  <input type="checkbox" name="stage_ddr" class="stage-checkbox" data-stage="ddr">
                   <div class="stage-text">
                     <span class="stage-color" style="background-color: #e31a1c;"></span>
                     <span class="stage-number">13.</span>
@@ -439,7 +434,7 @@
               <!-- Stage 14 - CDR -->
               <div class="stage-item">
                 <label>
-                  <input type="checkbox" name="stage_cdr" class="stage-checkbox" data-stage="cdr" {% if 'cdr' in demand.selected_stages %}checked{% endif %}>
+                  <input type="checkbox" name="stage_cdr" class="stage-checkbox" data-stage="cdr">
                   <div class="stage-text">
                     <span class="stage-color" style="background-color: #fdbf6f;"></span>
                     <span class="stage-number">14.</span>
@@ -452,7 +447,7 @@
               <div class="stage-item">
                 <label>
                   <input type="checkbox" name="stage_acceptance_of_critical_bom_by_dev_partner" class="stage-checkbox"
-                    data-stage="acceptance_of_critical_bom_by_dev_partner" {% if 'acceptance_of_critical_bom_by_dev_partner' in demand.selected_stages %}checked{% endif %}>
+                    data-stage="acceptance_of_critical_bom_by_dev_partner">
                   <div class="stage-text">
                     <span class="stage-color" style="background-color: #ff7f00;"></span>
                     <span class="stage-number">15.</span>
@@ -465,7 +460,7 @@
               <div class="stage-item">
                 <label>
                   <input type="checkbox" name="stage_realization_completed" class="stage-checkbox"
-                    data-stage="realization_completed" {% if 'realization_completed' in demand.selected_stages %}checked{% endif %}>
+                    data-stage="realization_completed">
                   <div class="stage-text">
                     <span class="stage-color" style="background-color: #cab2d6;"></span>
                     <span class="stage-number">16.</span>
@@ -477,7 +472,7 @@
               <!-- Stage 17 - FAT Completed -->
               <div class="stage-item">
                 <label>
-                  <input type="checkbox" name="stage_fat_completed" class="stage-checkbox" data-stage="fat_completed" {% if 'fat_completed' in demand.selected_stages %}checked{% endif %}>
+                  <input type="checkbox" name="stage_fat_completed" class="stage-checkbox" data-stage="fat_completed">
                   <div class="stage-text">
                     <span class="stage-color" style="background-color: #6a3d9a;"></span>
                     <span class="stage-number">17.</span>
@@ -489,7 +484,8 @@
               <!-- Stage 18 - ATP/QTP Completed -->
               <div class="stage-item">
                 <label>
-                  <input type="checkbox" name="stage_atp_qtp_completed" class="stage-checkbox" data-stage="atp_qtp_completed" {% if 'atp_qtp_completed' in demand.selected_stages %}checked{% endif %}>
+                  <input type="checkbox" name="stage_atp_qtp_completed" class="stage-checkbox"
+                    data-stage="atp_qtp_completed">
                   <div class="stage-text">
                     <span class="stage-color" style="background-color: #b2df8a;"></span>
                     <span class="stage-number">18.</span>
@@ -501,7 +497,8 @@
               <!-- Stage 19 - Delivery at Stores -->
               <div class="stage-item">
                 <label>
-                  <input type="checkbox" name="stage_delivery_at_stores" class="stage-checkbox" data-stage="delivery_at_stores" {% if 'delivery_at_stores' in demand.selected_stages %}checked{% endif %}>
+                  <input type="checkbox" name="stage_delivery_at_stores" class="stage-checkbox"
+                    data-stage="delivery_at_stores">
                   <div class="stage-text">
                     <span class="stage-color" style="background-color: #a6cee3;"></span>
                     <span class="stage-number">19.</span>
@@ -516,7 +513,7 @@
               <!-- Stage 20 - SAT/SoFT -->
               <div class="stage-item">
                 <label>
-                  <input type="checkbox" name="stage_sat_soft" class="stage-checkbox" data-stage="sat_soft" {% if 'sat_soft' in demand.selected_stages %}checked{% endif %}>
+                  <input type="checkbox" name="stage_sat_soft" class="stage-checkbox" data-stage="sat_soft">
                   <div class="stage-text">
                     <span class="stage-color" style="background-color: #1f78b4;"></span>
                     <span class="stage-number">20.</span>
@@ -529,7 +526,7 @@
               <div class="stage-item">
                 <label>
                   <input type="checkbox" name="stage_inward_inspection_clearance" class="stage-checkbox"
-                    data-stage="inward_inspection_clearance" {% if 'inward_inspection_clearance' in demand.selected_stages %}checked{% endif %}>
+                    data-stage="inward_inspection_clearance">
                   <div class="stage-text">
                     <span class="stage-color" style="background-color: #b2df8a;"></span>
                     <span class="stage-number">21.</span>
@@ -542,7 +539,7 @@
               <div class="stage-item">
                 <label>
                   <input type="checkbox" name="stage_payment_process" class="stage-checkbox"
-                    data-stage="payment_process" {% if 'payment_process' in demand.selected_stages %}checked{% endif %}>
+                    data-stage="payment_process">
                   <div class="stage-text">
                     <span class="stage-color" style="background-color: #fb9a99;"></span>
                     <span class="stage-number">22.</span>
@@ -554,8 +551,7 @@
               <!-- Stage 23 - Partially Paid -->
               <div class="stage-item">
                 <label>
-                  <input type="checkbox" name="stage_partially_paid" class="stage-checkbox" data-stage="partially_paid"
-                    {% if 'partially_paid' in demand.selected_stages %}checked{% endif %}>
+                  <input type="checkbox" name="stage_partially_paid" class="stage-checkbox" data-stage="partially_paid">
                   <div class="stage-text">
                     <span class="stage-color" style="background-color: #e31a1c;"></span>
                     <span class="stage-number">23.</span>
@@ -568,7 +564,7 @@
               <div class="stage-item">
                 <label>
                   <input type="checkbox" name="stage_payment_released" class="stage-checkbox"
-                    data-stage="payment_released" {% if 'payment_released' in demand.selected_stages %}checked{% endif %}>
+                    data-stage="payment_released">
                   <div class="stage-text">
                     <span class="stage-color" style="background-color: #fdbf6f;"></span>
                     <span class="stage-number">24.</span>
@@ -581,7 +577,7 @@
               <div class="stage-item">
                 <label>
                   <input type="checkbox" name="stage_available_for_integration" class="stage-checkbox"
-                    data-stage="available_for_integration" {% if 'available_for_integration' in demand.selected_stages %}checked{% endif %}>
+                    data-stage="available_for_integration">
                   <div class="stage-text">
                     <span class="stage-color" style="background-color: #ff7f00;"></span>
                     <span class="stage-number">25.</span>
