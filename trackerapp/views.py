@@ -158,7 +158,17 @@ def demand_list(request):
                 continue
                 
             # Calculate stage position relative to the demand's timeline
-            stage_duration = (s.end_date - s.start_date).days + 1
+            # Check if there are multiple weekly updates for this stage
+            weekly_updates_for_stage = demand.weekly_updates.filter(current_stage=s.stage).order_by('week_start_date')
+            
+            if weekly_updates_for_stage.count() > 1:
+                # Multiple weekly updates exist for this stage - calculate total duration
+                earliest_start = min(update.week_start_date for update in weekly_updates_for_stage)
+                latest_end = max(update.week_end_date for update in weekly_updates_for_stage)
+                stage_duration = (latest_end - earliest_start).days + 1
+            else:
+                # Single weekly update or no weekly updates - use the stage object duration
+                stage_duration = (s.end_date - s.start_date).days + 1
             
             # Calculate stage position relative to its demand's timeline (not global timeline)
             stage_start_offset = (s.start_date - demand_start).days
@@ -281,8 +291,19 @@ def demand_list(request):
                     # Find the current stage's end date to calculate the split point
                     current_stage_obj = demand.stages.filter(stage=current_stage).first()
                     if current_stage_obj:
-                        # Calculate the split point for the mini progress bar
-                        split_date = current_stage_obj.end_date
+                        # Check if there are multiple weekly updates for this stage
+                        weekly_updates_for_current_stage = demand.weekly_updates.filter(current_stage=current_stage).order_by('week_start_date')
+                        
+                        if weekly_updates_for_current_stage.count() > 1:
+                            # Multiple weekly updates exist - use the latest end date from weekly updates
+                            split_date = max(update.week_end_date for update in weekly_updates_for_current_stage)
+                            # Calculate actual current stage duration from weekly updates
+                            earliest_start = min(update.week_start_date for update in weekly_updates_for_current_stage)
+                            current_stage_duration = (split_date - earliest_start).days + 1
+                        else:
+                            # Single weekly update - use the stage object's end date
+                            split_date = current_stage_obj.end_date
+                            current_stage_duration = (split_date - current_stage_obj.start_date).days + 1
                         
                         # Calculate position of the split point within the timeline
                         split_year = split_date.year
@@ -311,7 +332,7 @@ def demand_list(request):
                                 'width_percent': segment1_width,
                                 'relative_start_percent': stage_relative_start,
                                 'relative_width_percent': stage_relative_width * (segment1_width / width),
-                                'duration': (split_date - s.start_date).days,
+                                'duration': current_stage_duration,
                                 'start_date': s.start_date.strftime('%Y-%m-%d'),
                                 'end_date': split_date.strftime('%Y-%m-%d'),
                                 'start_year': start_year,
