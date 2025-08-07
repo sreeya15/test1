@@ -333,7 +333,7 @@ def demand_list(request):
                                 'relative_start_percent': stage_relative_start,
                                 'relative_width_percent': stage_relative_width * (segment1_width / width),
                                 'duration': current_stage_duration,
-                                'start_date': s.start_date.strftime('%Y-%m-%d'),
+                                'start_date': earliest_start.strftime('%Y-%m-%d') if weekly_updates_for_current_stage.count() > 1 else current_stage_obj.start_date.strftime('%Y-%m-%d'),
                                 'end_date': split_date.strftime('%Y-%m-%d'),
                                 'start_year': start_year,
                                 'start_month': start_month,
