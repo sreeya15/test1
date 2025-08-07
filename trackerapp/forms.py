@@ -145,11 +145,11 @@ class WeeklyUpdateForm(forms.ModelForm):
         if demand and demand.selected_stages:
             # Only show stages that were selected when creating the demand
             available_choices = [('', 'Select Stage')]
-            print(f"DEBUG: Demand {demand.id} selected_stages: {demand.selected_stages}")
-            print(f"DEBUG: Selected stages type: {type(demand.selected_stages)}")
+            # print(f"DEBUG: Demand {demand.id} selected_stages: {demand.selected_stages}")
+            # print(f"DEBUG: Selected stages type: {type(demand.selected_stages)}")
             
             for stage_value in demand.selected_stages:
-                print(f"DEBUG: Processing stage_value: {stage_value}")
+                # print(f"DEBUG: Processing stage_value: {stage_value}")
                 # Get the stage label from Stage.choices
                 stage_label = None
                 for choice_value, choice_label in Stage.choices:
@@ -159,17 +159,17 @@ class WeeklyUpdateForm(forms.ModelForm):
                 
                 if stage_label:
                     available_choices.append((stage_value, stage_label))
-                    print(f"DEBUG: Added stage {stage_value} with label {stage_label}")
+                    # print(f"DEBUG: Added stage {stage_value} with label {stage_label}")
                 else:
                     # Fallback to the value itself if label not found
                     available_choices.append((stage_value, stage_value))
-                    print(f"DEBUG: Added stage {stage_value} with fallback label")
+                    # print(f"DEBUG: Added stage {stage_value} with fallback label")
             
-            print(f"DEBUG: Final available choices: {available_choices}")
+            # print(f"DEBUG: Final available choices: {available_choices}")
             self.fields['current_stage'].choices = available_choices
         else:
             # If no stages were selected, show only the default option
-            print(f"DEBUG: No selected stages for demand {demand.id if demand else 'None'}")
+            # print(f"DEBUG: No selected stages for demand {demand.id if demand else 'None'}")
             self.fields['current_stage'].choices = [('', 'No stages selected for this demand')]
         
         # Add help text for date fields
