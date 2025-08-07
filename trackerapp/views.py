@@ -459,64 +459,52 @@ def demand_list(request):
         weekly_current_stage = latest_weekly_update.current_stage if latest_weekly_update else None
         
         for stage_num in range(26):
-            # Look for the first non-mini_progress stage with this number
-            found_stage = None
-            for stage in stage_bars:
-                if (stage['stage'] not in ['mini_progress', 'mini_progress_colored', 'mini_progress_grey'] and 
-                    stage.get('number') == stage_num):
-                    found_stage = stage
+            # Look for the stage in the database first to get accurate data
+            stage_name = None
+            for stage_key, number in STAGE_ORDER.items():
+                if number == stage_num:
+                    stage_name = stage_key
                     break
             
-            if found_stage:
-                # If this is the current stage from weekly update, use that data
-                if weekly_current_stage and STAGE_ORDER.get(weekly_current_stage, -1) == stage_num:
-                    # Find the current stage object to get its actual dates
-                    current_stage_obj = demand.stages.filter(stage=weekly_current_stage).first()
-                    if current_stage_obj:
-                        stage_detail_boxes.append({
-                            'number': stage_num,
-                            'duration': current_stage_obj.duration_in_days(),
-                            'duration_text': f"{current_stage_obj.duration_in_days()}d",
-                            'color': STAGE_COLORS.get(weekly_current_stage, '#888'),
-                            'id': current_stage_obj.id,
-                            'stage_name': Stage(weekly_current_stage).label,
-                            'start_date': current_stage_obj.start_date.strftime('%Y-%m-%d'),
-                            'end_date': current_stage_obj.end_date.strftime('%Y-%m-%d'),
-                            'has_data': True
-                        })
-                    else:
-                        # Fallback to found stage data
-                        stage_detail_boxes.append({
-                            'number': stage_num,
-                            'duration': found_stage['duration'],
-                            'duration_text': f"{found_stage['duration']}d",
-                            'color': found_stage['color'],
-                            'id': found_stage['id'],
-                            'stage_name': found_stage.get('stage_verbose', f'Stage {stage_num}'),
-                            'start_date': found_stage.get('start_date', ''),
-                            'end_date': found_stage.get('end_date', ''),
-                            'has_data': True
-                        })
-                else:
+            # Find the stage object in the database
+            stage_obj = demand.stages.filter(stage=stage_name).exclude(stage='mini_progress').first()
+            
+            if stage_obj:
+                # Check if there are multiple weekly updates for this stage
+                weekly_updates_for_stage = demand.weekly_updates.filter(current_stage=stage_name).order_by('week_start_date')
+                
+                if weekly_updates_for_stage.count() > 1:
+                    # Multiple weekly updates exist for this stage - calculate total duration
+                    earliest_start = min(update.week_start_date for update in weekly_updates_for_stage)
+                    latest_end = max(update.week_end_date for update in weekly_updates_for_stage)
+                    total_duration = (latest_end - earliest_start).days + 1
+                    
                     stage_detail_boxes.append({
                         'number': stage_num,
-                        'duration': found_stage['duration'],
-                        'duration_text': f"{found_stage['duration']}d",
-                        'color': found_stage['color'],
-                        'id': found_stage['id'],
-                        'stage_name': found_stage.get('stage_verbose', f'Stage {stage_num}'),
-                        'start_date': found_stage.get('start_date', ''),
-                        'end_date': found_stage.get('end_date', ''),
+                        'duration': total_duration,
+                        'duration_text': f"{total_duration}d",
+                        'color': STAGE_COLORS.get(stage_name, '#888'),
+                        'id': stage_obj.id,
+                        'stage_name': Stage(stage_name).label,
+                        'start_date': earliest_start.strftime('%Y-%m-%d'),
+                        'end_date': latest_end.strftime('%Y-%m-%d'),
+                        'has_data': True
+                    })
+                else:
+                    # Single weekly update or no weekly updates - use the stage object duration
+                    stage_detail_boxes.append({
+                        'number': stage_num,
+                        'duration': stage_obj.duration_in_days(),
+                        'duration_text': f"{stage_obj.duration_in_days()}d",
+                        'color': STAGE_COLORS.get(stage_name, '#888'),
+                        'id': stage_obj.id,
+                        'stage_name': Stage(stage_name).label,
+                        'start_date': stage_obj.start_date.strftime('%Y-%m-%d'),
+                        'end_date': stage_obj.end_date.strftime('%Y-%m-%d'),
                         'has_data': True
                     })
             else:
                 # Check if this stage was selected when creating the demand
-                stage_name = None
-                for stage_key, number in STAGE_ORDER.items():
-                    if number == stage_num:
-                        stage_name = stage_key
-                        break
-                
                 if stage_name and stage_name in demand.selected_stages:
                     # Stage was selected but no data yet
                     stage_detail_boxes.append({
