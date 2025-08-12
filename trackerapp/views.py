@@ -1123,6 +1123,25 @@ def delete_weekly_update(request, update_id):
             if not latest_with_stage or latest_with_stage.week_number < weekly_update.week_number:
                 was_latest_with_stage = True
         
+        # Check if this was the only weekly update for this stage
+        # If so, we should clean up the corresponding DemandStagePeriod object
+        if weekly_update.current_stage:
+            other_updates_for_stage = WeeklyUpdate.objects.filter(
+                demand=weekly_update.demand,
+                current_stage=weekly_update.current_stage
+            ).exclude(id=weekly_update.id)
+            
+            if not other_updates_for_stage.exists():
+                # This was the only weekly update for this stage
+                # Delete the corresponding DemandStagePeriod object
+                stage_period = DemandStagePeriod.objects.filter(
+                    demand=weekly_update.demand,
+                    stage=weekly_update.current_stage
+                ).first()
+                
+                if stage_period:
+                    stage_period.delete()
+        
         weekly_update.delete()
         
         # If this was the latest update with current_stage, clear the session data
