@@ -158,6 +158,16 @@
             <p><strong>Demand ID:</strong> {{ demand.demand_ID|default:"Not specified" }}</p>
             <p><strong>File Type:</strong> {{ demand.file_type|default:"Not specified" }}</p>
             <p><strong>Amount:</strong> {{ demand.demand_amount|default:"Not specified" }}</p>
+            {% if demand.start_date and demand.get_end_date %}
+            <div style="background-color: #e3f2fd; padding: 10px; border-radius: 4px; margin-top: 10px; border-left: 4px solid #2196f3;">
+                <p style="margin: 0; font-weight: 500; color: #1976d2;">
+                    📅 <strong>Demand Duration:</strong> {{ demand.start_date|date:"M d, Y" }} to {{ demand.get_end_date|date:"M d, Y" }}
+                </p>
+                <p style="margin: 5px 0 0 0; font-size: 12px; color: #666;">
+                    Weekly updates can only be created within this date range.
+                </p>
+            </div>
+            {% endif %}
         </div>
 
         <form method="post">
@@ -327,11 +337,21 @@
                         return `${year}-${month}-${day}`;
                     };
 
+                    // Check if the calculated end date exceeds the demand end date
+                    const demandEndDate = startDateInput.getAttribute('data-demand-end');
+                    if (demandEndDate) {
+                        const demandEnd = new Date(demandEndDate);
+                        if (endDate > demandEnd) {
+                            // Adjust end date to demand end date
+                            endDate.setTime(demandEnd.getTime());
+                        }
+                    }
+
                     endDateInput.value = formatDate(endDate);
                 }
             });
 
-            // Validate that end date is not before start date
+            // Validate that end date is not before start date and within demand duration
             endDateInput.addEventListener('change', function () {
                 if (startDateInput.value && endDateInput.value) {
                     const startDate = new Date(startDateInput.value);
@@ -340,6 +360,48 @@
                     if (endDate < startDate) {
                         alert('End date cannot be before start date');
                         endDateInput.value = '';
+                        return;
+                    }
+
+                    // Check if dates are within demand duration
+                    const demandStartDate = startDateInput.getAttribute('data-demand-start');
+                    const demandEndDate = startDateInput.getAttribute('data-demand-end');
+                    
+                    if (demandStartDate && demandEndDate) {
+                        const demandStart = new Date(demandStartDate);
+                        const demandEnd = new Date(demandEndDate);
+                        
+                        if (startDate < demandStart || startDate > demandEnd) {
+                            alert('Start date must be within the demand duration period');
+                            startDateInput.value = '';
+                            return;
+                        }
+                        
+                        if (endDate < demandStart || endDate > demandEnd) {
+                            alert('End date must be within the demand duration period');
+                            endDateInput.value = '';
+                            return;
+                        }
+                    }
+                }
+            });
+
+            // Validate start date is within demand duration
+            startDateInput.addEventListener('change', function () {
+                if (startDateInput.value) {
+                    const startDate = new Date(startDateInput.value);
+                    const demandStartDate = startDateInput.getAttribute('data-demand-start');
+                    const demandEndDate = startDateInput.getAttribute('data-demand-end');
+                    
+                    if (demandStartDate && demandEndDate) {
+                        const demandStart = new Date(demandStartDate);
+                        const demandEnd = new Date(demandEndDate);
+                        
+                        if (startDate < demandStart || startDate > demandEnd) {
+                            alert('Start date must be within the demand duration period');
+                            startDateInput.value = '';
+                            return;
+                        }
                     }
                 }
             });

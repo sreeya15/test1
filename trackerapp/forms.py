@@ -172,9 +172,37 @@ class WeeklyUpdateForm(forms.ModelForm):
             # print(f"DEBUG: No selected stages for demand {demand.id if demand else 'None'}")
             self.fields['current_stage'].choices = [('', 'No stages selected for this demand')]
         
-        # Add help text for date fields
-        self.fields['week_start_date'].help_text = 'Select the start date of this week'
-        self.fields['week_end_date'].help_text = 'Select the end date of this week'
+        # Set date restrictions based on demand duration
+        if demand and demand.start_date and demand.get_end_date():
+            demand_start = demand.start_date
+            demand_end = demand.get_end_date()
+            
+            # Format dates for HTML date input (YYYY-MM-DD)
+            min_date = demand_start.strftime('%Y-%m-%d')
+            max_date = demand_end.strftime('%Y-%m-%d')
+            
+            # Update widget attributes to restrict date selection
+            self.fields['week_start_date'].widget.attrs.update({
+                'min': min_date,
+                'max': max_date,
+                'data-demand-start': min_date,
+                'data-demand-end': max_date
+            })
+            
+            self.fields['week_end_date'].widget.attrs.update({
+                'min': min_date,
+                'max': max_date,
+                'data-demand-start': min_date,
+                'data-demand-end': max_date
+            })
+            
+            # Update help text to show demand duration
+            self.fields['week_start_date'].help_text = f'Select the start date of this week (Demand duration: {demand_start.strftime("%b %d, %Y")} to {demand_end.strftime("%b %d, %Y")})'
+            self.fields['week_end_date'].help_text = f'Select the end date of this week (Demand duration: {demand_start.strftime("%b %d, %Y")} to {demand_end.strftime("%b %d, %Y")})'
+        else:
+            # Add help text for date fields
+            self.fields['week_start_date'].help_text = 'Select the start date of this week'
+            self.fields['week_end_date'].help_text = 'Select the end date of this week'
         
     def clean(self):
         cleaned_data = super().clean()
